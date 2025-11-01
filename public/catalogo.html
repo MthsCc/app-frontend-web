@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - EchoView</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .search-section {
+            margin-bottom: 30px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .title-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .title-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .title-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .title-card .no-poster {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .title-info {
+            padding: 15px;
+        }
+
+        .title-info h3 {
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            height: 2.6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .title-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #f39c12;
+            font-weight: 600;
+        }
+
+        .type-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .type-movie {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .type-tv {
+            background: #3498db;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .error {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #e74c3c;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-state h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+        }
+
+        /* Modal de detalhes */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-header .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 30px;
+            color: white;
+        }
+
+        .modal-header h2 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: white;
+            transform: rotate(90deg);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .action-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .rating-section {
+            margin-top: 20px;
+        }
+
+        .rating-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .rating-section input[type="range"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .rating-value {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .comment-section {
+            margin-top: 20px;
+        }
+
+        .comment-section textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .comment-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Catálogo EchoView</h1>
+            <div class="header-buttons">
+                <a href="perfil.html" class="btn btn-secondary">Meu Perfil</a>
+                <button class="btn btn-secondary" onclick="logout()">Sair</button>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar filmes e séries...">
+                <button class="btn btn-primary" onclick="searchTitles()">Buscar</button>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all" onclick="filterByType('all')">Todos</button>
+                <button class="filter-btn" data-filter="movie" onclick="filterByType('movie')">Filmes</button>
+                <button class="filter-btn" data-filter="tv" onclick="filterByType('tv')">Séries</button>
+            </div>
+        </div>
+
+        <div id="catalogContent">
+            <div class="loading">Carregando títulos populares...</div>
+        </div>
+    </div>
+
+    <!-- Modal de detalhes -->
+    <div id="titleModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div class="modal-header" id="modalHeader">
+                <!-- Conteúdo dinâmico -->
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Conteúdo dinâmico -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        let currentTitles = [];
+        let currentFilter = 'all';
+        let selectedTitle = null;
+
+        // Verificar autenticação
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Carregar títulos populares ao iniciar
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPopularTitles();
+            
+            // Enter para buscar
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchTitles();
+                }
+            });
+        });
+
+        async function loadPopularTitles() {
+            try {
+                const response = await fetch(`${API_URL}/api/tmdb/popular`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Erro ao carregar títulos');
+
+                const titles = await response.json();
+                currentTitles = titles;
+                displayTitles(titles);
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('catalogContent').innerHTML = `
+                    <div class="error">
+                        <h2>Erro ao carregar catálogo</h2>
+                        <p>${error.message}</p>
+                        <p style="margin-top: 15px; font-size: 0.9em;">
+                            Verifique se a chave da API TMDb está configurada corretamente no arquivo .env
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        async function searchTitles() {
+            const query = document.getElementById('searchInput').value.trim();
+            
+            if (!query) {
+                loadPopularTitles();
+                return;
+            }
+
+            try {
+                document.getElementById('catalogContent').innerHTML = '<div class="loading">Buscando...</div>';
+
+                const response = await fetch(`${API_URL}/api/tmdb/search?query=${encodeURIComponent(query)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Erro ao buscar títulos');
+
+                const titles = await response.json();
+                currentTitles = titles;
+                displayTitles(titles);
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('catalogContent').innerHTML = `
+                    <div class="error">
+                        <h2>Erro ao buscar</h2>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function filterByType(type) {
+            currentFilter = type;
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === type) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Filtrar títulos
+            const filtered = type === 'all' 
+                ? currentTitles 
+                : currentTitles.filter(t => t.type === type);
+            
+            displayTitles(filtered);
+        }
+
+        function displayTitles(titles) {
+            const container = document.getElementById('catalogContent');
+
+            if (!titles || titles.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h2>Nenhum título encontrado</h2>
+                        <p>Tente buscar por outro termo ou explore os títulos populares</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const grid = document.createElement('div');
+            grid.className = 'catalog-grid';
+
+            titles.forEach(title => {
+                const card = document.createElement('div');
+                card.className = 'title-card';
+                card.onclick = () => openModal(title);
+
+                const posterHTML = title.poster_path 
+                    ? `<img src="${title.poster_path}" alt="${title.title}">`
+                    : `<div class="no-poster">🎬</div>`;
+
+                card.innerHTML = `
+                    ${posterHTML}
+                    <div class="title-info">
+                        <h3>${title.title}</h3>
+                        <div class="title-meta">
+                            <span class="type-badge type-${title.type}">
+                                ${title.type === 'movie' ? 'Filme' : 'Série'}
+                            </span>
+                            <span class="rating">
+                                ⭐ ${title.vote_average ? title.vote_average.toFixed(1) : 'N/A'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            container.innerHTML = '';
+            container.appendChild(grid);
+        }
+
+        function openModal(title) {
+            selectedTitle = title;
+            const modal = document.getElementById('titleModal');
+            const modalHeader = document.getElementById('modalHeader');
+            const modalBody = document.getElementById('modalBody');
+
+            // Header do modal
+            const headerHTML = title.poster_path
+                ? `
+                    <img src="${title.poster_path}" alt="${title.title}">
+                    <div class="overlay">
+                        <h2>${title.title}</h2>
+                        <p>${title.release_date || 'Data não disponível'}</p>
+                    </div>
+                `
+                : `
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <div class="overlay">
+                            <h2>${title.title}</h2>
+                            <p>${title.release_date || 'Data não disponível'}</p>
+                        </div>
+                    </div>
+                `;
+
+            modalHeader.innerHTML = headerHTML;
+
+            // Body do modal
+            modalBody.innerHTML = `
+                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                    ${title.overview || 'Sinopse não disponível'}
+                </p>
+
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <span class="type-badge type-${title.type}">
+                        ${title.type === 'movie' ? 'Filme' : 'Série'}
+                    </span>
+                    <span class="rating" style="font-size: 1.1em;">
+                        ⭐ ${title.vote_average ? title.vote_average.toFixed(1) : 'N/A'}
+                    </span>
+                </div>
+
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+                <h3 style="margin-bottom: 15px; color: #333;">Marcar como:</h3>
+                <div class="action-buttons">
+                    <button class="action-btn" id="btn-watched" onclick="setStatus('watched')">
+                        ✓ Assistido
+                    </button>
+                    <button class="action-btn" id="btn-want_to_watch" onclick="setStatus('want_to_watch')">
+                        ★ Quero Ver
+                    </button>
+                    <button class="action-btn" id="btn-dropped" onclick="setStatus('dropped')">
+                        ✗ Abandonado
+                    </button>
+                </div>
+
+                <div class="rating-section">
+                    <label>Sua Avaliação (0-10):</label>
+                    <input type="range" id="ratingSlider" min="0" max="10" step="0.5" value="5" oninput="updateRatingDisplay()">
+                    <div class="rating-value" id="ratingValue">5.0</div>
+                </div>
+
+                <div class="comment-section">
+                    <label>Comentário / Resenha:</label>
+                    <textarea id="commentText" placeholder="Escreva sua opinião sobre este título..."></textarea>
+                </div>
+
+                <button class="save-btn" onclick="saveInteraction()">Salvar</button>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('titleModal').classList.remove('active');
+            selectedTitle = null;
+        }
+
+        let currentStatus = null;
+
+        function setStatus(status) {
+            currentStatus = status;
+            
+            // Atualizar botões
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`btn-${status}`).classList.add('active');
+        }
+
+        function updateRatingDisplay() {
+            const value = document.getElementById('ratingSlider').value;
+            document.getElementById('ratingValue').textContent = parseFloat(value).toFixed(1);
+        }
+
+        async function saveInteraction() {
+            if (!currentStatus) {
+                alert('Por favor, selecione um status (Assistido, Quero Ver ou Abandonado)');
+                return;
+            }
+
+            const rating = parseFloat(document.getElementById('ratingSlider').value);
+            const comment = document.getElementById('commentText').value.trim();
+
+            try {
+                const response = await fetch(`${API_URL}/api/titles/interaction`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        tmdbId: selectedTitle.id,
+                        type: selectedTitle.type,
+                        title: selectedTitle.title,
+                        releaseDate: selectedTitle.release_date,
+                        overview: selectedTitle.overview,
+                        posterPath: selectedTitle.poster_path,
+                        voteAverage: selectedTitle.vote_average,
+                        genres: [],
+                        status: currentStatus,
+                        rating: rating,
+                        comment: comment
+                    })
+                });
+
+                if (!response.ok) throw new Error('Erro ao salvar interação');
+
+                const result = await response.json();
+                alert('Interação salva com sucesso!');
+                closeModal();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao salvar interação: ' + error.message);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        // Fechar modal ao clicar fora
+        document.getElementById('titleModal').addEventListener('click', (e) => {
+            if (e.target.id === 'titleModal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

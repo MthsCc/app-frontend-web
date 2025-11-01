@@ -273,31 +273,31 @@
         }
     });
 
-    // Modal de Recuperação de Senha
+    // Modal de Recuperação de Senha (Código de Backup)
     function openForgotPasswordModal(e) {
         e.preventDefault();
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
-        modal.id = 'forgotPasswordModal';
+        modal.id = 'recoverPasswordModal';
         modal.innerHTML = `
             <div class="relative z-10 flex w-full max-w-md flex-col items-center justify-center space-y-6 rounded-xl bg-surface-dark p-8">
-                <button onclick="document.getElementById('forgotPasswordModal').remove()" class="absolute right-4 top-4 text-text-subtle hover:text-text-light">
+                <button onclick="document.getElementById('recoverPasswordModal').remove()" class="absolute right-4 top-4 text-text-subtle hover:text-text-light">
                     <span class="material-symbols-outlined">close</span>
                 </button>
                 <div class="w-full text-center">
-                    <h2 class="text-text-light text-2xl font-bold leading-tight">Recuperar Senha</h2>
-                    <p class="text-text-subtle text-base font-normal leading-normal pt-1">Enviaremos um código para seu e-mail</p>
+                    <h2 class="text-text-light text-2xl font-bold leading-tight">Redefinir Senha</h2>
+                    <p class="text-text-subtle text-base font-normal leading-normal pt-1">Use seu Código de Backup para redefinir a senha</p>
                 </div>
-                <form id="forgotPasswordForm" class="w-full space-y-4">
-                    <div id="forgotMessage" class="text-sm p-3 rounded text-center hidden"></div>
+                <form id="recoverPasswordForm" class="w-full space-y-4">
+                    <div id="recoverMessage" class="text-sm p-3 rounded text-center hidden"></div>
                     <label class="flex w-full flex-col">
                         <p class="text-text-light text-base font-medium leading-normal pb-2">E-mail</p>
                         <div class="relative flex w-full items-center">
                             <span class="material-symbols-outlined absolute left-4 text-text-subtle">mail</span>
-                            <input type="email" id="forgotEmail" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface-dark h-14 placeholder:text-text-subtle p-4 pl-12 text-base font-normal leading-normal" placeholder="seuemail@exemplo.com" required/>
+                            <input type="email" id="recoverEmail" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface-dark h-14 placeholder:text-text-subtle p-4 pl-12 text-base font-normal leading-normal" placeholder="seuemail@exemplo.com" required/>
                         </div>
                     </label>
-                    <button type="submit" class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-base font-bold text-white transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background-dark active:scale-95" onclick="createBlop(event)">Enviar Código</button>
+                    <button type="submit" class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-base font-bold text-white transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background-dark active:scale-95" onclick="createBlop(event)">Redefinir Senha</button>
                 </form>
             </div>
         `;
@@ -309,45 +309,47 @@
             if (e.target === modal) modal.remove();
         });
         
-        document.getElementById('forgotPasswordForm').addEventListener('submit', async (e) => {
+        document.getElementById('recoverPasswordForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('forgotEmail').value.trim();
+            const email = document.getElementById('recoverEmail').value.trim();
+            const backupCode = document.getElementById('backupCode').value.trim();
+            const newPassword = document.getElementById('recoverNewPassword').value;
             const btn = e.target.querySelector('button[type="submit"]');
-            const messageEl = document.getElementById('forgotMessage');
+            const messageEl = document.getElementById('recoverMessage');
             
-            if (!email) {
-                messageEl.textContent = 'Digite seu e-mail';
+            if (!email || !backupCode || !newPassword) {
+                messageEl.textContent = 'Preencha todos os campos';
                 messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
                 messageEl.classList.remove('hidden');
                 return;
             }
             
             btn.disabled = true;
-            btn.textContent = 'Enviando...';
+            btn.textContent = 'Redefinindo...';
             
             try {
-                const response = await fetch(`${API_URL}/forgot-password`, {
+                const response = await fetch(`${API_URL}/recover-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ email, backupCode, newPassword })
                 });
                 
                 const data = await response.json();
                 
                 if (!response.ok) {
-                    messageEl.textContent = data.error || 'Erro ao enviar código';
+                    messageEl.textContent = data.error || 'Erro ao redefinir senha';
                     messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
                     messageEl.classList.remove('hidden');
                     return;
                 }
                 
-                messageEl.textContent = 'Código enviado! Verifique seu e-mail';
+                messageEl.textContent = 'Senha redefinida com sucesso!';
                 messageEl.className = 'text-sm p-3 rounded text-center bg-green-900 text-green-200';
                 messageEl.classList.remove('hidden');
                 
                 setTimeout(() => {
                     modal.remove();
-                    openResetPasswordModal(email);
+                    window.location.href = 'login.html';
                 }, 1500);
                 
             } catch (error) {
@@ -356,12 +358,12 @@
                 messageEl.classList.remove('hidden');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Enviar Código';
+                btn.textContent = 'Redefinir Senha';
             }
         });
     }
     
-    function openResetPasswordModal(email) {
+    // Função antiga removida: openResetPasswordModal(email)
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
         modal.id = 'resetPasswordModal';
@@ -422,7 +424,7 @@
             });
         });
         
-        document.getElementById('resetPasswordForm').addEventListener('submit', async (e) => {
+       document.getElementById('recoverPasswordForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const code = document.getElementById('resetCode').value.trim();
             const newPassword = document.getElementById('newPassword').value;
@@ -473,7 +475,6 @@
                 btn.textContent = 'Trocar Senha';
             }
         });
-    }
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();

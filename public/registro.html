@@ -255,10 +255,19 @@
                 return;
             }
 
-            showMessage('Conta criada com sucesso!', 'success');
+            // 🚨 NOVO: Exibir o Código de Backup para o usuário salvar
+            const backupCode = data.backupCode;
+            
+            // Usar um alerta simples para garantir que o usuário veja
+            alert(`SUCESSO! Sua conta foi criada.
+🚨 CÓDIGO DE BACKUP: ${backupCode}
+GUARDE ESTE CÓDIGO! Ele será usado para recuperar sua senha.
+Você será redirecionado para o login.`);
+
+            showMessage('Conta criada com sucesso! Redirecionando...', 'success');
             setTimeout(() => {
                 window.location.href = 'login.html';
-            }, 1000);
+            }, 100); // Redirecionamento mais rápido após o alerta
 
         } catch (error) {
             showMessage('Erro ao conectar com o servidor', 'error');
