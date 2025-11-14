@@ -1,763 +1,1957 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html class="dark" lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo - EchoView</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <meta name="theme-color" content="#335b7e"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="EchoView"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="description" content="EchoView - Catálogo de Filmes e Séries"/>
+    <link rel="manifest" href="manifest.json"/>
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23335b7e' width='100' height='100'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23e2e0df'%3EEV%3C/text%3E%3C/svg%3E"/>
+    <link rel="stylesheet" href="css/mobile.css"/>
+    <title>ECHOVIEW - Catálogo de Filmes e Séries</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#335b7e",
+                        "secondary": "#707d9b",
+                        "tertiary": "#a7aabd",
+                        "accent": "#e2e0df",
+                        "background-light": "#e2e0df",
+                        "background-dark": "#051422",
+                        "surface": "#072f57",
+                        "surface-hover": "#335b7e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+        
+        /* Estilos para notificações */
+        #notificationsList::-webkit-scrollbar {
+            display: none;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        
+        #notificationsList {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #667eea;
+        
+        #notificationDropdown {
+            box-sizing: border-box !important;
+            width: 500px !important;
+            max-width: 500px !important;
         }
-
-        .header h1 {
-            color: #667eea;
-            font-size: 2.5em;
+        
+        #notificationsList {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
         }
-
-        .header-buttons {
-            display: flex;
-            gap: 15px;
+        
+        #notificationsList > div {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
         }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+        
+        #notificationsList .notification-item {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        
+        #notificationsList .notification-item > div {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
         }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        
+        #notificationsList p {
+            box-sizing: border-box !important;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            white-space: normal !important;
+            margin: 0 !important;
         }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .search-section {
-            margin-bottom: 30px;
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1em;
-            transition: border-color 0.3s ease;
-        }
-
-        .search-bar input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .filters {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 10px 20px;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .filter-btn:hover, .filter-btn.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .title-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .title-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .title-card img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-        }
-
-        .title-card .no-poster {
-            width: 100%;
-            height: 300px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2em;
-            font-weight: 600;
-        }
-
-        .title-info {
-            padding: 15px;
-        }
-
-        .title-info h3 {
-            color: #333;
-            font-size: 1.1em;
-            margin-bottom: 8px;
-            line-height: 1.3;
-            height: 2.6em;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        .title-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85em;
-            color: #666;
-        }
-
-        .rating {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #f39c12;
-            font-weight: 600;
-        }
-
-        .type-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75em;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .type-movie {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .type-tv {
-            background: #3498db;
-            color: white;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2em;
-            color: #667eea;
-        }
-
-        .error {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2em;
-            color: #e74c3c;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: #999;
-        }
-
-        .empty-state h2 {
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-
-        .empty-state p {
-            font-size: 1.1em;
-        }
-
-        /* Modal de detalhes */
+        
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 1000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s ease;
             overflow-y: auto;
         }
-
-        .modal.active {
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal.show {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 20px;
         }
-
+        
         .modal-content {
-            background: white;
-            border-radius: 20px;
-            max-width: 800px;
+            background-color: #072f57;
+            padding: 0;
+            border-radius: 0.75rem;
+            max-width: 1200px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
+            animation: slideIn 0.3s ease;
+            margin-top: 20px;
         }
-
-        .modal-header {
-            position: relative;
-            height: 400px;
-            overflow: hidden;
-            border-radius: 20px 20px 0 0;
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-
-        .modal-header img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .modal-header .overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 30px;
-            color: white;
-        }
-
-        .modal-header h2 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
+        
         .close-modal {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.9);
+            right: 16px;
+            top: 16px;
+            background: none;
             border: none;
+            color: white;
+            font-size: 2em;
+            cursor: pointer;
+            z-index: 10;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .carousel-wrapper {
+            margin: 0 auto;
+            padding: 20px 50px;
+            max-width: 100%;
+            overflow: hidden;
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        .carousel-wrapper::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        .carousel-item {
+            flex-shrink: 0;
+            width: 200px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border-radius: 24px;
+            box-shadow: rgba(0, 0, 0, 0.1) 5px 5px 20px 0;
+            overflow: hidden;
+        }
+        
+        .carousel-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .carousel-container:hover .carousel-wrapper {
+            animation-play-state: paused;
+        }
+        
+        .carousel-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 24px;
+        }
+        
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            font-size: 1.5em;
+            display: none;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
         }
-
-        .close-modal:hover {
-            background: white;
-            transform: rotate(90deg);
-        }
-
-        .action-buttons {
+        
+        .carousel-container:hover .carousel-arrow {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+        }
+        
+        .carousel-arrow:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .carousel-arrow.left {
+            left: 0;
+        }
+        
+        .carousel-arrow.right {
+            right: 0;
+        }
+        
+        .hero-banner {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #335b7e 0%, #072f57 50%, #051422 100%);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(16, 25, 34, 0.8), rgba(16, 25, 34, 0.4));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            gap: 1rem;
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1.2;
+        }
+        
+        .hero-description {
+            color: #e0e7ff;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
             flex-wrap: wrap;
         }
-
-        .action-btn {
-            flex: 1;
-            min-width: 150px;
-            padding: 12px;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .action-btn:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .action-btn.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .rating-section {
-            margin-top: 20px;
-        }
-
-        .rating-section label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .rating-section input[type="range"] {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .rating-value {
-            text-align: center;
-            font-size: 2em;
-            color: #667eea;
-            font-weight: 700;
-        }
-
-        .comment-section {
-            margin-top: 20px;
-        }
-
-        .comment-section textarea {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1em;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .comment-section textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .save-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        
+        .hero-btn {
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
+            border-radius: 0.5rem;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 20px;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .hero-btn-primary {
+            background: #707d9b;
+            color: white;
+        }
+        
+        .hero-btn-primary:hover {
+            background: #335b7e;
+            transform: translateY(-2px);
+        }
+        
+        .hero-btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .hero-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Loader Styles */
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
         }
 
-        .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .loader .circle {
+            position: relative;
+            width: 50px;
+            height: 50px;
+        }
+
+        .loader .dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background-color: #707d9b;
+            border-radius: 50%;
+            animation: dot-pulse 1.4s infinite ease-in-out;
+        }
+
+        .loader .circle:nth-child(1) .dot {
+            animation-delay: 0s;
+        }
+
+        .loader .circle:nth-child(2) .dot {
+            animation-delay: 0.2s;
+        }
+
+        .loader .circle:nth-child(3) .dot {
+            animation-delay: 0.4s;
+        }
+
+        .loader .circle:nth-child(4) .dot {
+            animation-delay: 0.6s;
+        }
+
+        .loader .outline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #707d9b;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: outline-pulse 1.4s infinite ease-in-out;
+        }
+
+        .loader .circle:nth-child(1) .outline {
+            animation-delay: 0s;
+        }
+
+        .loader .circle:nth-child(2) .outline {
+            animation-delay: 0.2s;
+        }
+
+        .loader .circle:nth-child(3) .outline {
+            animation-delay: 0.4s;
+        }
+
+        .loader .circle:nth-child(4) .outline {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes dot-pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes outline-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.6;
+            }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🎬 Catálogo EchoView</h1>
-            <div class="header-buttons">
-                <a href="perfil.html" class="btn btn-secondary">Meu Perfil</a>
-                <button class="btn btn-secondary" onclick="logout()">Sair</button>
+<body class="bg-background-light dark:bg-background-dark font-display" style="background: linear-gradient(135deg, #072f57 0%, #051422 50%, #000000 100%); min-height: 100vh;">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+    <div class="layout-container flex h-full grow flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 px-4 md:px-10 py-3 sticky top-0 z-50 bg-background-dark/80 backdrop-blur-sm">
+            <div class="flex items-center gap-4 text-white">
+                <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display cursor-pointer" onclick="window.location.href='catalogo.html'">ECHOVIEW</h2>
             </div>
-        </div>
-
-        <div class="search-section">
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Buscar filmes e séries...">
-                <button class="btn btn-primary" onclick="searchTitles()">Buscar</button>
-            </div>
-
-            <div class="filters">
-                <button class="filter-btn active" data-filter="all" onclick="filterByType('all')">Todos</button>
-                <button class="filter-btn" data-filter="movie" onclick="filterByType('movie')">Filmes</button>
-                <button class="filter-btn" data-filter="tv" onclick="filterByType('tv')">Séries</button>
-            </div>
-        </div>
-
-        <div id="catalogContent">
-            <div class="loading">Carregando títulos populares...</div>
-        </div>
-    </div>
-
-    <!-- Modal de detalhes -->
-    <div id="titleModal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeModal()">×</button>
-            <div class="modal-header" id="modalHeader">
-                <!-- Conteúdo dinâmico -->
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Conteúdo dinâmico -->
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const API_URL = 'http://localhost:3000';
-        let currentTitles = [];
-        let currentFilter = 'all';
-        let selectedTitle = null;
-
-        // Verificar autenticação
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = 'login.html';
-        }
-
-        // Carregar títulos populares ao iniciar
-        window.addEventListener('DOMContentLoaded', () => {
-            loadPopularTitles();
-            
-            // Enter para buscar
-            document.getElementById('searchInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    searchTitles();
-                }
-            });
-        });
-
-        async function loadPopularTitles() {
-            try {
-                const response = await fetch(`${API_URL}/api/tmdb/popular`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Erro ao carregar títulos');
-
-                const titles = await response.json();
-                currentTitles = titles;
-                displayTitles(titles);
-            } catch (error) {
-                console.error('Erro:', error);
-                document.getElementById('catalogContent').innerHTML = `
-                    <div class="error">
-                        <h2>Erro ao carregar catálogo</h2>
-                        <p>${error.message}</p>
-                        <p style="margin-top: 15px; font-size: 0.9em;">
-                            Verifique se a chave da API TMDb está configurada corretamente no arquivo .env
-                        </p>
-                    </div>
-                `;
-            }
-        }
-
-        async function searchTitles() {
-            const query = document.getElementById('searchInput').value.trim();
-            
-            if (!query) {
-                loadPopularTitles();
-                return;
-            }
-
-            try {
-                document.getElementById('catalogContent').innerHTML = '<div class="loading">Buscando...</div>';
-
-                const response = await fetch(`${API_URL}/api/tmdb/search?query=${encodeURIComponent(query)}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Erro ao buscar títulos');
-
-                const titles = await response.json();
-                currentTitles = titles;
-                displayTitles(titles);
-            } catch (error) {
-                console.error('Erro:', error);
-                document.getElementById('catalogContent').innerHTML = `
-                    <div class="error">
-                        <h2>Erro ao buscar</h2>
-                        <p>${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        function filterByType(type) {
-            currentFilter = type;
-            
-            // Atualizar botões ativos
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.filter === type) {
-                    btn.classList.add('active');
-                }
-            });
-
-            // Filtrar títulos
-            const filtered = type === 'all' 
-                ? currentTitles 
-                : currentTitles.filter(t => t.type === type);
-            
-            displayTitles(filtered);
-        }
-
-        function displayTitles(titles) {
-            const container = document.getElementById('catalogContent');
-
-            if (!titles || titles.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h2>Nenhum título encontrado</h2>
-                        <p>Tente buscar por outro termo ou explore os títulos populares</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const grid = document.createElement('div');
-            grid.className = 'catalog-grid';
-
-            titles.forEach(title => {
-                const card = document.createElement('div');
-                card.className = 'title-card';
-                card.onclick = () => openModal(title);
-
-                const posterHTML = title.poster_path 
-                    ? `<img src="${title.poster_path}" alt="${title.title}">`
-                    : `<div class="no-poster">🎬</div>`;
-
-                card.innerHTML = `
-                    ${posterHTML}
-                    <div class="title-info">
-                        <h3>${title.title}</h3>
-                        <div class="title-meta">
-                            <span class="type-badge type-${title.type}">
-                                ${title.type === 'movie' ? 'Filme' : 'Série'}
-                            </span>
-                            <span class="rating">
-                                ⭐ ${title.vote_average ? title.vote_average.toFixed(1) : 'N/A'}
-                            </span>
+            <div class="flex flex-1 justify-center items-center gap-4 md:gap-6">
+                <!-- Barra de Busca -->
+                <label class="flex flex-col min-w-40 !h-10 max-w-96 w-full">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full relative">
+                        <div class="text-[#a7aabd] flex border-none bg-[#072f57] items-center justify-center pl-3 rounded-l-lg border-r-0">
+                            <span class="material-symbols-outlined text-[20px]">search</span>
+                        </div>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#072f57] focus:border-none h-full placeholder:text-[#a7aabd] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal font-display" id="searchInput" placeholder="Buscar filmes e séries..." value=""/>
+                        <!-- Dropdown de resultados -->
+                        <div id="searchResultsDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#072f57] rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-[#707d9b]/30">
+                            <div id="searchResultsContent" class="p-2">
+                                <!-- Resultados serão inseridos aqui -->
+                            </div>
                         </div>
                     </div>
-                `;
-
-                grid.appendChild(card);
-            });
-
-            container.innerHTML = '';
-            container.appendChild(grid);
-        }
-
-        function openModal(title) {
-            selectedTitle = title;
-            const modal = document.getElementById('titleModal');
-            const modalHeader = document.getElementById('modalHeader');
-            const modalBody = document.getElementById('modalBody');
-
-            // Header do modal
-            const headerHTML = title.poster_path
-                ? `
-                    <img src="${title.poster_path}" alt="${title.title}">
-                    <div class="overlay">
-                        <h2>${title.title}</h2>
-                        <p>${title.release_date || 'Data não disponível'}</p>
-                    </div>
-                `
-                : `
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; display: flex; align-items: center; justify-content: center;">
-                        <div class="overlay">
-                            <h2>${title.title}</h2>
-                            <p>${title.release_date || 'Data não disponível'}</p>
+                </label>
+            </div>
+            <div class="flex items-center gap-3 md:gap-4">
+                <!-- Dashboard (apenas para admin) -->
+                <button id="dashboardBtn" class="hidden flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='dashboard-admin.html'" title="Dashboard Admin">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                </button>
+                <!-- ECHOSOCIAL -->
+                <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='echosocial.html'" title="ECHOSOCIAL">
+                    <span class="material-symbols-outlined text-[20px]">groups</span>
+                </button>
+                <!-- Ícone de Notificação -->
+                <div class="relative">
+                    <button id="notificationBtn" class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors relative" title="Notificações">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                    </button>
+                    <!-- Dropdown de Notificações -->
+                    <div id="notificationDropdown" class="hidden absolute right-0 top-full mt-2 w-[500px] bg-[#072f57] rounded-lg shadow-2xl border border-[#707d9b]/30 z-50 h-[600px] overflow-hidden flex flex-col">
+                        <div class="p-4 border-b border-white/10 flex items-center justify-between flex-shrink-0">
+                            <h3 class="text-white font-bold">Notificações</h3>
+                            <button onclick="NotificationSystem.markAllNotificationsAsRead()" class="text-sm text-[#a7aabd] hover:text-white whitespace-nowrap">Marcar todas como lidas</button>
+                        </div>
+                        <div id="notificationsList" class="flex-1 overflow-y-auto p-2" style="min-height: 0;">
+                            <div class="p-4 text-center text-gray-400 text-sm">Carregando notificações...</div>
                         </div>
                     </div>
-                `;
-
-            modalHeader.innerHTML = headerHTML;
-
-            // Body do modal
-            modalBody.innerHTML = `
-                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-                    ${title.overview || 'Sinopse não disponível'}
-                </p>
-
-                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                    <span class="type-badge type-${title.type}">
-                        ${title.type === 'movie' ? 'Filme' : 'Série'}
-                    </span>
-                    <span class="rating" style="font-size: 1.1em;">
-                        ⭐ ${title.vote_average ? title.vote_average.toFixed(1) : 'N/A'}
-                    </span>
                 </div>
+                <!-- Perfil -->
+                <button class="flex items-center justify-center rounded-full h-10 w-10 bg-[#072f57] text-white hover:bg-[#335b7e] transition-colors overflow-hidden border-2 border-transparent hover:border-[#707d9b]" onclick="window.location.href='perfil.html'" title="Perfil" id="profileButton">
+                    <span class="material-symbols-outlined text-[20px]">person</span>
+                </button>
+            </div>
+        </header>
 
-                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
-
-                <h3 style="margin-bottom: 15px; color: #333;">Marcar como:</h3>
-                <div class="action-buttons">
-                    <button class="action-btn" id="btn-watched" onclick="setStatus('watched')">
-                        ✓ Assistido
-                    </button>
-                    <button class="action-btn" id="btn-want_to_watch" onclick="setStatus('want_to_watch')">
-                        ★ Quero Ver
-                    </button>
-                    <button class="action-btn" id="btn-dropped" onclick="setStatus('dropped')">
-                        ✗ Abandonado
-                    </button>
+        <!-- Main Content -->
+        <main class="flex flex-col gap-8 px-4 sm:px-10 md:px-20 lg:px-40 py-5">
+            <!-- Hero Banner -->
+            <div id="heroBanner" class="hero-banner">
+                <img id="heroBannerImg" src="" alt="Hero Banner" loading="lazy" />
+                <div class="hero-overlay">
+                    <h1 class="hero-title" id="heroTitle">Carregando...</h1>
+                    <p class="hero-description" id="heroDescription">Descubra os melhores filmes e séries</p>
+                    <div class="hero-buttons">
+                        <button class="hero-btn hero-btn-primary" onclick="openHeroModal()">
+                            <span class="material-symbols-outlined">play_arrow</span>
+                            Assistir Agora
+                        </button>
+                        <button class="hero-btn hero-btn-secondary" onclick="openHeroModal()">
+                            <span class="material-symbols-outlined">info</span>
+                            Mais Informações
+                        </button>
+                    </div>
+                    <!-- Streaming Providers -->
+                    <div id="heroStreamingProviders" class="flex items-center gap-3 mt-2">
+                        <!-- Ícones de streaming serão inseridos aqui -->
+                    </div>
                 </div>
+            </div>
 
-                <div class="rating-section">
-                    <label>Sua Avaliação (0-10):</label>
-                    <input type="range" id="ratingSlider" min="0" max="10" step="0.5" value="5" oninput="updateRatingDisplay()">
-                    <div class="rating-value" id="ratingValue">5.0</div>
-                </div>
+            <!-- Catálogos -->
+            <div id="catalogContent"></div>
+        </main>
+    </div>
+</div>
 
-                <div class="comment-section">
-                    <label>Comentário / Resenha:</label>
-                    <textarea id="commentText" placeholder="Escreva sua opinião sobre este título..."></textarea>
-                </div>
+<!-- Modal -->
+<div id="titleModal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal()">×</button>
+        <div id="modalBody"></div>
+    </div>
+</div>
 
-                <button class="save-btn" onclick="saveInteraction()">Salvar</button>
+<script>
+    const API_URL = 'http://localhost:3000';
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+
+    let heroIndex = 0;
+    let heroTitles = [];
+    let currentHeroTitle = null;
+    let selectedTitle = null;
+
+    // Carregar foto de perfil do usuário e verificar se é admin
+    async function loadUserProfile() {
+        try {
+            const response = await fetch(`${API_URL}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const userData = await response.json();
+                
+                // Aguardar um pouco para garantir que o DOM está pronto
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const profileButton = document.getElementById('profileButton');
+                
+                if (profileButton) {
+                    if (userData.profilePicture) {
+                        profileButton.innerHTML = `<img src="${userData.profilePicture}" alt="Perfil" class="w-full h-full object-cover rounded-full" onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined text-[20px]\\'>person</span>'">`;
+                    } else if (userData.name) {
+                        // Gerar avatar baseado no nome
+                        const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                        profileButton.innerHTML = `<span class="text-sm font-bold">${initials}</span>`;
+                    }
+                }
+            }
+
+            // Verificar se o usuário é admin (verificar no token decodificado)
+            try {
+                const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                const dashboardBtn = document.getElementById('dashboardBtn');
+                if ((tokenPayload.isAdmin || tokenPayload.isAdminMaster) && dashboardBtn) {
+                    dashboardBtn.classList.remove('hidden');
+                    console.log('Dashboard button mostrado');
+                }
+            } catch (e) {
+                console.error('Erro ao decodificar token:', e);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar perfil do usuário:', error);
+        }
+    }
+
+    // Categorias fixas
+    const categories = [
+        { name: 'Em Alta', type: 'popular', endpoint: '/api/tmdb/popular' },
+        { name: 'Assistir Agora', type: 'watch-now', endpoint: null, isWatchNow: true }, // Catálogo especial
+        { name: 'Filmes Populares', type: 'movies-popular', endpoint: '/api/tmdb/movies/popular' },
+        { name: 'Séries Populares', type: 'tv-popular', endpoint: '/api/tmdb/tv/popular' },
+        { name: 'Filmes Mais Bem Avaliados', type: 'movies-top-rated', endpoint: '/api/tmdb/movies/top-rated' },
+        { name: 'Séries Mais Bem Avaliadas', type: 'tv-top-rated', endpoint: '/api/tmdb/tv/top-rated' },
+        { name: 'Filmes em Cartaz', type: 'movies-now-playing', endpoint: '/api/tmdb/movies/now-playing' },
+        { name: 'Séries no Ar', type: 'tv-on-the-air', endpoint: '/api/tmdb/tv/on-the-air' }
+    ];
+
+    async function loadCatalog() {
+        try {
+            const catalogContent = document.getElementById('catalogContent');
+            catalogContent.innerHTML = '';
+
+            // Carregar primeira categoria para o hero
+            const firstResponse = await fetch(`${API_URL}${categories[0].endpoint}?page=1`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (firstResponse.ok) {
+                const firstData = await firstResponse.json();
+                // Filtrar apenas títulos com backdrop_path, poster_path e ID válidos
+                heroTitles = firstData.results.filter(t => t.backdrop_path && t.poster_path && t.id).slice(0, 5);
+                if (heroTitles.length > 0) {
+                    updateHeroBanner();
+                    setInterval(updateHeroBanner, 8000);
+                }
+            }
+
+            // Carregar catálogo "Assistir Agora" em paralelo (não bloquear outras categorias)
+            const watchNowCategory = categories.find(c => c.isWatchNow);
+            if (watchNowCategory) {
+                loadWatchNowCatalog(watchNowCategory).catch(err => {
+                    console.error('Erro ao carregar catálogo Assistir Agora:', err);
+                });
+            }
+
+            // Carregar todas as categorias
+            for (const category of categories) {
+                // Pular "Assistir Agora" - já foi carregado
+                if (category.isWatchNow) {
+                    continue;
+                }
+                
+                const response = await fetch(`${API_URL}${category.endpoint}?page=1`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Filtrar apenas títulos com poster_path válido
+                    const validItems = data.results.filter(item => item.poster_path && item.id);
+                    
+                    if (validItems.length === 0) continue; // Pular categorias sem itens válidos
+                    
+                    const section = document.createElement('div');
+                    section.className = 'flex flex-col gap-4';
+                    
+                    // Cabeçalho com título e botão "Ver mais"
+                    const header = document.createElement('div');
+                    header.className = 'flex items-center justify-between';
+                    
+                    const title = document.createElement('h2');
+                    title.className = 'text-white text-2xl font-bold';
+                    title.textContent = category.name;
+                    header.appendChild(title);
+                    
+                    const seeMoreBtn = document.createElement('button');
+                    seeMoreBtn.className = 'flex items-center gap-2 text-primary hover:text-blue-400 transition-colors text-sm font-medium';
+                    seeMoreBtn.innerHTML = `
+                        <span>Ver mais</span>
+                        <span class="material-symbols-outlined text-base">chevron_right</span>
+                    `;
+                    seeMoreBtn.addEventListener('click', () => {
+                        window.location.href = `categoria.html?type=${category.type}&name=${encodeURIComponent(category.name)}`;
+                    });
+                    header.appendChild(seeMoreBtn);
+                    
+                    section.appendChild(header);
+
+                    const carouselContainer = document.createElement('div');
+                    carouselContainer.className = 'carousel-container';
+                    const carouselId = `carousel-${category.type}`;
+                    carouselContainer.id = carouselId;
+                    
+                    const carouselWrapper = document.createElement('div');
+                    carouselWrapper.className = 'carousel-wrapper';
+                    carouselWrapper.id = `${carouselId}-wrapper`;
+
+                    // Duplicar itens para efeito infinito
+                    const itemsToShow = validItems.slice(0, 20); // Mostrar mais itens
+                    
+                    // Variáveis para controle de animação (precisam estar antes da função)
+                    let animationId = null;
+                    let isPaused = false;
+                    let scrollSpeed = 0.5; // Velocidade de scroll automático
+                    
+                    // Função para criar item do carrossel
+                    const createCarouselItem = (item) => {
+                        const carouselItem = document.createElement('div');
+                        carouselItem.className = 'carousel-item';
+                        // poster_path pode vir como URL completa ou caminho relativo
+                        // Se for URL completa, substituir w500 por w300 para carrossel
+                        let posterUrl = null;
+                        if (item.poster_path) {
+                            if (item.poster_path.startsWith('http')) {
+                                posterUrl = item.poster_path.replace('/w500', '/w300');
+                            } else {
+                                posterUrl = `https://image.tmdb.org/t/p/w300${item.poster_path}`;
+                            }
+                        }
+                        carouselItem.innerHTML = `
+                            <img src="${posterUrl}" alt="${item.title || item.name}" loading="lazy" />
+                        `;
+                        carouselItem.addEventListener('click', () => {
+                            openModal({
+                                id: item.id,
+                                title: item.title || item.name,
+                                type: item.type || item.media_type || (item.name ? 'tv' : 'movie')
+                            });
+                        });
+                        // Pausar quando passar o mouse sobre o card
+                        carouselItem.addEventListener('mouseenter', () => {
+                            isPaused = true;
+                        });
+                        // Retomar quando tirar o mouse
+                        carouselItem.addEventListener('mouseleave', () => {
+                            isPaused = false;
+                        });
+                        return carouselItem;
+                    };
+                    
+                    // Adicionar itens duplicados para efeito infinito (sempre para frente)
+                    // Criar 3 cópias para efeito infinito suave
+                    for (let i = 0; i < 3; i++) {
+                        itemsToShow.forEach(item => {
+                            carouselWrapper.appendChild(createCarouselItem(item));
+                        });
+                    }
+                    
+                    // Inicializar scroll no meio (segunda cópia)
+                    const itemWidth = 200 + 16;
+                    const itemsPerSet = itemsToShow.length;
+                    const setWidth = itemWidth * itemsPerSet;
+                    setTimeout(() => {
+                        carouselWrapper.scrollLeft = setWidth;
+                    }, 100);
+                    
+                    // Função de animação automática
+                    function animateCarousel() {
+                        if (isPaused) {
+                            animationId = requestAnimationFrame(animateCarousel);
+                            return;
+                        }
+                        
+                        const currentScroll = carouselWrapper.scrollLeft;
+                        const newScroll = currentScroll + scrollSpeed;
+                        const maxScroll = carouselWrapper.scrollWidth - carouselWrapper.clientWidth;
+                        
+                        // Se chegou no final da segunda cópia, resetar para início da segunda cópia
+                        if (newScroll >= setWidth * 2 - 10) {
+                            carouselWrapper.scrollLeft = setWidth;
+                        } else {
+                            carouselWrapper.scrollLeft = newScroll;
+                        }
+                        
+                        animationId = requestAnimationFrame(animateCarousel);
+                    }
+                    
+                    // Iniciar animação
+                    animateCarousel();
+                    
+                    // Pausar quando passar o mouse sobre o carrossel
+                    carouselContainer.addEventListener('mouseenter', () => {
+                        isPaused = true;
+                    });
+                    
+                    // Retomar quando tirar o mouse
+                    carouselContainer.addEventListener('mouseleave', () => {
+                        isPaused = false;
+                    });
+                    
+                    // Evento de scroll para reset infinito imperceptível (backup)
+                    let isScrolling = false;
+                    carouselWrapper.addEventListener('scroll', () => {
+                        if (isScrolling || isPaused) return; // Evitar loop
+                        
+                        const scrollLeft = carouselWrapper.scrollLeft;
+                        
+                        // Se chegou perto do final da terceira cópia, resetar para início da segunda
+                        if (scrollLeft >= setWidth * 2.5) {
+                            isScrolling = true;
+                            const excess = scrollLeft - setWidth * 2;
+                            carouselWrapper.scrollLeft = setWidth + excess;
+                            setTimeout(() => {
+                                isScrolling = false;
+                            }, 50);
+                        }
+                        // Se chegou perto do início, ir para posição equivalente no final da segunda cópia
+                        else if (scrollLeft <= setWidth * 0.5) {
+                            isScrolling = true;
+                            const excess = scrollLeft;
+                            carouselWrapper.scrollLeft = setWidth * 2 + excess;
+                            setTimeout(() => {
+                                isScrolling = false;
+                            }, 50);
+                        }
+                    });
+
+                    // Botões de navegação
+                    const leftArrow = document.createElement('button');
+                    leftArrow.className = 'carousel-arrow left';
+                    leftArrow.innerHTML = '<span class="material-symbols-outlined">chevron_left</span>';
+                    leftArrow.addEventListener('click', () => scrollCarousel(carouselId, -1));
+                    
+                    const rightArrow = document.createElement('button');
+                    rightArrow.className = 'carousel-arrow right';
+                    rightArrow.innerHTML = '<span class="material-symbols-outlined">chevron_right</span>';
+                    rightArrow.addEventListener('click', () => scrollCarousel(carouselId, 1));
+                    
+                    carouselContainer.appendChild(leftArrow);
+                    carouselContainer.appendChild(carouselWrapper);
+                    carouselContainer.appendChild(rightArrow);
+                    
+                    section.appendChild(carouselContainer);
+                    catalogContent.appendChild(section);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar catálogo:', error);
+        }
+    }
+
+    /**
+     * Verifica se um título tem providers disponíveis e permitidos
+     * @param {number} tmdbId - ID do TMDb
+     * @param {string} type - Tipo do título ('movie' ou 'tv')
+     * @returns {Promise<boolean>} true se houver providers permitidos
+     */
+    async function checkTitleHasProviders(tmdbId, type) {
+        try {
+            const response = await fetch(`${API_URL}/api/tmdb/${type}/${tmdbId}/watch/providers`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (!response.ok) {
+                return false;
+            }
+            
+            const data = await response.json();
+            const brProviders = data.results?.BR;
+            
+            if (!brProviders) {
+                return false;
+            }
+            
+            // Combinar todos os providers
+            const allProviders = [
+                ...(brProviders.flatrate || []),
+                ...(brProviders.buy || []),
+                ...(brProviders.rent || [])
+            ];
+            
+            if (allProviders.length === 0) {
+                return false;
+            }
+            
+            // Verificar se tem algum provider permitido
+            const hasAllowedProvider = allProviders.some(provider => 
+                ALLOWED_PROVIDERS.some(allowed => {
+                    const providerName = provider.provider_name.toLowerCase();
+                    const allowedName = allowed.toLowerCase();
+                    return providerName.includes(allowedName) || allowedName.includes(providerName);
+                })
+            );
+            
+            return hasAllowedProvider;
+        } catch (error) {
+            // Ignorar erros silenciosamente (404 é esperado para títulos sem providers)
+            return false;
+        }
+    }
+
+    // Função para carregar catálogo "Assistir Agora" (apenas títulos com providers disponíveis)
+    async function loadWatchNowCatalog(category) {
+        try {
+            const catalogContent = document.getElementById('catalogContent');
+            const validItems = [];
+            
+            // Buscar títulos populares (filmes e séries)
+            const endpoints = [
+                { endpoint: '/api/tmdb/movies/popular', type: 'movie' },
+                { endpoint: '/api/tmdb/tv/popular', type: 'tv' },
+                { endpoint: '/api/tmdb/movies/top-rated', type: 'movie' },
+                { endpoint: '/api/tmdb/tv/top-rated', type: 'tv' }
+            ];
+            
+            // Buscar de múltiplas fontes para ter mais opções
+            for (const source of endpoints) {
+                try {
+                    const response = await fetch(`${API_URL}${source.endpoint}?page=1`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const items = data.results || [];
+                        
+                        // Verificar providers para cada título
+                        for (const item of items) {
+                            if (!item.poster_path || !item.id) continue;
+                            
+                            // Verificar se já foi adicionado
+                            if (validItems.some(v => v.id === item.id && v.media_type === (source.type === 'movie' ? 'movie' : 'tv'))) {
+                                continue;
+                            }
+                            
+                            // Verificar se tem providers disponíveis
+                            const hasProviders = await checkTitleHasProviders(item.id, source.type);
+                            
+                            if (hasProviders) {
+                                validItems.push({
+                                    ...item,
+                                    media_type: source.type === 'movie' ? 'movie' : 'tv'
+                                });
+                                
+                                // Limitar a 20 itens para não sobrecarregar
+                                if (validItems.length >= 20) break;
+                            }
+                        }
+                        
+                        if (validItems.length >= 20) break;
+                    }
+                } catch (error) {
+                    console.warn(`Erro ao buscar de ${source.endpoint}:`, error);
+                }
+            }
+            
+            if (validItems.length === 0) {
+                // Se não houver itens, não mostrar o catálogo
+                return;
+            }
+            
+            // Criar seção do catálogo seguindo o mesmo padrão
+            const section = document.createElement('div');
+            section.className = 'flex flex-col gap-4';
+            
+            // Cabeçalho
+            const header = document.createElement('div');
+            header.className = 'flex items-center justify-between';
+            
+            const title = document.createElement('h2');
+            title.className = 'text-white text-2xl font-bold';
+            title.textContent = category.name;
+            header.appendChild(title);
+            
+            const seeMoreBtn = document.createElement('button');
+            seeMoreBtn.className = 'flex items-center gap-2 text-primary hover:text-blue-400 transition-colors text-sm font-medium';
+            seeMoreBtn.innerHTML = `
+                <span>Ver mais</span>
+                <span class="material-symbols-outlined text-base">chevron_right</span>
             `;
-
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('titleModal').classList.remove('active');
-            selectedTitle = null;
-        }
-
-        let currentStatus = null;
-
-        function setStatus(status) {
-            currentStatus = status;
-            
-            // Atualizar botões
-            document.querySelectorAll('.action-btn').forEach(btn => {
-                btn.classList.remove('active');
+            seeMoreBtn.addEventListener('click', () => {
+                window.location.href = `categoria.html?type=${category.type}&name=${encodeURIComponent(category.name)}`;
             });
-            document.getElementById(`btn-${status}`).classList.add('active');
+            header.appendChild(seeMoreBtn);
+            
+            section.appendChild(header);
+            
+            // Carrossel
+            const carouselContainer = document.createElement('div');
+            carouselContainer.className = 'carousel-container';
+            const carouselId = `carousel-${category.type}`;
+            carouselContainer.id = carouselId;
+            
+            const carouselWrapper = document.createElement('div');
+            carouselWrapper.className = 'carousel-wrapper';
+            carouselWrapper.id = `${carouselId}-wrapper`;
+            
+            // Criar itens do carrossel
+            const createCarouselItem = (item) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'carousel-item';
+                
+                const posterUrl = item.poster_path 
+                    ? `https://image.tmdb.org/t/p/w300${item.poster_path}`
+                    : 'https://via.placeholder.com/300x450?text=Sem+Pôster';
+                
+                itemDiv.innerHTML = `
+                    <img src="${posterUrl}" 
+                         alt="${item.title || item.name}" 
+                         loading="lazy"
+                         onerror="this.src='https://via.placeholder.com/300x450?text=Sem+Pôster'">
+                `;
+                
+                itemDiv.addEventListener('click', () => {
+                    openModal({
+                        id: item.id,
+                        tmdbId: item.id,
+                        title: item.title || item.name,
+                        type: item.media_type || (item.title ? 'movie' : 'tv')
+                    });
+                });
+                
+                return itemDiv;
+            };
+            
+            // Duplicar itens para efeito infinito
+            const itemsToShow = validItems.slice(0, 20);
+            for (let i = 0; i < 3; i++) {
+                itemsToShow.forEach(item => {
+                    carouselWrapper.appendChild(createCarouselItem(item));
+                });
+            }
+            
+            // Inicializar scroll no meio (segunda cópia)
+            const itemWidth = 200 + 16;
+            const itemsPerSet = itemsToShow.length;
+            const setWidth = itemWidth * itemsPerSet;
+            setTimeout(() => {
+                carouselWrapper.scrollLeft = setWidth;
+            }, 100);
+            
+            // Variáveis para controle de animação
+            let animationId = null;
+            let isPaused = false;
+            let scrollSpeed = 0.5;
+            
+            // Função de animação automática
+            function animateCarousel() {
+                if (isPaused) {
+                    animationId = requestAnimationFrame(animateCarousel);
+                    return;
+                }
+                
+                const currentScroll = carouselWrapper.scrollLeft;
+                const newScroll = currentScroll + scrollSpeed;
+                
+                // Se chegou no final da segunda cópia, resetar para início da segunda cópia
+                if (newScroll >= setWidth * 2 - 10) {
+                    carouselWrapper.scrollLeft = setWidth;
+                } else {
+                    carouselWrapper.scrollLeft = newScroll;
+                }
+                
+                animationId = requestAnimationFrame(animateCarousel);
+            }
+            
+            // Iniciar animação
+            animateCarousel();
+            
+            // Pausar quando passar o mouse sobre o carrossel
+            carouselContainer.addEventListener('mouseenter', () => {
+                isPaused = true;
+            });
+            
+            // Retomar quando tirar o mouse
+            carouselContainer.addEventListener('mouseleave', () => {
+                isPaused = false;
+            });
+            
+            // Evento de scroll para reset infinito imperceptível
+            let isScrolling = false;
+            carouselWrapper.addEventListener('scroll', () => {
+                if (isScrolling || isPaused) return;
+                
+                const scrollLeft = carouselWrapper.scrollLeft;
+                
+                // Se chegou perto do final da terceira cópia, resetar para início da segunda
+                if (scrollLeft >= setWidth * 2.5) {
+                    isScrolling = true;
+                    const excess = scrollLeft - setWidth * 2;
+                    carouselWrapper.scrollLeft = setWidth + excess;
+                    setTimeout(() => {
+                        isScrolling = false;
+                    }, 50);
+                }
+                // Se chegou perto do início, ir para posição equivalente no final da segunda cópia
+                else if (scrollLeft <= setWidth * 0.5) {
+                    isScrolling = true;
+                    const excess = scrollLeft;
+                    carouselWrapper.scrollLeft = setWidth * 2 + excess;
+                    setTimeout(() => {
+                        isScrolling = false;
+                    }, 50);
+                }
+            });
+            
+            // Setas de navegação
+            const leftArrow = document.createElement('button');
+            leftArrow.className = 'carousel-arrow left';
+            leftArrow.innerHTML = '<span class="material-symbols-outlined">chevron_left</span>';
+            leftArrow.addEventListener('click', () => scrollCarousel(carouselId, -1));
+            
+            const rightArrow = document.createElement('button');
+            rightArrow.className = 'carousel-arrow right';
+            rightArrow.innerHTML = '<span class="material-symbols-outlined">chevron_right</span>';
+            rightArrow.addEventListener('click', () => scrollCarousel(carouselId, 1));
+            
+            carouselContainer.appendChild(leftArrow);
+            carouselContainer.appendChild(carouselWrapper);
+            carouselContainer.appendChild(rightArrow);
+            
+            section.appendChild(carouselContainer);
+            
+            // Inserir como segundo catálogo (depois de "Em Alta")
+            // Aguardar um pouco para garantir que o primeiro catálogo já foi adicionado
+            setTimeout(() => {
+                const catalogContentEl = document.getElementById('catalogContent');
+                if (catalogContentEl && catalogContentEl.children.length > 0) {
+                    catalogContentEl.insertBefore(section, catalogContentEl.children[1]);
+                } else if (catalogContentEl) {
+                    catalogContentEl.appendChild(section);
+                }
+            }, 200);
+            
+        } catch (error) {
+            console.error('Erro ao carregar catálogo Assistir Agora:', error);
         }
+    }
 
-        function updateRatingDisplay() {
-            const value = document.getElementById('ratingSlider').value;
-            document.getElementById('ratingValue').textContent = parseFloat(value).toFixed(1);
+    function updateHeroBanner() {
+        if (heroTitles.length === 0) return;
+        
+        const title = heroTitles[heroIndex];
+        currentHeroTitle = title;
+        // backdrop_path pode vir como URL completa ou caminho relativo
+        let backdropUrl = '';
+        if (title.backdrop_path) {
+            if (title.backdrop_path.startsWith('http')) {
+                backdropUrl = title.backdrop_path;
+            } else {
+                backdropUrl = `https://image.tmdb.org/t/p/w1280${title.backdrop_path}`;
+            }
         }
+        document.getElementById('heroBannerImg').src = backdropUrl;
+        document.getElementById('heroTitle').textContent = title.title || title.name;
+        document.getElementById('heroDescription').textContent = title.overview?.substring(0, 150) + '...';
+        
+        // Buscar providers de streaming
+        const type = title.media_type || (title.title ? 'movie' : 'tv');
+        const tmdbId = title.tmdbId || title.id;
+        if (tmdbId) {
+            loadStreamingProviders(tmdbId, type);
+        }
+        
+        heroIndex = (heroIndex + 1) % heroTitles.length;
+    }
+    
+    async function loadStreamingProviders(tmdbId, type) {
+        try {
+            const response = await fetch(`${API_URL}/api/tmdb/${type}/${tmdbId}/watch/providers`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const providers = data.results?.BR?.flatrate || data.results?.BR?.buy || data.results?.BR?.rent || [];
+                displayStreamingProviders(providers);
+            } else if (response.status === 404) {
+                // Se não houver providers, simplesmente não mostrar
+                document.getElementById('heroStreamingProviders').innerHTML = '';
+            } else {
+                document.getElementById('heroStreamingProviders').innerHTML = '';
+            }
+        } catch (error) {
+            // Não mostrar erro no console para 404 - é normal não ter providers
+            if (error.message && !error.message.includes('404')) {
+                console.error('Erro ao buscar providers:', error);
+            }
+            document.getElementById('heroStreamingProviders').innerHTML = '';
+        }
+    }
+    
+    function displayStreamingProviders(providers) {
+        const container = document.getElementById('heroStreamingProviders');
+        
+        if (!providers || providers.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        container.innerHTML = providers.slice(0, 6).map(provider => {
+            const logoUrl = provider.logo_path 
+                ? `https://image.tmdb.org/t/p/w45${provider.logo_path}`
+                : null;
+            
+            return `
+                <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" title="${provider.provider_name}">
+                    ${logoUrl 
+                        ? `<img src="${logoUrl}" alt="${provider.provider_name}" class="w-full h-full object-contain rounded" onerror="this.style.display='none'">`
+                        : ''
+                    }
+                </div>
+            `;
+        }).join('');
+    }
+    
+    function openHeroModal() {
+        if (currentHeroTitle) {
+            const title = {
+                id: currentHeroTitle.id,
+                tmdbId: currentHeroTitle.id,
+                type: currentHeroTitle.media_type || (currentHeroTitle.title ? 'movie' : 'tv')
+            };
+            openModal(title);
+        }
+    }
 
-        async function saveInteraction() {
-            if (!currentStatus) {
-                alert('Por favor, selecione um status (Assistido, Quero Ver ou Abandonado)');
+    async function openModal(title) {
+        const modal = document.getElementById('titleModal');
+        const modalBody = document.getElementById('modalBody');
+        
+        // Se o modal já está aberto e é o mesmo título, não fazer nada
+        if (modal.classList.contains('show') && selectedTitle && selectedTitle.id === title.id) {
+            return;
+        }
+        
+        selectedTitle = title;
+        
+        // Se o modal já está aberto, apenas atualizar o conteúdo sem fechar
+        if (modal.classList.contains('show')) {
+            modalBody.innerHTML = '<div class="text-white text-center py-12">Carregando detalhes...</div>';
+        } else {
+            // Se está fechado, abrir normalmente
+            modalBody.innerHTML = '<div class="text-white text-center py-12">Carregando detalhes...</div>';
+            modal.classList.add('show');
+        }
+        
+        try {
+            // Garantir que o tipo está definido
+            const titleType = title.type || 'movie';
+            // Usar tmdbId se disponível, senão usar id
+            const titleId = title.tmdbId || title.id;
+            
+            if (!titleId) {
+                console.error('ID do título não fornecido:', title);
+                modalBody.innerHTML = '<div class="text-white text-center py-12">Erro: ID do título não encontrado</div>';
                 return;
             }
-
-            const rating = parseFloat(document.getElementById('ratingSlider').value);
-            const comment = document.getElementById('commentText').value.trim();
-
-            try {
-                const response = await fetch(`${API_URL}/api/titles/interaction`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        tmdbId: selectedTitle.id,
-                        type: selectedTitle.type,
-                        title: selectedTitle.title,
-                        releaseDate: selectedTitle.release_date,
-                        overview: selectedTitle.overview,
-                        posterPath: selectedTitle.poster_path,
-                        voteAverage: selectedTitle.vote_average,
-                        genres: [],
-                        status: currentStatus,
-                        rating: rating,
-                        comment: comment
-                    })
-                });
-
-                if (!response.ok) throw new Error('Erro ao salvar interação');
-
-                const result = await response.json();
-                alert('Interação salva com sucesso!');
-                closeModal();
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao salvar interação: ' + error.message);
+            
+            const detailsResponse = await fetch(`${API_URL}/api/titles/tmdb/${titleId}?type=${titleType}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            let titleData = {};
+            if (detailsResponse.ok) {
+                titleData = await detailsResponse.json();
+            } else {
+                const errorText = await detailsResponse.text();
+                console.error('Erro ao buscar detalhes do TMDB:', detailsResponse.status, errorText);
+                // Título não encontrado no TMDB - usar dados básicos
+                titleData = {
+                    title: title.title || 'Sem título',
+                    overview: 'Informações não disponíveis',
+                    voteAverage: 0,
+                    releaseDate: null,
+                    posterPath: null,
+                    backdropPath: null,
+                    trailerUrl: null
+                };
             }
+            
+            // Buscar comentários (com tratamento de erro)
+            let comments = [];
+            try {
+                const commentsResponse = await fetch(`${API_URL}/api/titles/${titleId}/comments`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (commentsResponse.ok) {
+                    const commentsData = await commentsResponse.json();
+                    comments = commentsData.comments || [];
+                }
+            } catch (error) {
+                console.warn('Erro ao buscar comentários:', error);
+            }
+            
+            // Buscar interação do usuário (com tratamento de erro)
+            let interaction = null;
+            try {
+                const interactionResponse = await fetch(`${API_URL}/api/titles/${titleId}/my-interaction`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (interactionResponse.ok) {
+                    const interactionData = await interactionResponse.json();
+                    interaction = interactionData.interaction || null;
+                }
+            } catch (error) {
+                console.warn('Erro ao buscar interação:', error);
+            }
+            
+            // Buscar títulos similares (com tratamento de erro)
+            let similarTitles = { results: [] };
+            try {
+                const similarResponse = await fetch(`${API_URL}/api/titles/similar/${titleId}?type=${titleType}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (similarResponse.ok) {
+                    similarTitles = await similarResponse.json();
+                } else {
+                    console.warn('Erro ao buscar títulos similares:', similarResponse.status);
+                }
+            } catch (error) {
+                console.warn('Erro ao buscar títulos similares:', error);
+            }
+            
+            // Buscar providers de streaming (com tratamento de erro)
+            let watchProviders = { results: {} };
+            try {
+                const providersResponse = await fetch(`${API_URL}/api/tmdb/${titleType}/${titleId}/watch/providers`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (providersResponse.ok) {
+                    watchProviders = await providersResponse.json();
+                }
+            } catch (error) {
+                // Ignorar erro 404 - é normal não ter providers
+            }
+            
+            const rating = titleData.voteAverage !== undefined && titleData.voteAverage !== null && titleData.voteAverage > 0
+                ? (titleData.voteAverage / 2).toFixed(1) 
+                : '';
+            
+            // Processar trailer
+            let trailerUrl = titleData.trailerUrl || null;
+            const trailerSite = titleData.trailerSite || 'YouTube';
+            
+            if (trailerUrl) {
+                if (trailerSite === 'YouTube') {
+                    trailerUrl += (trailerUrl.includes('?') ? '&' : '?') + 'autoplay=1&mute=1';
+                } else if (trailerSite === 'Vimeo') {
+                    trailerUrl += (trailerUrl.includes('?') ? '&' : '?') + 'autoplay=1&muted=1';
+                } else {
+                    // Para outras fontes (DailyMotion, etc), adicionar autoplay se possível
+                    if (!trailerUrl.includes('autoplay')) {
+                        trailerUrl += (trailerUrl.includes('?') ? '&' : '?') + 'autoplay=1';
+                    }
+                }
+            }
+            
+            // Obter imagem de fallback (backdrop primeiro, depois poster)
+            const backdropPath = titleData.backdropPath || null;
+            const posterPath = titleData.posterPath || null;
+            const fallbackImage = backdropPath || posterPath;
+            
+            window.currentSimilarTitles = similarTitles.results || [];
+            
+            const trailerHtml = trailerUrl ? `
+                <div class="mb-6">
+                    <h3 class="text-white text-lg font-bold mb-3">Trailer</h3>
+                    <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-black">
+                        <iframe src="${trailerUrl}" 
+                                class="w-full h-full" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            ` : `
+                <div class="mb-6">
+                    <h3 class="text-white text-lg font-bold mb-3">Imagem</h3>
+                    <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-800">
+                        ${fallbackImage ? `
+                            <img src="${fallbackImage}" 
+                                 alt="${title.title || titleData.title || titleData.name || 'Imagem do título'}" 
+                                 class="w-full h-full object-cover" 
+                                 onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center\\'><span class=\\'text-gray-400\\'>Imagem não disponível</span></div>'">
+                        ` : `
+                            <div class="w-full h-full flex items-center justify-center">
+                                <span class="text-gray-400">Trailer e imagem não disponíveis</span>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            const similarTitlesHtml = similarTitles.results && similarTitles.results.length > 0 ? `
+                <div class="mb-6">
+                    <h3 class="text-white text-lg font-bold mb-3">Títulos Similares</h3>
+                    <div class="relative">
+                        <div id="similarTitlesCarousel" class="flex overflow-x-hidden gap-4 pb-2 scroll-smooth" style="scrollbar-width: none; -ms-overflow-style: none;">
+                            <style>
+                                #similarTitlesCarousel::-webkit-scrollbar {
+                                    display: none;
+                                }
+                            </style>
+                            ${similarTitles.results.slice(0, 8).map((similar) => `
+                                <div class="flex-shrink-0 w-32 cursor-pointer group" onclick="openModal({id: ${similar.id}, title: '${(similar.title || similar.name).replace(/'/g, "\\'")}'})">
+                                    <div class="aspect-[2/3] rounded-lg overflow-hidden bg-gray-800 relative">
+                                        ${similar.poster_path ? `
+                                            <img src="https://image.tmdb.org/t/p/w300${similar.poster_path}" alt="${similar.title || similar.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform" loading="lazy" />
+                                        ` : `
+                                            <div class="w-full h-full flex items-center justify-center text-gray-400">Sem pôster</div>
+                                        `}
+                                    </div>
+                                    <p class="text-white text-sm font-medium mt-2 truncate">${similar.title || similar.name}</p>
+                                    ${similar.vote_average && similar.vote_average > 0 ? `<p class="text-[#9dabb9] text-xs">⭐ ${(similar.vote_average / 2).toFixed(1)}/10</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button id="similarTitlesPrev" class="absolute left-0 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-colors z-10" onclick="scrollSimilarTitles(-1)">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button id="similarTitlesNext" class="absolute right-0 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black/90 text-white p-2 rounded-full transition-colors z-10" onclick="scrollSimilarTitles(1)">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            ` : '';
+            
+            modalBody.innerHTML = `
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            ${trailerHtml}
+                            ${similarTitlesHtml}
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <div>
+                                <h2 class="text-white text-2xl font-bold mb-2">${title.title || titleData.title || titleData.name}</h2>
+                                <div class="flex items-center gap-4 flex-wrap mb-4">
+                                    ${titleData.releaseDate ? `<span class="text-[#9dabb9] text-sm">${new Date(titleData.releaseDate).getFullYear()}</span>` : ''}
+                                    ${rating ? `
+                                        <div class="flex items-center gap-1 text-yellow-400">
+                                            <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+                                            <span class="text-sm font-bold">${rating}/10</span>
+                                        </div>
+                                    ` : ''}
+                                    <span class="px-2 py-1 rounded text-xs font-bold ${title.type === 'tv' ? 'bg-blue-900/50 text-blue-300' : 'bg-red-900/50 text-red-300'}">
+                                        ${title.type === 'tv' ? 'Série' : 'Filme'}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-700 pt-4">
+                                <h3 class="text-white font-bold mb-3">Sinopse</h3>
+                                <p class="text-[#e0e7ff] text-sm leading-relaxed">${titleData.overview && titleData.overview.trim() ? titleData.overview : 'Sinopse não disponível'}</p>
+                            </div>
+                            
+                            ${getWatchNowButton(watchProviders, titleData, titleType, titleId)}
+                            
+                            <div class="border-t border-gray-700 pt-4">
+                                <h3 class="text-white font-bold mb-3">Status</h3>
+                                <div class="flex flex-col gap-2">
+                                    <label class="flex items-center gap-2 cursor-pointer text-white hover:bg-gray-800 p-2 rounded">
+                                        <input type="radio" name="status" value="want_to_watch" class="w-4 h-4" ${interaction && interaction.status === 'want_to_watch' ? 'checked' : ''} onchange="updateStatus('want_to_watch')" />
+                                        <span>Quero Assistir</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer text-white hover:bg-gray-800 p-2 rounded">
+                                        <input type="radio" name="status" value="watched" class="w-4 h-4" ${interaction && interaction.status === 'watched' ? 'checked' : ''} onchange="updateStatus('watched')" />
+                                        <span>Já Assisti</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer text-white hover:bg-gray-800 p-2 rounded">
+                                        <input type="radio" name="status" value="dropped" class="w-4 h-4" ${interaction && interaction.status === 'dropped' ? 'checked' : ''} onchange="updateStatus('dropped')" />
+                                        <span>Abandonado</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-700 pt-4">
+                                <h3 class="text-white font-bold mb-3">Comentários (${comments.length})</h3>
+                                <div class="space-y-3 max-h-60 overflow-y-auto mb-3">
+                                    ${comments.length > 0 ? comments.map(comment => `
+                                        <div class="bg-gray-800/50 p-3 rounded">
+                                            <p class="text-white text-sm font-bold">${comment.userName}</p>
+                                            <p class="text-[#9dabb9] text-xs mb-1">${new Date(comment.createdAt).toLocaleDateString('pt-BR')}</p>
+                                            <p class="text-[#e0e7ff] text-sm">${comment.comment || comment.text}</p>
+                                        </div>
+                                    `).join('') : '<p class="text-gray-400 text-sm">Nenhum comentário ainda</p>'}
+                                </div>
+                                <textarea class="w-full bg-gray-800 text-white text-sm rounded p-2 resize-none" id="commentInput" placeholder="Deixe seu comentário..." rows="2"></textarea>
+                                <button class="w-full mt-2 bg-primary text-white font-bold py-2 rounded hover:bg-blue-700 transition" onclick="submitComment()">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Erro ao carregar detalhes:', error);
+            modalBody.innerHTML = `
+                <div class="text-white text-center py-12">
+                    <p class="text-lg font-bold mb-2">Erro ao carregar detalhes</p>
+                    <p class="text-sm text-gray-400">${error.message || 'Erro desconhecido'}</p>
+                    <button onclick="closeModal()" class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-blue-700 transition">Fechar</button>
+                </div>
+            `;
         }
+    }
 
-        function logout() {
-            localStorage.removeItem('token');
-            window.location.href = 'login.html';
+    async function updateStatus(status) {
+        if (!selectedTitle) return;
+        
+        try {
+            const titleType = selectedTitle.type || 'movie';
+            const titleId = selectedTitle.id;
+            
+            // Buscar dados do título do TMDB
+            const detailsResponse = await fetch(`${API_URL}/api/titles/tmdb/${titleId}?type=${titleType}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            let titleData = {};
+            if (detailsResponse.ok) {
+                titleData = await detailsResponse.json();
+            }
+            
+            // Salvar status no banco
+            const response = await fetch(`${API_URL}/api/titles/interaction`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    tmdbId: titleId,
+                    type: titleType,
+                    title: titleData.title || selectedTitle.title || 'Título',
+                    releaseDate: titleData.releaseDate || null,
+                    overview: titleData.overview || null,
+                    posterPath: titleData.posterPath || null,
+                    voteAverage: titleData.voteAverage || 0,
+                    genres: titleData.genres || [],
+                    status: status
+                })
+            });
+            
+            if (response.ok) {
+                // Recarregar o modal para atualizar o status marcado
+                await openModal(selectedTitle);
+            } else {
+                const errorData = await response.json();
+                alert('Erro ao salvar status: ' + (errorData.error || 'Erro desconhecido'));
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar status:', error);
+            alert('Erro ao salvar status. Tente novamente.');
         }
+    }
 
-        // Fechar modal ao clicar fora
-        document.getElementById('titleModal').addEventListener('click', (e) => {
-            if (e.target.id === 'titleModal') {
-                closeModal();
+    async function submitComment() {
+        if (!selectedTitle) return;
+        
+        const commentInput = document.getElementById('commentInput');
+        const comment = commentInput.value.trim();
+        
+        if (!comment) {
+            alert('Por favor, escreva um comentário');
+            return;
+        }
+        
+        try {
+            // Primeiro, buscar os dados do título do TMDB e a interação atual
+            const titleType = selectedTitle.type || 'movie';
+            const titleId = selectedTitle.id;
+            
+            const [detailsResponse, interactionResponse] = await Promise.all([
+                fetch(`${API_URL}/api/titles/tmdb/${titleId}?type=${titleType}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }),
+                fetch(`${API_URL}/api/titles/${titleId}/my-interaction`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+            ]);
+            
+            let titleData = {};
+            if (detailsResponse.ok) {
+                titleData = await detailsResponse.json();
+            }
+            
+            // Obter status atual da interação, ou usar 'watched' como padrão
+            let currentStatus = 'watched';
+            if (interactionResponse.ok) {
+                const interactionData = await interactionResponse.json();
+                if (interactionData.interaction && interactionData.interaction.status) {
+                    currentStatus = interactionData.interaction.status;
+                }
+            }
+            
+            // Enviar interação com comentário (mantém o status atual)
+            const response = await fetch(`${API_URL}/api/titles/interaction`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    tmdbId: titleId,
+                    type: titleType,
+                    title: titleData.title || selectedTitle.title || 'Título',
+                    releaseDate: titleData.releaseDate || null,
+                    overview: titleData.overview || null,
+                    posterPath: titleData.posterPath || null,
+                    voteAverage: titleData.voteAverage || 0,
+                    genres: titleData.genres || [],
+                    status: currentStatus, // Manter o status atual
+                    comment: comment
+                })
+            });
+            
+            if (response.ok) {
+                commentInput.value = '';
+                // Recarregar o modal para mostrar o novo comentário
+                await openModal(selectedTitle);
+            } else {
+                const errorData = await response.json();
+                alert('Erro ao salvar comentário: ' + (errorData.error || 'Erro desconhecido'));
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao salvar comentário. Tente novamente.');
+        }
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('titleModal');
+        const modalBody = document.getElementById('modalBody');
+        
+        // Limpar o conteúdo do modal, especialmente iframes de vídeo
+        modalBody.innerHTML = '';
+        
+        // Remover a classe show para fechar o modal
+        modal.classList.remove('show');
+        selectedTitle = null;
+    }
+
+    // Função para scroll do carrossel infinito (com animação automática)
+    function scrollCarousel(carouselId, direction) {
+        const wrapper = document.getElementById(`${carouselId}-wrapper`);
+        if (!wrapper) return;
+        
+        const itemWidth = 200 + 16; // 200px + gap (16px)
+        const scrollAmount = itemWidth * 4; // Scroll 4 itens por vez
+        const currentScroll = wrapper.scrollLeft || 0;
+        const itemsPerSet = Math.floor(wrapper.scrollWidth / 3 / itemWidth); // Dividir por 3 (3 cópias)
+        const setWidth = itemWidth * itemsPerSet;
+        
+        let newScroll = currentScroll + (scrollAmount * direction);
+        
+        // Se passar dos limites, ajustar para posição equivalente
+        if (newScroll >= setWidth * 2.5) {
+            newScroll = setWidth + (newScroll - setWidth * 2);
+        } else if (newScroll <= setWidth * 0.5) {
+            newScroll = setWidth * 2 + (newScroll - setWidth * 0.5);
+        }
+        
+        wrapper.scrollTo({
+            left: newScroll,
+            behavior: 'smooth'
+        });
+    }
+    
+    // Função para scroll dos títulos similares
+    function scrollSimilarTitles(direction) {
+        const carousel = document.getElementById('similarTitlesCarousel');
+        if (!carousel) return;
+        
+        const itemWidth = 128 + 16; // 128px (w-32) + gap (16px)
+        const scrollAmount = itemWidth * 3; // Scroll 3 itens por vez
+        
+        carousel.scrollBy({
+            left: scrollAmount * direction,
+            behavior: 'smooth'
+        });
+    }
+
+    window.addEventListener('click', (event) => {
+        const modal = document.getElementById('titleModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Funcionalidade de busca em tempo real
+    let searchTimeout;
+    const searchInput = document.getElementById('searchInput');
+    const searchResultsDropdown = document.getElementById('searchResultsDropdown');
+    const searchResultsContent = document.getElementById('searchResultsContent');
+    
+    if (searchInput) {
+        // Busca em tempo real enquanto digita
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length >= 2) {
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`${API_URL}/api/tmdb/search?query=${encodeURIComponent(query)}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            displaySearchResults(data.results || []);
+                        } else {
+                            hideSearchResults();
+                        }
+                    } catch (error) {
+                        console.error('Erro na busca:', error);
+                        hideSearchResults();
+                    }
+                }, 300); // Aguardar 300ms após parar de digitar
+            } else {
+                hideSearchResults();
             }
         });
-    </script>
+        
+        // Redirecionar ao pressionar Enter
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query.length >= 2) {
+                    hideSearchResults();
+                    window.location.href = `categoria.html?type=search&name=${encodeURIComponent(query)}&query=${encodeURIComponent(query)}`;
+                }
+            }
+        });
+        
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', (e) => {
+            const searchContainer = searchInput.closest('label');
+            if (searchContainer && !searchContainer.contains(e.target)) {
+                hideSearchResults();
+            }
+        });
+    }
+    
+    function displaySearchResults(results) {
+        if (!results || results.length === 0) {
+            searchResultsContent.innerHTML = '<div class="p-4 text-center text-gray-400">Nenhum resultado encontrado</div>';
+            searchResultsDropdown.classList.remove('hidden');
+            return;
+        }
+        
+        searchResultsContent.innerHTML = results.slice(0, 8).map(item => {
+            const posterUrl = item.poster_path 
+                ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
+                : 'https://via.placeholder.com/92x138?text=Sem+Imagem';
+            const title = item.title || item.name || 'Sem título';
+            const type = item.media_type || (item.title ? 'movie' : 'tv');
+            const year = (item.release_date || item.first_air_date || '').substring(0, 4);
+            
+            return `
+                <div class="flex items-center gap-3 p-3 hover:bg-[#1a1f2e] rounded-lg cursor-pointer transition-colors" onclick="openModalFromSearch(${item.id}, '${type}')">
+                    <img src="${posterUrl}" alt="${title}" class="w-16 h-24 object-cover rounded" onerror="this.src='https://via.placeholder.com/92x138?text=Sem+Imagem'">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-white font-semibold truncate">${title}</h4>
+                        <p class="text-gray-400 text-sm">${type === 'movie' ? 'Filme' : 'Série'}${year ? ` • ${year}` : ''}</p>
+                        ${item.overview ? `<p class="text-gray-500 text-xs mt-1 line-clamp-2">${item.overview}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        searchResultsDropdown.classList.remove('hidden');
+    }
+    
+    function hideSearchResults() {
+        if (searchResultsDropdown) {
+            searchResultsDropdown.classList.add('hidden');
+        }
+    }
+
+    // Abrir modal diretamente da busca
+    async function openModalFromSearch(tmdbId, type) {
+        hideSearchResults();
+        document.getElementById('searchInput').value = '';
+        
+        // Criar objeto título para passar para openModal
+        // Garantir que o ID seja numérico
+        const titleId = parseInt(tmdbId);
+        if (isNaN(titleId)) {
+            console.error('ID inválido:', tmdbId);
+            alert('Erro: ID do título inválido');
+            return;
+        }
+        
+        const title = {
+            id: titleId,
+            tmdbId: titleId,
+            type: type || 'movie'
+        };
+        
+        console.log('Abrindo modal da busca:', title);
+        await openModal(title);
+    }
+
+    // Redes permitidas para "Assistir Agora"
+    const ALLOWED_PROVIDERS = [
+        'Amazon Prime Video',
+        'Apple TV',
+        'Apple iTunes',
+        'Google Play Movies',
+        'YouTube',
+        'Paramount',
+        'Max',
+        'HBO Max',
+        'Discovery+',
+        'Claro video',
+        'NOW',
+        'Rakuten TV',
+        'Vudu',
+        'Starz',
+        'StarzPlay'
+    ];
+    
+    // Função generateAffiliateLink agora está em js/affiliateLinks.js
+    // Se não estiver disponível, usar fallback
+    if (typeof generateAffiliateLink === 'undefined') {
+        window.generateAffiliateLink = function(providerName, titleName, tmdbId, type) {
+            const searchQuery = encodeURIComponent(titleName);
+            const providerLower = providerName.toLowerCase();
+            
+            // Links de afiliados baseados no provider (fallback)
+            const affiliateLinks = {
+                'amazon prime video': `https://www.primevideo.com/search/ref=atv_sr_sug_1?phrase=${searchQuery}`,
+                'apple tv': `https://tv.apple.com/search?term=${searchQuery}`,
+                'apple itunes': `https://itunes.apple.com/search?term=${searchQuery}&media=${type === 'tv' ? 'tvShow' : 'movie'}`,
+                'google play movies': `https://play.google.com/store/search?q=${searchQuery}&c=movies`,
+                'youtube': `https://www.youtube.com/results?search_query=${searchQuery}`,
+                'paramount': `https://www.paramountplus.com/search/?q=${searchQuery}`,
+                'max': `https://www.max.com/search?q=${searchQuery}`,
+                'hbo max': `https://www.max.com/search?q=${searchQuery}`,
+                'discovery+': `https://www.discoveryplus.com/search?q=${searchQuery}`,
+                'claro video': `https://www.clarovideo.com/brasil/web/guest/search?term=${searchQuery}`,
+                'now': `https://www.nowtv.com/search?q=${searchQuery}`,
+                'rakuten tv': `https://rakuten.tv/br/search?q=${searchQuery}`,
+                'vudu': `https://www.vudu.com/content/search?q=${searchQuery}`,
+                'starz': `https://www.starz.com/search?q=${searchQuery}`,
+                'starzplay': `https://www.starz.com/search?q=${searchQuery}`
+            };
+            
+            return affiliateLinks[providerLower] || null;
+        };
+    }
+    
+    /**
+     * Gera o botão "Assistir Agora" com links de afiliado
+     * @param {Object} watchProviders - Dados dos providers de streaming
+     * @param {Object} titleData - Dados do título (filme/série)
+     * @param {string} titleType - Tipo do título ('movie' ou 'tv')
+     * @param {number} tmdbId - ID do TMDb
+     * @returns {string} HTML do botão ou string vazia se não houver providers
+     */
+    function getWatchNowButton(watchProviders, titleData, titleType, tmdbId) {
+        if (!watchProviders?.results?.BR) {
+            return '';
+        }
+        
+        const brProviders = watchProviders.results.BR;
+        
+        // Combinar todos os providers (flatrate, buy, rent)
+        const allProviders = [
+            ...(brProviders.flatrate || []),
+            ...(brProviders.buy || []),
+            ...(brProviders.rent || [])
+        ];
+        
+        if (allProviders.length === 0) {
+            return '';
+        }
+        
+        // Filtrar apenas providers permitidos
+        const allowedProviders = allProviders.filter(provider => 
+            ALLOWED_PROVIDERS.some(allowed => {
+                const providerName = provider.provider_name.toLowerCase();
+                const allowedName = allowed.toLowerCase();
+                return providerName.includes(allowedName) || allowedName.includes(providerName);
+            })
+        );
+        
+        if (allowedProviders.length === 0) {
+            return '';
+        }
+        
+        // Pegar o primeiro provider disponível
+        const primaryProvider = allowedProviders[0];
+        const titleName = titleData.title || titleData.name || '';
+        
+        // Gerar link de afiliado
+        const generateLink = (providerName) => {
+            if (window.generateAffiliateLink) {
+                return window.generateAffiliateLink(providerName, titleName, tmdbId, titleType);
+            }
+            if (typeof generateAffiliateLink !== 'undefined') {
+                return generateAffiliateLink(providerName, titleName, tmdbId, titleType);
+            }
+            return null;
+        };
+        
+        const affiliateLink = generateLink(primaryProvider.provider_name);
+        
+        if (!affiliateLink) {
+            return '';
+        }
+        
+        // URL do logo do provider
+        const providerLogo = primaryProvider.logo_path 
+            ? `https://image.tmdb.org/t/p/w45${primaryProvider.logo_path}`
+            : null;
+        
+        // HTML do botão principal
+        const buttonHtml = `
+            <div class="border-t border-gray-700 pt-4 mb-4">
+                <a href="${affiliateLink}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="w-full border-2 border-green-500 bg-transparent hover:bg-green-500/10 text-green-500 hover:text-green-400 font-bold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
+                    ${providerLogo 
+                        ? `<img src="${providerLogo}" alt="${primaryProvider.provider_name}" class="w-6 h-6 object-contain">` 
+                        : '<span class="material-symbols-outlined text-xl">play_arrow</span>'}
+                    <span>Assistir Agora em ${primaryProvider.provider_name}</span>
+                </a>
+                ${allowedProviders.length > 1 ? `
+                    <div class="mt-3">
+                        <p class="text-gray-400 text-xs mb-2">Também disponível em:</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${allowedProviders.slice(1, 4).map(provider => {
+                                const link = generateLink(provider.provider_name);
+                                if (!link) return '';
+                                
+                                const logo = provider.logo_path 
+                                    ? `https://image.tmdb.org/t/p/w45${provider.logo_path}` 
+                                    : null;
+                                
+                                return `
+                                    <a href="${link}" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="text-xs border border-gray-600 hover:border-gray-500 bg-transparent hover:bg-gray-800/50 text-gray-300 hover:text-white px-3 py-1.5 rounded transition-all duration-200 flex items-center gap-1.5">
+                                        ${logo 
+                                            ? `<img src="${logo}" alt="${provider.provider_name}" class="w-4 h-4 object-contain">` 
+                                            : ''}
+                                        <span>${provider.provider_name}</span>
+                                    </a>
+                                `;
+                            }).filter(html => html).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        return buttonHtml;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadUserProfile();
+        loadCatalog();
+    });
+    
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(() => {
+                console.log('Service Worker não disponível');
+            });
+        });
+    }
+</script>
+    <script src="js/affiliateLinks.js"></script>
+    <script src="js/notifications.js"></script>
 </body>
 </html>

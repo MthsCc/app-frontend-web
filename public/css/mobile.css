@@ -1,0 +1,225 @@
+/* ============================================
+   ESTILOS GLOBAIS PARA MOBILE
+   ============================================ */
+
+/* Prevenir zoom em inputs no iOS */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+select {
+    font-size: 16px !important; /* Previne zoom automático no iOS */
+}
+
+/* Melhorar toque em botões e links */
+button,
+a,
+.clickable {
+    -webkit-tap-highlight-color: rgba(51, 91, 126, 0.3);
+    touch-action: manipulation;
+    min-height: 44px; /* Tamanho mínimo recomendado para toque */
+    min-width: 44px;
+}
+
+/* Ajustar espaçamentos para mobile */
+@media (max-width: 768px) {
+    /* Reduzir padding geral */
+    .container,
+    main,
+    section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Ajustar tamanhos de fonte */
+    h1 {
+        font-size: 1.75rem !important;
+    }
+    
+    h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    h3 {
+        font-size: 1.25rem !important;
+    }
+    
+    /* Ajustar botões */
+    button,
+    .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Ajustar inputs */
+    input,
+    textarea,
+    select {
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+    
+    /* Melhorar espaçamento entre elementos */
+    .space-y-4 > * + * {
+        margin-top: 1rem;
+    }
+    
+    .space-y-6 > * + * {
+        margin-top: 1.5rem;
+    }
+    
+    /* Ajustar grid para mobile */
+    .grid {
+        gap: 1rem;
+    }
+    
+    /* Ajustar cards */
+    .card,
+    .post-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Ajustar header */
+    header {
+        padding: 0.75rem 1rem;
+    }
+    
+    /* Ajustar modal */
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        margin: 1rem auto;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    /* Ajustar carrossel */
+    .carousel-wrapper {
+        padding: 0.5rem;
+    }
+    
+    .carousel-item {
+        min-width: 140px;
+    }
+    
+    /* Ajustar sidebar de chat */
+    aside {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Ajustar FAB */
+    .fab-container {
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
+    .fab-main {
+        width: 56px;
+        height: 56px;
+    }
+    
+    /* Ajustar notificações */
+    .notification-dropdown {
+        width: calc(100vw - 2rem);
+        max-width: calc(100vw - 2rem);
+        right: 1rem;
+        left: 1rem;
+    }
+    
+    /* Ajustar calendário */
+    #activityGrid {
+        gap: 0.5rem;
+    }
+    
+    #activityGrid > div {
+        min-width: 32px;
+        min-height: 32px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    h2 {
+        font-size: 1.25rem !important;
+    }
+    
+    button,
+    .btn {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+    
+    .container,
+    main,
+    section {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
+/* Melhorar scroll em mobile */
+* {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Prevenir seleção de texto acidental */
+button,
+.icon-button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Ajustar área segura do iPhone (notch) */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+    
+    header {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+}
+
+/* Melhorar performance de scroll */
+.scroll-container {
+    will-change: scroll-position;
+    transform: translateZ(0);
+}
+
+/* Ajustar z-index para mobile */
+.modal {
+    z-index: 9999;
+}
+
+.dropdown {
+    z-index: 9998;
+}
+
+.fab-container {
+    z-index: 9997;
+}
+
+/* Ajustar animações para mobile (reduzir para melhor performance) */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+

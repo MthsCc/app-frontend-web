@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-br">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <meta name="theme-color" content="#335b7e"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="EchoView"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="description" content="ECHOSOCIAL - Rede Social EchoView"/>
+    <link rel="manifest" href="manifest.json"/>
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23335b7e' width='100' height='100'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23e2e0df'%3EEV%3C/text%3E%3C/svg%3E"/>
+    <link rel="stylesheet" href="css/mobile.css"/>
+    <title>ECHOSOCIAL - ECHOVIEW</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#335b7e",
+                        "secondary": "#707d9b",
+                        "tertiary": "#a7aabd",
+                        "accent": "#e2e0df",
+                        "background-light": "#e2e0df",
+                        "background-dark": "#051422",
+                        "surface": "#072f57",
+                        "surface-hover": "#335b7e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Esconder scrollbar mas manter funcionalidade de scroll */
+        #notificationsList::-webkit-scrollbar {
+            display: none;
+        }
+        
+        #notificationsList {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Quebra de texto nas notificações - FORÇADO */
+        #notificationDropdown {
+            box-sizing: border-box !important;
+            width: 500px !important;
+            max-width: 500px !important;
+        }
+        
+        #notificationsList {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        #notificationsList > div {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+        
+        #notificationsList .notification-item {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+        
+        #notificationsList .notification-item > div {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        #notificationsList p {
+            box-sizing: border-box !important;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            white-space: normal !important;
+            margin: 0 !important;
+        }
+        
+        .fab-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 50;
+        }
+        
+        .fab-main {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #707d9b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .fab-main:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+        
+        .fab-main.active {
+            transform: rotate(45deg);
+        }
+        
+        .fab-option {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            color: #a7aabd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: scale(0) translateY(0);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+        
+        .fab-option.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: all;
+        }
+        
+        .fab-option:nth-child(2) {
+            bottom: 70px;
+            transition-delay: 0.05s;
+        }
+        
+        .fab-option:nth-child(3) {
+            bottom: 130px;
+            transition-delay: 0.1s;
+        }
+        
+        .fab-option:hover {
+            transform: scale(1.1);
+            background: #707d9b;
+            color: white;
+        }
+        
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display" style="background: linear-gradient(135deg, #072f57 0%, #051422 50%, #000000 100%); min-height: 100vh;">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+    <div class="layout-container flex h-full grow flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 px-4 md:px-10 py-3 sticky top-0 z-50 bg-background-dark/80 backdrop-blur-sm">
+            <div class="flex items-center gap-4 text-white">
+                <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display cursor-pointer" onclick="window.location.href='catalogo.html'">ECHOVIEW</h2>
+            </div>
+            <div class="flex flex-1 justify-center items-center gap-4 md:gap-6">
+                <!-- Barra de Busca (para usuários no echosocial) -->
+                <label class="flex flex-col min-w-40 !h-10 max-w-96 w-full">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full relative">
+                        <div class="text-[#a7aabd] flex border-none bg-[#072f57] items-center justify-center pl-3 rounded-l-lg border-r-0">
+                            <span class="material-symbols-outlined text-[20px]">search</span>
+                        </div>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#072f57] focus:border-none h-full placeholder:text-[#a7aabd] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal font-display" id="searchInput" placeholder="Buscar usuários..." value=""/>
+                        <!-- Dropdown de resultados -->
+                        <div id="searchResultsDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#072f57] rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-[#707d9b]/30">
+                            <div id="searchResultsContent" class="p-2">
+                                <!-- Resultados serão inseridos aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+            <div class="flex items-center gap-3 md:gap-4">
+                <!-- Dashboard (apenas para admin) -->
+                <button id="dashboardBtn" class="hidden flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='dashboard-admin.html'" title="Dashboard Admin">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                </button>
+                <!-- ECHOSOCIAL -->
+                <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#335b7e] text-white hover:bg-[#707d9b] transition-colors" onclick="window.location.href='echosocial.html'" title="ECHOSOCIAL">
+                    <span class="material-symbols-outlined text-[20px]">groups</span>
+                </button>
+                <!-- Ícone de Notificação -->
+                <div class="relative">
+                    <button id="notificationBtn" class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors relative" title="Notificações">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                    </button>
+                    <!-- Dropdown de Notificações -->
+                    <div id="notificationDropdown" class="hidden absolute right-0 top-full mt-2 w-[500px] bg-[#072f57] rounded-lg shadow-2xl border border-[#707d9b]/30 z-50 h-[600px] overflow-hidden flex flex-col">
+                        <div class="p-4 border-b border-white/10 flex items-center justify-between flex-shrink-0">
+                            <h3 class="text-white font-bold">Notificações</h3>
+                            <button onclick="NotificationSystem.markAllNotificationsAsRead()" class="text-sm text-[#a7aabd] hover:text-white whitespace-nowrap">Marcar todas como lidas</button>
+                        </div>
+                        <div id="notificationsList" class="flex-1 overflow-y-auto p-2" style="min-height: 0;">
+                            <div class="p-4 text-center text-gray-400 text-sm">Carregando notificações...</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Perfil -->
+                <button class="flex items-center justify-center rounded-full h-10 w-10 bg-[#072f57] text-white hover:bg-[#335b7e] transition-colors overflow-hidden border-2 border-transparent hover:border-[#707d9b]" onclick="window.location.href='perfil.html'" title="Perfil" id="profileButton">
+                    <span class="material-symbols-outlined text-[20px]">person</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex flex-1 overflow-hidden">
+            <!-- Sidebar de Mensagens -->
+            <aside class="w-80 border-r border-white/10 bg-[#051422] flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-white/10">
+                    <h3 class="text-white font-bold text-lg">Mensagens</h3>
+                </div>
+                <div class="flex-1 overflow-y-auto">
+                    <div class="p-4 border-b border-white/10">
+                        <input type="text" id="searchUsersInput" placeholder="Buscar usuários..." class="w-full px-4 py-2 bg-[#072f57] text-white rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-[#707d9b] placeholder:text-gray-400">
+                    </div>
+                    <div id="messagesList" class="overflow-y-auto">
+                        <!-- Lista de conversas será carregada aqui -->
+                        <div class="p-4 text-center text-gray-400 text-sm">Carregando conversas...</div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Feed Central ou Chat -->
+            <div id="mainContent" class="flex-1 flex flex-col overflow-hidden">
+                <!-- Feed de Posts (padrão) -->
+                <div id="postsContainer" class="flex-1 flex flex-col overflow-hidden">
+                    <div class="flex-1 overflow-y-auto p-4 md:p-8">
+                        <div class="max-w-2xl mx-auto space-y-4" id="postsFeed">
+                            <!-- Posts serão carregados aqui -->
+                            <div class="text-center text-gray-400 py-8">Carregando posts...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat (quando aberto) -->
+                <div id="chatContainer" class="hidden flex-1 flex flex-col overflow-hidden border-l border-white/10 bg-[#072f57]">
+                    <!-- Header do Chat -->
+                    <div class="p-4 border-b border-white/10 flex items-center gap-3">
+                        <button onclick="closeChat()" class="lg:hidden text-gray-400 hover:text-white">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <div id="chatUserAvatar" class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=' + currentChatUserId">
+                        </div>
+                        <div class="flex-1">
+                            <h3 id="chatUserName" class="text-white font-bold cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=' + currentChatUserId"></h3>
+                            <p id="chatUserHandle" class="text-gray-400 text-sm cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=' + currentChatUserId"></p>
+                        </div>
+                    </div>
+
+                    <!-- Mensagens -->
+                    <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-4">
+                        <!-- Mensagens serão carregadas aqui -->
+                    </div>
+
+                    <!-- Input de Mensagem -->
+                    <div class="p-4 border-t border-white/10">
+                        <div id="chatMediaPreview" class="mb-2 flex gap-2 flex-wrap"></div>
+                        <div class="flex items-end gap-2">
+                            <button id="chatMediaBtn" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#335b7e] text-white hover:bg-[#707d9b] transition-all shadow-lg hover:shadow-xl hover:scale-110">
+                                <span class="material-symbols-outlined !text-2xl">add</span>
+                            </button>
+                            <div class="flex-1 relative">
+                                <textarea id="chatMessageInput" placeholder="Digite uma mensagem..." class="w-full px-4 py-2 pr-12 bg-[#072f57] text-white rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-[#707d9b] resize-none" rows="1"></textarea>
+                                <button id="chatSendBtn" class="absolute right-2 bottom-2 flex items-center justify-center w-8 h-8 rounded-full bg-[#707d9b] text-[#e2e0df] hover:bg-[#335b7e] hover:text-white transition-colors">
+                                    <span class="material-symbols-outlined !text-lg">send</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- FAB Button -->
+<div class="fab-container">
+    <div class="fab-main" id="fabMain">
+        <span class="material-symbols-outlined !text-2xl">add</span>
+    </div>
+    <div class="fab-option" id="fabPost" title="Novo Post">
+        <span class="material-symbols-outlined !text-xl">edit</span>
+    </div>
+    <div class="fab-option" id="fabMoviePost" title="Compartilhar Filme">
+        <span class="material-symbols-outlined !text-xl">movie</span>
+    </div>
+</div>
+
+<!-- Modal de Novo Post -->
+<div id="postModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-[#072f57] rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-white text-xl font-bold" id="postModalTitle">Novo Post</h3>
+                <button onclick="closePostModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div id="postModalContent">
+                <!-- Conteúdo será preenchido dinamicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Busca de Filmes -->
+<div id="movieSearchModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-[#072f57] rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-white text-xl font-bold">Selecionar Filme/Série</h3>
+                <button onclick="closeMovieSearchModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div class="relative mb-4">
+                <input type="text" id="movieSearchInput" placeholder="Buscar filmes ou séries..." class="w-full px-4 py-2 pl-10 bg-[#335b7e] text-white rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-[#707d9b]">
+                <span class="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 !text-xl">search</span>
+            </div>
+            <div id="movieSearchResults" class="space-y-2">
+                <!-- Resultados da busca -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Erro - Mensagem para si mesmo -->
+<div id="selfMessageErrorModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="if(event.target === this) closeSelfMessageErrorModal()">
+    <div class="bg-[#283039] rounded-xl shadow-2xl max-w-md w-full transform transition-all animate-fade-in" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center justify-center mb-4">
+                <div class="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-500 !text-4xl">block</span>
+                </div>
+            </div>
+            <h3 class="text-white text-xl font-bold text-center mb-2">Não é possível enviar mensagem</h3>
+            <p class="text-gray-400 text-center mb-6">
+                Você não pode enviar mensagem para si mesmo. Tente enviar para outros usuários.
+            </p>
+            <div class="flex justify-center">
+                <button onclick="closeSelfMessageErrorModal()" class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // CONFIGURAÇÕES E CONSTANTES
+    // ============================================
+    const API_URL = 'http://localhost:3000';
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+
+    // ============================================
+    // ESTADO DA APLICAÇÃO
+    // ============================================
+    const AppState = {
+        selectedMovie: null,
+        fabActive: false,
+        currentChatUserId: null,
+        chatMediaFiles: [],
+        chatSelectedMovie: null,
+        chatAttachedPost: null,
+        chatPollingInterval: null,
+        unreadMessagesCount: 0
+    };
+    
+    // Aliases para compatibilidade
+    let selectedMovie = AppState.selectedMovie;
+    let fabActive = AppState.fabActive;
+    let currentChatUserId = AppState.currentChatUserId;
+    let chatMediaFiles = AppState.chatMediaFiles;
+    let chatSelectedMovie = AppState.chatSelectedMovie;
+    let chatAttachedPost = AppState.chatAttachedPost;
+    let chatPollingInterval = AppState.chatPollingInterval;
+
+    // FAB Button
+    document.getElementById('fabMain').addEventListener('click', function() {
+        fabActive = !fabActive;
+        const fab = document.getElementById('fabMain');
+        const options = document.querySelectorAll('.fab-option');
+        
+        if (fabActive) {
+            fab.classList.add('active');
+            options.forEach(opt => opt.classList.add('active'));
+        } else {
+            fab.classList.remove('active');
+            options.forEach(opt => opt.classList.remove('active'));
+        }
+    });
+
+    document.getElementById('fabPost').addEventListener('click', function() {
+        openPostModal('normal');
+    });
+
+    document.getElementById('fabMoviePost').addEventListener('click', function() {
+        openPostModal('movie');
+        setTimeout(() => {
+            openMovieSearchModal();
+        }, 100);
+    });
+
+    // Buscar usuários em tempo real (no header)
+    let searchTimeout;
+    const searchInput = document.getElementById('searchInput');
+    const searchResultsDropdown = document.getElementById('searchResultsDropdown');
+    const searchResultsContent = document.getElementById('searchResultsContent');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                searchResultsDropdown.classList.add('hidden');
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                searchUsersInHeader(query);
+            }, 300);
+        });
+        
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResultsDropdown.contains(e.target)) {
+                searchResultsDropdown.classList.add('hidden');
+            }
+        });
+    }
+    
+    async function searchUsersInHeader(query) {
+        try {
+            searchResultsContent.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">Buscando...</div>';
+            searchResultsDropdown.classList.remove('hidden');
+            
+            const response = await fetch(`${API_URL}/api/social/search-users?q=${encodeURIComponent(query)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const users = data.users || [];
+                
+                if (users.length === 0) {
+                    searchResultsContent.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">Nenhum usuário encontrado</div>';
+                    return;
+                }
+                
+                searchResultsContent.innerHTML = users.slice(0, 8).map(user => {
+                    const avatar = user.profilePicture 
+                        ? `<img src="${user.profilePicture}" alt="${user.name}" class="w-10 h-10 rounded-full object-cover">`
+                        : `<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">${user.name ? user.name.charAt(0).toUpperCase() : 'U'}</div>`;
+                    
+                    return `
+                        <div class="p-3 hover:bg-[#335b7e] cursor-pointer rounded-lg flex items-center gap-3" onclick="openChat('${user.id}'); searchResultsDropdown.classList.add('hidden'); searchInput.value = '';">
+                            ${avatar}
+                            <div class="flex-1">
+                                <p class="text-white font-medium">${user.name}</p>
+                                <p class="text-gray-400 text-sm">@${user.email.split('@')[0]}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch (error) {
+            console.error('Erro ao buscar usuários:', error);
+            searchResultsContent.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">Erro ao buscar usuários</div>';
+        }
+    }
+
+    async function searchUsers(query) {
+        try {
+            const response = await fetch(`${API_URL}/api/social/search-users?q=${encodeURIComponent(query)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                displayUserSearchResults(data.users || []);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar usuários:', error);
+        }
+    }
+
+    function displayUserSearchResults(users) {
+        const container = document.getElementById('messagesList');
+        
+        if (users.length === 0) {
+            container.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">Nenhum usuário encontrado</div>';
+            return;
+        }
+        
+        container.innerHTML = users.map(user => {
+            const avatar = user.profilePicture 
+                ? `<img src="${user.profilePicture}" alt="${user.name}" class="w-10 h-10 rounded-full object-cover">`
+                : `<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">${user.name ? user.name.charAt(0).toUpperCase() : 'U'}</div>`;
+            
+            return `
+            <div class="p-4 hover:bg-[#072f57] cursor-pointer border-b border-white/5" onclick="openChat('${user.id}')">
+                <div class="flex items-center gap-3">
+                    ${avatar}
+                    <div>
+                        <p class="text-white font-medium">${user.name}</p>
+                        <p class="text-gray-400 text-sm">@${user.email.split('@')[0]}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        }).join('');
+    }
+    
+    // Carregar conversas no sidebar
+    async function loadConversations() {
+        try {
+            const response = await fetch(`${API_URL}/api/social/conversations`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const conversations = data.conversations || [];
+                displayConversations(conversations);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar conversas:', error);
+        }
+    }
+    
+    function displayConversations(conversations) {
+        const container = document.getElementById('messagesList');
+        
+        if (conversations.length === 0) {
+            container.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">Nenhuma conversa ainda</div>';
+            return;
+        }
+        
+        container.innerHTML = conversations.map(conv => {
+            const otherUser = conv.otherUser;
+            const avatar = otherUser.profilePicture 
+                ? `<img src="${otherUser.profilePicture}" alt="${otherUser.name}" class="w-10 h-10 rounded-full object-cover">`
+                : `<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">${otherUser.name ? otherUser.name.charAt(0).toUpperCase() : 'U'}</div>`;
+            
+            let lastMessage = 'Sem mensagens';
+            if (conv.lastMessage) {
+                if (typeof conv.lastMessage === 'string') {
+                    lastMessage = conv.lastMessage || 'Mídia';
+                } else {
+                    lastMessage = conv.lastMessage.content || (conv.lastMessage.hasMedia ? 'Mídia' : 'Sem mensagens');
+                }
+            }
+            const unreadBadge = conv.unread ? '<span class="absolute top-0 right-0 w-2 h-2 bg-blue-500 rounded-full"></span>' : '';
+            
+            return `
+            <div class="p-4 hover:bg-[#072f57] cursor-pointer border-b border-white/5 relative" onclick="openChat('${otherUser.id}')">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        ${avatar}
+                        ${unreadBadge}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-white font-medium truncate">${otherUser.name}</p>
+                        <p class="text-gray-400 text-sm truncate">${lastMessage}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        }).join('');
+    }
+    
+    // Event listener para busca de usuários no sidebar
+    const searchUsersInput = document.getElementById('searchUsersInput');
+    let searchUsersTimeout;
+    
+    if (searchUsersInput) {
+        searchUsersInput.addEventListener('input', function(e) {
+            clearTimeout(searchUsersTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                loadConversations(); // Voltar para lista de conversas
+                return;
+            }
+            
+            searchUsersTimeout = setTimeout(() => {
+                searchUsers(query);
+            }, 300);
+        });
+    }
+
+    function openChat(userId) {
+        AppState.currentChatUserId = userId;
+        currentChatUserId = userId; // Alias para compatibilidade
+        
+        document.getElementById('postsContainer').classList.add('hidden');
+        document.getElementById('chatContainer').classList.remove('hidden');
+        
+        // Esconder FAB quando estiver no chat
+        toggleFABVisibility(false);
+        
+        loadChatUser(userId);
+        loadChatMessages(userId);
+        startChatPolling(userId);
+        
+        // Se houver post anexado, mostrar preview
+        if (AppState.chatAttachedPost) {
+            displayAttachedPostPreview();
+        }
+    }
+
+    function closeChat() {
+        AppState.currentChatUserId = null;
+        AppState.chatAttachedPost = null;
+        currentChatUserId = null; // Alias
+        chatAttachedPost = null; // Alias
+        
+        document.getElementById('postsContainer').classList.remove('hidden');
+        document.getElementById('chatContainer').classList.add('hidden');
+        document.getElementById('chatMediaPreview').innerHTML = '';
+        stopChatPolling();
+        
+        // Mostrar FAB novamente quando sair do chat
+        toggleFABVisibility(true);
+    }
+    
+    function toggleFABVisibility(show) {
+        const fabContainer = document.querySelector('.fab-container');
+        if (fabContainer) {
+            fabContainer.style.display = show ? 'block' : 'none';
+        }
+    }
+
+    async function loadChatUser(userId) {
+        try {
+            const response = await fetch(`${API_URL}/api/admin/users/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const user = data.user;
+                
+                const avatar = document.getElementById('chatUserAvatar');
+                if (user.profilePicture) {
+                    avatar.style.backgroundImage = `url('${user.profilePicture}')`;
+                    avatar.innerHTML = '';
+                } else {
+                    avatar.style.backgroundImage = '';
+                    avatar.innerHTML = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+                }
+                
+                document.getElementById('chatUserName').textContent = user.name;
+                document.getElementById('chatUserHandle').textContent = '@' + (user.email.split('@')[0] || 'usuario');
+            }
+        } catch (error) {
+            console.error('Erro ao carregar usuário do chat:', error);
+        }
+    }
+
+    async function loadChatMessages(userId) {
+        try {
+            const response = await fetch(`${API_URL}/api/social/messages/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                displayChatMessages(data.messages || []);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar mensagens:', error);
+        }
+    }
+
+    // ============================================
+    // FUNÇÕES DE CHAT
+    // ============================================
+    function displayChatMessages(messages) {
+        const container = document.getElementById('chatMessages');
+        const currentUserId = getCurrentUserId();
+        
+        // Se não houver mensagens, mostrar mensagem
+        if (!messages || messages.length === 0) {
+            container.innerHTML = '<div class="flex items-center justify-center h-full"><p class="text-gray-400 text-center">Nenhuma mensagem ainda. Comece a conversa!</p></div>';
+            return;
+        }
+        
+        container.innerHTML = messages.map(msg => {
+            const isOwn = msg.senderId === currentUserId;
+            // Sempre usar sender para o avatar (quem enviou a mensagem)
+            const sender = msg.sender || { name: 'Usuário', email: 'usuario@email.com' };
+            
+            // Criar avatar usando a função utilitária
+            const avatar = createAvatarElement(sender, 'w-8 h-8');
+            
+            let mediaHtml = '';
+            if (msg.images && msg.images.length > 0) {
+                mediaHtml += msg.images.map(img => `<img src="${img}" alt="Imagem" class="max-w-xs rounded-lg mb-2">`).join('');
+            }
+            if (msg.videos && msg.videos.length > 0) {
+                mediaHtml += msg.videos.map(vid => `<video src="${vid}" controls class="max-w-xs rounded-lg mb-2"></video>`).join('');
+            }
+            if (msg.post) {
+                // Mensagem com post anexado
+                const post = msg.post;
+                let postPreview = '';
+                if (post.title) {
+                    // Post com filme/série
+                    const posterUrl = post.title.posterPath 
+                        ? (post.title.posterPath.startsWith('http') 
+                            ? post.title.posterPath 
+                            : `https://image.tmdb.org/t/p/w300${post.title.posterPath}`)
+                        : '';
+                    postPreview = `
+                        <div class="bg-[#072f57] rounded-lg p-3 border border-[#707d9b]/30 mt-2 cursor-pointer hover:bg-[#335b7e] transition-colors" onclick="openMovieModal('${post.title.tmdbId}', '${post.title.type}')">
+                            ${posterUrl ? `<img src="${posterUrl}" alt="${post.title.title}" class="w-32 h-48 object-cover rounded mb-2">` : ''}
+                            <p class="text-white font-bold text-sm">${post.title.title}</p>
+                            <p class="text-gray-400 text-xs mt-1">${post.title.type === 'movie' ? 'Filme' : 'Série'}</p>
+                        </div>
+                    `;
+                } else {
+                    // Post normal
+                    const contentPreview = post.content ? (post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content) : 'Post sem texto';
+                    const imagePreview = post.images && post.images.length > 0 
+                        ? `<img src="${post.images[0]}" alt="Post image" class="w-full max-w-xs rounded-lg mb-2">` 
+                        : '';
+                    postPreview = `
+                        <div class="bg-[#072f57] rounded-lg p-3 border border-[#707d9b]/30 mt-2">
+                            ${imagePreview}
+                            <p class="text-white text-sm">${contentPreview}</p>
+                            <p class="text-gray-400 text-xs mt-1">Post de @${post.user.email.split('@')[0]}</p>
+                        </div>
+                    `;
+                }
+                mediaHtml += postPreview;
+            }
+            if (msg.title) {
+                const posterUrl = msg.title.posterPath 
+                    ? (msg.title.posterPath.startsWith('http') 
+                        ? msg.title.posterPath 
+                        : `https://image.tmdb.org/t/p/w92${msg.title.posterPath}`)
+                    : null;
+                
+                mediaHtml += `
+                    <div class="p-3 bg-[#072f57] rounded-lg mb-2 max-w-xs cursor-pointer hover:bg-[#335b7e] transition-colors" onclick="openMovieModal('${msg.title.tmdbId}', '${msg.title.type}')">
+                        <div class="flex gap-3">
+                            ${posterUrl ? `<img src="${posterUrl}" alt="${msg.title.title}" class="w-16 h-24 object-cover rounded flex-shrink-0">` : ''}
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-white font-bold ${!posterUrl ? 'text-base' : 'text-sm'}">${msg.title.title}</h4>
+                                <p class="text-gray-400 text-xs mt-1">${msg.title.type === 'movie' ? 'Filme' : 'Série'}</p>
+                                ${msg.title.overview ? `<p class="text-gray-400 text-xs line-clamp-2 mt-1">${msg.title.overview}</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="flex ${isOwn ? 'justify-end' : 'justify-start'} gap-2 mb-4">
+                    ${!isOwn ? `<div class="flex-shrink-0">${avatar}</div>` : ''}
+                    <div class="flex flex-col ${isOwn ? 'items-end' : 'items-start'} max-w-[70%]">
+                        ${isOwn ? '<p class="text-gray-400 text-xs mb-1 mr-1">Você:</p>' : ''}
+                        <div class="bg-[#072f57] rounded-lg px-4 py-2 ${isOwn ? 'bg-[#335b7e]' : ''}">
+                            ${mediaHtml}
+                            ${msg.content ? `<p class="text-white text-sm whitespace-pre-wrap break-words">${msg.content}</p>` : ''}
+                        </div>
+                        <p class="text-gray-400 text-xs mt-1 ${isOwn ? 'mr-1' : 'ml-1'}">${new Date(msg.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                    </div>
+                    ${isOwn ? `<div class="flex-shrink-0">${avatar}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+        
+        // Scroll para o final
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // ============================================
+    // UTILITÁRIOS
+    // ============================================
+    function startChatPolling(userId) {
+        stopChatPolling();
+        AppState.chatPollingInterval = setInterval(() => {
+            if (AppState.currentChatUserId === userId) {
+                loadChatMessages(userId);
+            }
+        }, 2000);
+    }
+
+    function stopChatPolling() {
+        if (AppState.chatPollingInterval) {
+            clearInterval(AppState.chatPollingInterval);
+            AppState.chatPollingInterval = null;
+        }
+    }
+    
+    function getCurrentUserId() {
+        try {
+            return JSON.parse(atob(token.split('.')[1])).id;
+        } catch (e) {
+            console.error('Erro ao obter ID do usuário:', e);
+            return null;
+        }
+    }
+    
+    function createAvatarElement(user, size = 'w-10 h-10') {
+        if (!user) {
+            user = { name: 'Usuário', email: 'usuario@email.com' };
+        }
+        if (user.profilePicture) {
+            return `<img src="${user.profilePicture}" alt="${user.name || 'Usuário'}" class="${size} rounded-full object-cover">`;
+        }
+        const initial = (user.name && user.name.length > 0) ? user.name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U');
+        return `<div class="${size} rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs">${initial}</div>`;
+    }
+
+    // Enviar mensagem
+    document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
+    document.getElementById('chatMessageInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
+        }
+    });
+
+    async function sendChatMessage() {
+        if (!AppState.currentChatUserId) return;
+        
+        const input = document.getElementById('chatMessageInput');
+        const content = input.value.trim();
+        
+        if (!content && AppState.chatMediaFiles.length === 0 && !AppState.chatSelectedMovie && !AppState.chatAttachedPost) {
+            return;
+        }
+        
+        try {
+            const formData = {
+                receiverId: AppState.currentChatUserId,
+                content: content || ''
+            };
+            
+            // Adicionar mídia
+            if (AppState.chatMediaFiles.length > 0) {
+                const { images, videos } = await processMediaFiles(AppState.chatMediaFiles);
+                formData.images = images;
+                formData.videos = videos;
+            }
+            
+            // Adicionar filme se houver
+            if (AppState.chatSelectedMovie) {
+                formData.titleId = AppState.chatSelectedMovie.tmdbId;
+                formData.titleType = AppState.chatSelectedMovie.type;
+            }
+            
+            // Adicionar post anexado se houver
+            if (AppState.chatAttachedPost) {
+                formData.postId = AppState.chatAttachedPost.id;
+            }
+            
+            const response = await fetch(`${API_URL}/api/social/messages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            if (response.ok) {
+                resetChatInput();
+                loadChatMessages(AppState.currentChatUserId);
+            } else {
+                const error = await response.json();
+                handleChatError(error);
+            }
+        } catch (error) {
+            console.error('Erro ao enviar mensagem:', error);
+            alert('Erro ao enviar mensagem. Tente novamente.');
+        }
+    }
+    
+    async function processMediaFiles(files) {
+        const images = [];
+        const videos = [];
+        
+        for (let file of files) {
+            const reader = new FileReader();
+            await new Promise((resolve) => {
+                reader.onload = (e) => {
+                    if (file.type.startsWith('image/')) {
+                        images.push(e.target.result);
+                    } else {
+                        videos.push(e.target.result);
+                    }
+                    resolve();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        return { images, videos };
+    }
+    
+    function resetChatInput() {
+        const input = document.getElementById('chatMessageInput');
+        input.value = '';
+        AppState.chatMediaFiles = [];
+        AppState.chatSelectedMovie = null;
+        AppState.chatAttachedPost = null;
+        chatMediaFiles = [];
+        chatSelectedMovie = null;
+        chatAttachedPost = null;
+        document.getElementById('chatMediaPreview').innerHTML = '';
+    }
+    
+    function handleChatError(error) {
+        if (error.error && error.error.includes('si mesmo')) {
+            openSelfMessageErrorModal();
+        } else {
+            alert('Erro ao enviar mensagem: ' + (error.error || 'Erro desconhecido'));
+        }
+    }
+
+    // Botão de mídia no chat
+    document.getElementById('chatMediaBtn').addEventListener('click', function() {
+        const menu = document.createElement('div');
+        menu.className = 'absolute bottom-16 left-0 bg-[#072f57] rounded-lg shadow-xl p-2 z-50';
+        menu.innerHTML = `
+            <button onclick="document.getElementById('chatImageInput').click(); this.parentElement.remove();" class="w-full px-4 py-2 text-left text-white hover:bg-[#335b7e] rounded flex items-center gap-2">
+                <span class="material-symbols-outlined">image</span>
+                <span>Foto/Vídeo</span>
+            </button>
+            <button onclick="openMovieSearchForChat(); this.parentElement.remove();" class="w-full px-4 py-2 text-left text-white hover:bg-[#335b7e] rounded flex items-center gap-2">
+                <span class="material-symbols-outlined">movie</span>
+                <span>Filme/Série</span>
+            </button>
+        `;
+        
+        const btn = document.getElementById('chatMediaBtn');
+        btn.parentElement.style.position = 'relative';
+        btn.parentElement.appendChild(menu);
+        
+        // Fechar ao clicar fora
+        setTimeout(() => {
+            document.addEventListener('click', function closeMenu(e) {
+                if (!menu.contains(e.target) && e.target !== btn) {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                }
+            });
+        }, 0);
+    });
+
+    // Input de imagem/vídeo para chat
+    const chatImageInput = document.createElement('input');
+    chatImageInput.type = 'file';
+    chatImageInput.id = 'chatImageInput';
+    chatImageInput.accept = 'image/*,video/*';
+    chatImageInput.multiple = true;
+    chatImageInput.style.display = 'none';
+    document.body.appendChild(chatImageInput);
+    
+    chatImageInput.addEventListener('change', function(e) {
+        chatMediaFiles = Array.from(e.target.files);
+        const preview = document.getElementById('chatMediaPreview');
+        preview.innerHTML = '';
+        
+        chatMediaFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'relative';
+                if (file.type.startsWith('image/')) {
+                    div.innerHTML = `<img src="${e.target.result}" class="w-20 h-20 object-cover rounded-lg"><button onclick="removeChatMedia(${index})" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">&times;</button>`;
+                } else {
+                    div.innerHTML = `<video src="${e.target.result}" class="w-20 h-20 object-cover rounded-lg"></video><button onclick="removeChatMedia(${index})" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">&times;</button>`;
+                }
+                preview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    function removeChatMedia(index) {
+        chatMediaFiles.splice(index, 1);
+        const preview = document.getElementById('chatMediaPreview');
+        preview.innerHTML = '';
+        chatMediaFiles.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'relative';
+                if (file.type.startsWith('image/')) {
+                    div.innerHTML = `<img src="${e.target.result}" class="w-20 h-20 object-cover rounded-lg"><button onclick="removeChatMedia(${idx})" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">&times;</button>`;
+                } else {
+                    div.innerHTML = `<video src="${e.target.result}" class="w-20 h-20 object-cover rounded-lg"></video><button onclick="removeChatMedia(${idx})" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">&times;</button>`;
+                }
+                preview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function openMovieSearchForChat() {
+        openMovieSearchModal();
+        // Quando selecionar filme, usar para chat
+        const originalSelectMovie = window.selectMovie;
+        window.selectMovie = function(movie) {
+            chatSelectedMovie = {
+                tmdbId: movie.id,
+                title: movie.title || movie.name,
+                overview: movie.overview,
+                posterPath: movie.poster_path,
+                type: movie.media_type || (movie.title ? 'movie' : 'tv')
+            };
+            closeMovieSearchModal();
+            
+            // Mostrar preview do filme no chat
+            const preview = document.getElementById('chatMediaPreview');
+            preview.innerHTML = `
+                <div class="p-3 bg-[#072f57] rounded-lg flex gap-3 items-center">
+                    <img src="${chatSelectedMovie.posterPath ? (chatSelectedMovie.posterPath.startsWith('http') ? chatSelectedMovie.posterPath : `https://image.tmdb.org/t/p/w92${chatSelectedMovie.posterPath}`) : 'https://via.placeholder.com/92x138'}" alt="${chatSelectedMovie.title}" class="w-16 h-24 object-cover rounded">
+                    <div class="flex-1">
+                        <h4 class="text-white font-bold text-sm">${chatSelectedMovie.title}</h4>
+                        <p class="text-gray-400 text-xs line-clamp-2">${chatSelectedMovie.overview || ''}</p>
+                    </div>
+                    <button onclick="chatSelectedMovie = null; document.getElementById('chatMediaPreview').innerHTML = '';" class="text-gray-400 hover:text-white">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            `;
+            
+            window.selectMovie = originalSelectMovie;
+        };
+    }
+
+    // Carregar posts
+    async function loadPosts() {
+        try {
+            const response = await fetch(`${API_URL}/api/social/posts`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                displayPosts(data.posts || []);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar posts:', error);
+        }
+    }
+
+    function displayPosts(posts) {
+        const container = document.getElementById('postsFeed');
+        
+        if (posts.length === 0) {
+            container.innerHTML = '<div class="text-center text-gray-400 py-8">Nenhum post ainda. Seja o primeiro a postar!</div>';
+            return;
+        }
+        
+        container.innerHTML = posts.map(post => {
+            const currentUserId = getCurrentUserId();
+            const isRepost = post.repostedBy && post.repostedBy.id === currentUserId;
+            
+            // Avatar do autor original do post
+            const originalUserAvatar = post.user.profilePicture 
+                ? `<img src="${post.user.profilePicture}" alt="${post.user.name}" class="w-12 h-12 rounded-full object-cover cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">`
+                : `<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">${post.user.name ? post.user.name.charAt(0).toUpperCase() : 'U'}</div>`;
+            
+            // Avatar de quem repostou (se for repost)
+            const reposterAvatar = isRepost && post.repostedBy ? (
+                post.repostedBy.profilePicture 
+                    ? `<img src="${post.repostedBy.profilePicture}" alt="${post.repostedBy.name}" class="w-8 h-8 rounded-full object-cover cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.repostedBy.id}'">`
+                    : `<div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xs cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.repostedBy.id}'">${post.repostedBy.name ? post.repostedBy.name.charAt(0).toUpperCase() : 'U'}</div>`
+            ) : '';
+            
+            return `
+            <div class="bg-[#072f57] rounded-xl p-6 border border-[#707d9b]/30" data-post-id="${post.id}">
+                ${isRepost ? `
+                    <div class="flex items-center gap-2 mb-3 text-green-400 text-sm">
+                        <span class="material-symbols-outlined !text-base">repeat</span>
+                        <span>Você repostou</span>
+                    </div>
+                ` : ''}
+                <div class="flex items-start gap-4 mb-4">
+                    ${originalUserAvatar}
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <p class="text-white font-bold cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">${post.user.name}</p>
+                            <p class="text-gray-400 text-sm cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">@${post.user.email.split('@')[0]}</p>
+                            <span class="text-gray-500">·</span>
+                            <p class="text-gray-400 text-sm">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</p>
+                            ${post.user.id === currentUserId ? `
+                                <button onclick="deletePost('${post.id}')" class="ml-auto text-gray-400 hover:text-red-500 transition-colors" title="Deletar post">
+                                    <span class="material-symbols-outlined !text-lg">delete</span>
+                                </button>
+                            ` : ''}
+                        </div>
+                        <p class="text-white whitespace-pre-wrap">${post.content}</p>
+                        ${post.title ? `
+                            <div class="mt-4 p-4 bg-[#335b7e] rounded-lg flex gap-4 cursor-pointer hover:bg-[#707d9b] transition-colors" onclick="openMovieModal('${post.title.tmdbId}', '${post.title.type}')">
+                                ${post.title.posterPath ? `
+                                    <img src="${post.title.posterPath.startsWith('http') ? post.title.posterPath : `https://image.tmdb.org/t/p/w200${post.title.posterPath}`}" alt="${post.title.title}" class="w-20 h-30 object-cover rounded flex-shrink-0">
+                                ` : ''}
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-white font-bold ${!post.title.posterPath ? 'text-lg' : ''}">${post.title.title}</h4>
+                                    ${post.title.overview ? `<p class="text-gray-400 text-sm line-clamp-2 mt-1">${post.title.overview}</p>` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${post.images && post.images.length > 0 ? `
+                            <div class="mt-4 grid grid-cols-2 gap-2">
+                                ${post.images.map(img => `<img src="${img}" alt="Post image" class="w-full h-48 object-cover rounded-lg">`).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        <!-- Ações do post -->
+                        <div class="flex items-center gap-6 mt-4 pt-4 border-t border-white/10">
+                            <button onclick="toggleLike('${post.id}')" class="flex items-center gap-2 transition-colors ${post.userLiked ? 'text-blue-500' : 'text-gray-400 hover:text-blue-500'}" id="likeBtn-${post.id}">
+                                <span class="material-symbols-outlined !text-xl">${post.userLiked ? 'favorite' : 'favorite_border'}</span>
+                                <span class="text-sm" id="likeCount-${post.id}">${post.likesCount || 0}</span>
+                            </button>
+                            <button onclick="replyPostInPrivate('${post.id}', '${post.user.id}')" class="flex items-center gap-2 text-gray-400 hover:text-blue-500 transition-colors" title="Responder no privado">
+                                <span class="material-symbols-outlined !text-xl">mail</span>
+                                <span class="text-sm">Responder</span>
+                            </button>
+                            <button onclick="toggleRepost('${post.id}')" class="flex items-center gap-2 transition-colors ${post.userReposted ? 'text-green-500' : 'text-gray-400 hover:text-green-500'}" id="repostBtn-${post.id}">
+                                <span class="material-symbols-outlined !text-xl">repeat</span>
+                                <span class="text-sm" id="repostCount-${post.id}">${post.repostsCount || 0}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function openPostModal(type) {
+        AppState.selectedMovie = null;
+        selectedMovie = null; // Alias
+        const modal = document.getElementById('postModal');
+        const title = document.getElementById('postModalTitle');
+        const content = document.getElementById('postModalContent');
+        
+        title.textContent = type === 'normal' ? 'Novo Post' : 'Compartilhar Filme';
+        
+        if (type === 'normal') {
+            content.innerHTML = `
+                <textarea id="postContent" placeholder="O que está acontecendo?" class="w-full p-4 bg-[#335b7e] text-white rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-[#707d9b] resize-none" rows="6"></textarea>
+                <div class="mt-4">
+                    <label class="block text-gray-400 text-sm mb-2">Adicionar imagens/vídeos</label>
+                    <input type="file" id="postMedia" multiple accept="image/*,video/*" class="hidden">
+                    <button onclick="document.getElementById('postMedia').click()" class="px-4 py-2 bg-[#335b7e] text-white rounded-lg hover:bg-[#707d9b] transition-colors">
+                        <span class="material-symbols-outlined !text-xl mr-2">image</span>
+                        Adicionar mídia
+                    </button>
+                    <div id="mediaPreview" class="mt-4 grid grid-cols-2 gap-2"></div>
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button onclick="closePostModal()" class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">Cancelar</button>
+                    <button onclick="submitPost('normal')" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">Publicar</button>
+                </div>
+            `;
+        } else {
+            const posterUrl = AppState.selectedMovie?.posterPath 
+                ? (AppState.selectedMovie.posterPath.startsWith('http') 
+                    ? AppState.selectedMovie.posterPath 
+                    : `https://image.tmdb.org/t/p/w92${AppState.selectedMovie.posterPath}`)
+                : null;
+            
+            content.innerHTML = `
+                <div class="movie-card-container">
+                    ${AppState.selectedMovie ? `
+                        <div class="mb-4 p-3 bg-[#335b7e] rounded-lg flex gap-3 items-center border border-[#707d9b]/30 cursor-pointer hover:bg-[#707d9b] transition-colors" onclick="openMovieModal('${AppState.selectedMovie.tmdbId}', '${AppState.selectedMovie.type}')">
+                            ${posterUrl ? `<img src="${posterUrl}" alt="${AppState.selectedMovie.title}" class="w-16 h-24 object-cover rounded flex-shrink-0">` : ''}
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-white font-bold ${!posterUrl ? 'text-base' : 'text-sm'} mb-1 truncate">${AppState.selectedMovie.title}</h4>
+                                ${AppState.selectedMovie.overview ? `<p class="text-gray-400 text-xs line-clamp-2">${AppState.selectedMovie.overview}</p>` : ''}
+                            </div>
+                            <button onclick="event.stopPropagation(); AppState.selectedMovie = null; selectedMovie = null; updatePostModalContent();" class="text-gray-400 hover:text-white flex-shrink-0">
+                                <span class="material-symbols-outlined !text-xl">close</span>
+                            </button>
+                        </div>
+                    ` : `
+                        <button onclick="openMovieSearchModal();" class="w-full p-4 bg-[#335b7e] text-white rounded-lg hover:bg-[#707d9b] transition-colors mb-4">
+                            <span class="material-symbols-outlined !text-xl mr-2">movie</span>
+                            Selecionar Filme/Série
+                        </button>
+                    `}
+                </div>
+                <textarea id="postContent" placeholder="Compartilhe seus pensamentos sobre este título..." class="w-full p-4 bg-[#335b7e] text-white rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-[#707d9b] resize-none" rows="6"></textarea>
+                <div class="flex gap-3 mt-6">
+                    <button onclick="closePostModal()" class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">Cancelar</button>
+                    <button onclick="submitPost('movie')" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">Publicar</button>
+                </div>
+            `;
+        }
+        
+        modal.classList.remove('hidden');
+        
+        // Preview de mídia
+        if (type === 'normal') {
+            document.getElementById('postMedia').addEventListener('change', function(e) {
+                const preview = document.getElementById('mediaPreview');
+                preview.innerHTML = '';
+                
+                Array.from(e.target.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'relative';
+                        if (file.type.startsWith('image/')) {
+                            div.innerHTML = `<img src="${e.target.result}" class="w-full h-48 object-cover rounded-lg"><button onclick="this.parentElement.remove()" class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center">&times;</button>`;
+                        } else {
+                            div.innerHTML = `<video src="${e.target.result}" class="w-full h-48 object-cover rounded-lg" controls></video><button onclick="this.parentElement.remove()" class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center">&times;</button>`;
+                        }
+                        preview.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+    }
+
+    function openMovieSearchModal() {
+        document.getElementById('movieSearchModal').classList.remove('hidden');
+    }
+
+    function closeMovieSearchModal() {
+        document.getElementById('movieSearchModal').classList.add('hidden');
+    }
+
+    function openSelfMessageErrorModal() {
+        document.getElementById('selfMessageErrorModal').classList.remove('hidden');
+    }
+
+    function closeSelfMessageErrorModal() {
+        document.getElementById('selfMessageErrorModal').classList.add('hidden');
+    }
+
+    // Buscar filmes
+    let movieSearchTimeout;
+    document.getElementById('movieSearchInput')?.addEventListener('input', function(e) {
+        clearTimeout(movieSearchTimeout);
+        const query = e.target.value.trim();
+        
+        if (query.length < 2) {
+            document.getElementById('movieSearchResults').innerHTML = '';
+            return;
+        }
+        
+        movieSearchTimeout = setTimeout(() => {
+            searchMovies(query);
+        }, 300);
+    });
+
+    async function searchMovies(query) {
+        try {
+            const response = await fetch(`${API_URL}/api/tmdb/search?query=${encodeURIComponent(query)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                displayMovieResults(data.results || []);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar filmes:', error);
+        }
+    }
+
+    function displayMovieResults(movies) {
+        const container = document.getElementById('movieSearchResults');
+        
+        if (movies.length === 0) {
+            container.innerHTML = '<div class="text-center text-gray-400 py-4">Nenhum resultado encontrado</div>';
+            return;
+        }
+        
+        container.innerHTML = movies.slice(0, 10).map(movie => `
+            <div class="p-4 bg-[#335b7e] rounded-lg hover:bg-[#707d9b] cursor-pointer flex gap-4" onclick="selectMovie(${JSON.stringify(movie).replace(/"/g, '&quot;')})">
+                <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://via.placeholder.com/92x138'}" alt="${movie.title || movie.name}" class="w-16 h-24 object-cover rounded">
+                <div class="flex-1">
+                    <h4 class="text-white font-bold">${movie.title || movie.name}</h4>
+                    <p class="text-gray-400 text-sm">${movie.release_date || movie.first_air_date || ''}</p>
+                    <p class="text-gray-400 text-sm line-clamp-2">${movie.overview || ''}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function selectMovie(movie) {
+        AppState.selectedMovie = {
+            tmdbId: movie.id,
+            title: movie.title || movie.name,
+            overview: movie.overview,
+            posterPath: movie.poster_path,
+            type: movie.media_type || (movie.title ? 'movie' : 'tv')
+        };
+        selectedMovie = AppState.selectedMovie; // Alias
+        closeMovieSearchModal();
+        
+        // Atualizar o modal de post sem fechar
+        const content = document.getElementById('postModalContent');
+        const existingContent = document.getElementById('postContent')?.value || '';
+        
+        // Criar card miniatura do filme (clicável para abrir modal)
+        const posterUrl = AppState.selectedMovie.posterPath 
+            ? (AppState.selectedMovie.posterPath.startsWith('http') 
+                ? AppState.selectedMovie.posterPath 
+                : `https://image.tmdb.org/t/p/w92${AppState.selectedMovie.posterPath}`)
+            : null;
+        
+        const movieCard = `
+            <div class="mb-4 p-3 bg-[#335b7e] rounded-lg flex gap-3 items-center border border-[#707d9b]/30 cursor-pointer hover:bg-[#707d9b] transition-colors" onclick="openMovieModal('${AppState.selectedMovie.tmdbId}', '${AppState.selectedMovie.type}')">
+                ${posterUrl ? `<img src="${posterUrl}" alt="${AppState.selectedMovie.title}" class="w-16 h-24 object-cover rounded flex-shrink-0">` : ''}
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-white font-bold ${!posterUrl ? 'text-base' : 'text-sm'} mb-1 truncate">${AppState.selectedMovie.title}</h4>
+                    ${AppState.selectedMovie.overview ? `<p class="text-gray-400 text-xs line-clamp-2">${AppState.selectedMovie.overview}</p>` : ''}
+                </div>
+                <button onclick="event.stopPropagation(); AppState.selectedMovie = null; selectedMovie = null; updatePostModalContent();" class="text-gray-400 hover:text-white flex-shrink-0">
+                    <span class="material-symbols-outlined !text-xl">close</span>
+                </button>
+            </div>
+        `;
+        
+        // Atualizar apenas a parte do filme, mantendo o textarea
+        const movieCardContainer = content.querySelector('.movie-card-container');
+        if (movieCardContainer) {
+            movieCardContainer.innerHTML = movieCard;
+        } else {
+            // Se não existe, inserir antes do textarea
+            const textarea = content.querySelector('#postContent');
+            if (textarea) {
+                const container = document.createElement('div');
+                container.className = 'movie-card-container';
+                container.innerHTML = movieCard;
+                textarea.parentNode.insertBefore(container, textarea);
+            } else {
+                // Se não tem textarea, recriar tudo
+                content.innerHTML = `
+                    ${movieCard}
+                    <textarea id="postContent" placeholder="Compartilhe seus pensamentos sobre este título..." class="w-full p-4 bg-[#335b7e] text-white rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-[#707d9b] resize-none" rows="6">${existingContent}</textarea>
+                    <div class="flex gap-3 mt-6">
+                        <button onclick="closePostModal()" class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">Cancelar</button>
+                        <button onclick="submitPost('movie')" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">Publicar</button>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    function updatePostModalContent() {
+        const content = document.getElementById('postModalContent');
+        if (!content) return;
+        
+        const existingContent = document.getElementById('postContent')?.value || '';
+        const movieCardContainer = content.querySelector('.movie-card-container');
+        
+        if (movieCardContainer) {
+            if (AppState.selectedMovie) {
+                // Atualizar com o filme selecionado
+                const posterUrl = AppState.selectedMovie.posterPath 
+                    ? (AppState.selectedMovie.posterPath.startsWith('http') 
+                        ? AppState.selectedMovie.posterPath 
+                        : `https://image.tmdb.org/t/p/w92${AppState.selectedMovie.posterPath}`)
+                    : null;
+                
+                movieCardContainer.innerHTML = `
+                    <div class="mb-4 p-3 bg-[#335b7e] rounded-lg flex gap-3 items-center border border-[#707d9b]/30 cursor-pointer hover:bg-[#707d9b] transition-colors" onclick="openMovieModal('${AppState.selectedMovie.tmdbId}', '${AppState.selectedMovie.type}')">
+                        ${posterUrl ? `<img src="${posterUrl}" alt="${AppState.selectedMovie.title}" class="w-16 h-24 object-cover rounded flex-shrink-0">` : ''}
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-white font-bold ${!posterUrl ? 'text-base' : 'text-sm'} mb-1 truncate">${AppState.selectedMovie.title}</h4>
+                            ${AppState.selectedMovie.overview ? `<p class="text-gray-400 text-xs line-clamp-2">${AppState.selectedMovie.overview}</p>` : ''}
+                        </div>
+                        <button onclick="event.stopPropagation(); AppState.selectedMovie = null; selectedMovie = null; updatePostModalContent();" class="text-gray-400 hover:text-white flex-shrink-0">
+                            <span class="material-symbols-outlined !text-xl">close</span>
+                        </button>
+                    </div>
+                `;
+            } else {
+                // Remover o card e mostrar botão de selecionar
+                movieCardContainer.innerHTML = `
+                    <button onclick="openMovieSearchModal();" class="w-full p-4 bg-[#335b7e] text-white rounded-lg hover:bg-[#707d9b] transition-colors mb-4">
+                        <span class="material-symbols-outlined !text-xl mr-2">movie</span>
+                        Selecionar Filme/Série
+                    </button>
+                `;
+            }
+        }
+    }
+
+    function closePostModal() {
+        document.getElementById('postModal').classList.add('hidden');
+        fabActive = false;
+        document.getElementById('fabMain').classList.remove('active');
+        document.querySelectorAll('.fab-option').forEach(opt => opt.classList.remove('active'));
+    }
+
+    async function submitPost(type) {
+        const content = document.getElementById('postContent').value.trim();
+        
+        if (!content) {
+            alert('Por favor, escreva algo no post');
+            return;
+        }
+        
+        if (type === 'movie' && !AppState.selectedMovie) {
+            alert('Por favor, selecione um filme/série');
+            return;
+        }
+        
+        try {
+            const formData = {
+                content,
+                type: type === 'movie' ? 'movie' : 'normal'
+            };
+            
+            if (type === 'movie' && AppState.selectedMovie) {
+                formData.titleId = AppState.selectedMovie.tmdbId;
+                formData.titleType = AppState.selectedMovie.type;
+            }
+            
+            // Adicionar mídia se houver
+            if (type === 'normal') {
+                const mediaInput = document.getElementById('postMedia');
+                if (mediaInput.files.length > 0) {
+                    const images = [];
+                    const videos = [];
+                    
+                    for (let file of mediaInput.files) {
+                        const reader = new FileReader();
+                        await new Promise((resolve) => {
+                            reader.onload = (e) => {
+                                if (file.type.startsWith('image/')) {
+                                    images.push(e.target.result);
+                                } else {
+                                    videos.push(e.target.result);
+                                }
+                                resolve();
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+                    
+                    formData.images = images;
+                    formData.videos = videos;
+                }
+            }
+            
+            const response = await fetch(`${API_URL}/api/social/posts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            if (response.ok) {
+                closePostModal();
+                loadPosts();
+            } else {
+                const error = await response.json();
+                alert('Erro ao publicar: ' + (error.error || 'Erro desconhecido'));
+            }
+        } catch (error) {
+            console.error('Erro ao publicar post:', error);
+            alert('Erro ao publicar post');
+        }
+    }
+
+    // Carregar perfil do usuário
+    async function loadUserProfile() {
+        try {
+            const response = await fetch(`${API_URL}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const userData = await response.json();
+                const profileButton = document.getElementById('profileButton');
+                
+                if (profileButton) {
+                    if (userData.profilePicture) {
+                        profileButton.innerHTML = `<img src="${userData.profilePicture}" alt="Perfil" class="w-full h-full object-cover rounded-full" onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined text-[20px]\\'>person</span>'">`;
+                    } else if (userData.name) {
+                        const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                        profileButton.innerHTML = `<span class="text-sm font-bold">${initials}</span>`;
+                    }
+                }
+                
+                // Verificar se é admin
+                try {
+                    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                    const dashboardBtn = document.getElementById('dashboardBtn');
+                    if ((tokenPayload.isAdmin || tokenPayload.isAdminMaster) && dashboardBtn) {
+                        dashboardBtn.classList.remove('hidden');
+                    }
+                } catch (e) {
+                    console.error('Erro ao decodificar token:', e);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar perfil:', error);
+        }
+    }
+    
+
+    // Toggle Like
+    async function toggleLike(postId) {
+        try {
+            const response = await fetch(`${API_URL}/api/social/posts/${postId}/like`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const likeBtn = document.getElementById(`likeBtn-${postId}`);
+                const likeCount = document.getElementById(`likeCount-${postId}`);
+                const icon = likeBtn.querySelector('.material-symbols-outlined');
+                
+                if (data.liked) {
+                    likeBtn.classList.remove('text-gray-400', 'hover:text-blue-500');
+                    likeBtn.classList.add('text-blue-500');
+                    icon.textContent = 'favorite';
+                    likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                } else {
+                    likeBtn.classList.remove('text-blue-500');
+                    likeBtn.classList.add('text-gray-400', 'hover:text-blue-500');
+                    icon.textContent = 'favorite_border';
+                    likeCount.textContent = Math.max(0, parseInt(likeCount.textContent) - 1);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao dar like:', error);
+        }
+    }
+
+    // Deletar Post
+    async function deletePost(postId) {
+        if (!confirm('Tem certeza que deseja deletar este post? Esta ação não pode ser desfeita.')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/api/social/posts/${postId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                // Remover o post do DOM
+                const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+                if (postElement) {
+                    postElement.remove();
+                }
+                // Recarregar posts para atualizar contagem
+                loadPosts();
+            } else {
+                const error = await response.json();
+                alert('Erro ao deletar post: ' + (error.error || 'Erro desconhecido'));
+            }
+        } catch (error) {
+            console.error('Erro ao deletar post:', error);
+            alert('Erro ao deletar post');
+        }
+    }
+
+    // Toggle Repost
+    async function toggleRepost(postId) {
+        try {
+            const response = await fetch(`${API_URL}/api/social/posts/${postId}/repost`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const repostBtn = document.getElementById(`repostBtn-${postId}`);
+                const repostCount = document.getElementById(`repostCount-${postId}`);
+                
+                if (data.reposted) {
+                    repostBtn.classList.remove('text-gray-400', 'hover:text-green-500');
+                    repostBtn.classList.add('text-green-500');
+                    repostCount.textContent = parseInt(repostCount.textContent) + 1;
+                } else {
+                    repostBtn.classList.remove('text-green-500');
+                    repostBtn.classList.add('text-gray-400', 'hover:text-green-500');
+                    repostCount.textContent = Math.max(0, parseInt(repostCount.textContent) - 1);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao repostar:', error);
+        }
+    }
+
+    // Toggle seção de comentários
+    // ============================================
+    // FUNÇÕES DE POSTS
+    // ============================================
+    async function replyPostInPrivate(postId, userId) {
+        try {
+            const response = await fetch(`${API_URL}/api/social/posts`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const posts = data.posts || [];
+                const post = posts.find(p => p.id === postId);
+                
+                if (post) {
+                    AppState.chatAttachedPost = post;
+                    chatAttachedPost = post; // Alias
+                    openChat(userId);
+                    displayAttachedPostPreview();
+                } else {
+                    openChat(userId);
+                }
+            } else {
+                openChat(userId);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar post:', error);
+            openChat(userId);
+        }
+    }
+    
+    function displayAttachedPostPreview() {
+        if (!AppState.chatAttachedPost) return;
+        
+        const preview = document.getElementById('chatMediaPreview');
+        const post = AppState.chatAttachedPost;
+        
+        let postContent = '';
+                if (post.title) {
+                    // Post com filme/série
+                    const posterUrl = post.title.posterPath 
+                        ? (post.title.posterPath.startsWith('http') 
+                            ? post.title.posterPath 
+                            : `https://image.tmdb.org/t/p/w300${post.title.posterPath}`)
+                        : '';
+                    postContent = `
+                        <div class="bg-[#072f57] rounded-lg p-3 border border-[#707d9b]/30 flex gap-3 cursor-pointer hover:bg-[#335b7e] transition-colors" onclick="openMovieModal('${post.title.tmdbId}', '${post.title.type}')">
+                            ${posterUrl ? `<img src="${posterUrl}" alt="${post.title.title}" class="w-16 h-24 object-cover rounded flex-shrink-0">` : ''}
+                            <div class="flex-1 min-w-0">
+                                <p class="text-white font-bold ${!posterUrl ? 'text-base' : 'text-sm'}">${post.title.title}</p>
+                                <p class="text-gray-400 text-xs mt-1">${post.title.type === 'movie' ? 'Filme' : 'Série'}</p>
+                            </div>
+                            <button onclick="event.stopPropagation(); removeAttachedPost();" class="text-gray-400 hover:text-white flex-shrink-0">
+                                <span class="material-symbols-outlined !text-lg">close</span>
+                            </button>
+                        </div>
+                    `;
+                } else {
+            // Post normal
+            const contentPreview = post.content ? (post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content) : 'Post sem texto';
+            const imagePreview = post.images && post.images.length > 0 
+                ? `<img src="${post.images[0]}" alt="Post image" class="w-16 h-16 object-cover rounded">` 
+                : '';
+            
+            postContent = `
+                <div class="bg-[#072f57] rounded-lg p-3 border border-[#707d9b]/30 flex gap-3">
+                    ${imagePreview}
+                    <div class="flex-1">
+                        <p class="text-white text-sm">${contentPreview}</p>
+                        <p class="text-gray-400 text-xs mt-1">Post de @${post.user.email.split('@')[0]}</p>
+                    </div>
+                    <button onclick="removeAttachedPost()" class="text-gray-400 hover:text-white">
+                        <span class="material-symbols-outlined !text-lg">close</span>
+                    </button>
+                </div>
+            `;
+        }
+        
+        preview.innerHTML = postContent;
+    }
+    
+    function removeAttachedPost() {
+        AppState.chatAttachedPost = null;
+        chatAttachedPost = null; // Alias
+        document.getElementById('chatMediaPreview').innerHTML = '';
+    }
+
+    // ============================================
+    // FUNÇÕES DE NOTIFICAÇÕES
+    // ============================================
+    async function checkUnreadMessages() {
+        try {
+            const response = await fetch(`${API_URL}/api/social/conversations`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const unreadCount = data.conversations.filter(c => c.unread).length;
+                
+                if (unreadCount !== AppState.unreadMessagesCount) {
+                    AppState.unreadMessagesCount = unreadCount;
+                    unreadMessagesCount = unreadCount; // Alias
+                    updateNotificationBadge();
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao verificar mensagens:', error);
+        }
+    }
+
+    function updateNotificationBadge() {
+        const notificationBtn = document.getElementById('notificationBtn');
+        const count = AppState.unreadMessagesCount;
+        
+        if (notificationBtn && count > 0) {
+            if (!notificationBtn.querySelector('.notification-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'notification-badge absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center';
+                badge.textContent = count > 9 ? '9+' : count;
+                notificationBtn.style.position = 'relative';
+                notificationBtn.appendChild(badge);
+            } else {
+                const badge = notificationBtn.querySelector('.notification-badge');
+                badge.textContent = count > 9 ? '9+' : count;
+            }
+        } else if (notificationBtn) {
+            const badge = notificationBtn.querySelector('.notification-badge');
+            if (badge) badge.remove();
+        }
+    }
+
+    // ============================================
+    // FUNÇÕES DE NOTIFICAÇÕES (DROPDOWN)
+    // ============================================
+    // Notificações agora são gerenciadas pelo NotificationSystem global (js/notifications.js)
+    function openMovieModal(tmdbId, type) {
+        window.location.href = `categoria.html?tmdbId=${tmdbId}&type=${type}`;
+    }
+    
+    // Sobrescrever a função de exibição de notificações para incluir link para chat
+    if (window.NotificationSystem) {
+        const originalDisplay = NotificationSystem.displayNotifications;
+        NotificationSystem.displayNotifications = function(notifications) {
+            const container = document.getElementById('notificationsList');
+            if (!container) return;
+            
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 flex flex-col items-center justify-center">
+                        <div class="w-16 h-16 rounded-full bg-[#335b7e]/20 flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-[#707d9b] !text-4xl">notifications_none</span>
+                        </div>
+                        <p class="text-white font-medium text-base mb-1">Ainda não há notificações</p>
+                        <p class="text-gray-400 text-sm text-center">Quando você receber mensagens ou outras atualizações, elas aparecerão aqui</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = notifications.map(conv => {
+                const otherUser = conv.otherUser || conv.user;
+                const avatar = createAvatarElement(otherUser, 'w-10 h-10');
+                let lastMsg = 'Nova mensagem';
+                if (conv.lastMessage) {
+                    if (typeof conv.lastMessage === 'string') {
+                        lastMsg = conv.lastMessage || 'Mídia';
+                    } else {
+                        lastMsg = conv.lastMessage.content || (conv.lastMessage.hasMedia ? 'Mídia' : 'Nova mensagem');
+                    }
+                }
+                
+                // Escapar HTML para evitar problemas
+                const safeName = (otherUser.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeMsg = lastMsg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                
+                return `
+                    <div class="notification-item p-3 hover:bg-[#335b7e] cursor-pointer rounded-lg border-b border-white/5" style="width: 100%; box-sizing: border-box; overflow: hidden;" onclick="openChat('${otherUser.id}')">
+                        <div class="flex items-start gap-3" style="width: 100%; box-sizing: border-box;">
+                            <div style="flex-shrink: 0; width: 40px;">${avatar}</div>
+                            <div style="flex: 1; min-width: 0; max-width: calc(100% - 60px); overflow: hidden; box-sizing: border-box;">
+                                <p class="text-white font-medium text-sm" style="word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%; overflow: hidden; white-space: normal; margin: 0;">${safeName}</p>
+                                <p class="text-gray-400 text-xs mt-1" style="word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%; overflow: hidden; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; margin: 0; line-height: 1.4;">${safeMsg}</p>
+                            </div>
+                            <span class="w-2 h-2 bg-blue-500 rounded-full" style="flex-shrink: 0; width: 8px; height: 8px; margin-top: 4px;"></span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+    }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPosts();
+        loadUserProfile();
+        loadConversations(); // Carregar conversas no sidebar
+        checkUnreadMessages();
+        
+        // Verificar mensagens a cada 30 segundos
+        setInterval(checkUnreadMessages, 30000);
+        setInterval(loadConversations, 10000); // Atualizar conversas a cada 10 segundos
+        // Notificações agora são gerenciadas pelo NotificationSystem global
+        
+        // Verificar se há parâmetro de chat na URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatUserId = urlParams.get('chat');
+        if (chatUserId) {
+            openChat(chatUserId);
+        }
+    });
+    
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(() => {
+                console.log('Service Worker não disponível');
+            });
+        });
+    }
+</script>
+    <script src="js/notifications.js"></script>
+</body>
+</html>
+

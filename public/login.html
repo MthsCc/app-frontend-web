@@ -2,10 +2,19 @@
 <html class="dark" lang="pt-BR">
 <head>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <meta name="theme-color" content="#335b7e"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="EchoView"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="description" content="EchoView - Plataforma de gerenciamento de filmes e séries"/>
+    <link rel="manifest" href="manifest.json"/>
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23335b7e' width='100' height='100'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23e2e0df'%3EEV%3C/text%3E%3C/svg%3E"/>
+    <link rel="stylesheet" href="css/mobile.css"/>
+    <title>Login - EchoView</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
@@ -13,15 +22,19 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#38BDF8",
-                        "background-light": "#f6f6f8",
-                        "background-dark": "#111827",
-                        "text-light": "#E2E8F0",
-                        "text-subtle": "#94A3B8",
-                        "surface-dark": "#1F2937",
+                        "primary": "#335b7e",
+                        "secondary": "#707d9b",
+                        "tertiary": "#a7aabd",
+                        "accent": "#e2e0df",
+                        "background-light": "#e2e0df",
+                        "background-dark": "#051422",
+                        "surface": "#072f57",
+                        "surface-hover": "#335b7e",
+                        "text-light": "#e2e0df",
+                        "text-subtle": "#a7aabd",
                     },
                     fontFamily: {
-                        "display": ["Spline Sans", "sans-serif"]
+                        "display": ["Inter", "sans-serif"]
                     },
                     borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
                 },
@@ -30,7 +43,7 @@
     </script>
     <style>
         body {
-            font-family: 'Spline Sans', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -97,6 +110,187 @@
         .modal-blop {
             animation: modalBlop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
+
+        /* Tela de Loading */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #072f57 0%, #051422 50%, #000000 100%);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .loading-screen.hidden {
+            display: none;
+        }
+
+        .app-title {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            color: #a7aabd;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(56, 189, 248, 0.5);
+            margin: 0;
+            padding: 0 20px;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .app-title {
+                font-size: clamp(2rem, 10vw, 3rem);
+                padding: 0 15px;
+            }
+        }
+
+        .app-title.animate-in {
+            animation: tracking-in-expand 2.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+        }
+
+        .app-title.animate-out {
+            animation: tracking-out-contract 1.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+        }
+
+        @keyframes tracking-in-expand {
+            0% {
+                letter-spacing: -0.5em;
+                opacity: 0;
+            }
+            30% {
+                opacity: 0.4;
+            }
+            60% {
+                opacity: 0.8;
+            }
+            100% {
+                letter-spacing: 0.1em;
+                opacity: 1;
+            }
+        }
+
+        @keyframes tracking-out-contract {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                letter-spacing: -0.5em;
+                opacity: 0;
+            }
+        }
+
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .loader.visible {
+            opacity: 1;
+        }
+
+        .loader .circle {
+            position: relative;
+            width: 50px;
+            height: 50px;
+        }
+
+        .loader .dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background-color: #707d9b;
+            border-radius: 50%;
+            animation: dot-pulse 1.4s infinite ease-in-out;
+        }
+
+        .loader .circle:nth-child(1) .dot {
+            animation-delay: 0s;
+        }
+
+        .loader .circle:nth-child(2) .dot {
+            animation-delay: 0.2s;
+        }
+
+        .loader .circle:nth-child(3) .dot {
+            animation-delay: 0.4s;
+        }
+
+        .loader .circle:nth-child(4) .dot {
+            animation-delay: 0.6s;
+        }
+
+        .loader .outline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #707d9b;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: outline-pulse 1.4s infinite ease-in-out;
+        }
+
+        .loader .circle:nth-child(1) .outline {
+            animation-delay: 0s;
+        }
+
+        .loader .circle:nth-child(2) .outline {
+            animation-delay: 0.2s;
+        }
+
+        .loader .circle:nth-child(3) .outline {
+            animation-delay: 0.4s;
+        }
+
+        .loader .circle:nth-child(4) .outline {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes dot-pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes outline-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.6;
+            }
+        }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display">
@@ -104,7 +298,6 @@
     <div class="absolute inset-0 z-0 h-full w-full bg-cover bg-center bg-no-repeat opacity-10" data-alt="Abstract cinematic background pattern" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuByOnjxKYgJYU41wabx0E81IyEWIM0axhPRz15c1lJJuc7OydLi8x9NKIRCSCPB2m1spOVZ-AtQA2_uxrRg3XIh5wB9_qhcJzNfuTyyx0nUIC8qBR7Vit2vsZwt6stPTz1d1n8Y7xqLD4jo5C3L0pODhsWeEpA9aS64_oNyoRqnmBf973pzBMyJkJXTCcySE5eor0oxCFi4bxf_P09SaH4GN5Xz6A90wwZvWGD2-f_CcEt5-0CnVOW9L44qwBG5TtEQNHy6-tTZBWZ9');"></div>
     <div class="relative z-10 flex w-full max-w-md flex-col items-center justify-center space-y-6 min-h-screen sm:min-h-auto py-4 sm:py-0">
         <div class="flex items-center justify-center gap-3 pb-4">
-            <span class="material-symbols-outlined text-primary text-5xl">movie</span>
         </div>
         <div class="w-full text-center">
             <h1 class="text-text-light tracking-tight text-[28px] sm:text-[32px] font-bold leading-tight">Bem-vindo de volta!</h1>
@@ -172,7 +365,7 @@
 </div>
 
 <script>
-    const API_URL = 'https://app-backend-api-h67c.onrender.com';
+    const API_URL = 'http://localhost:3000';
 
     // Toggle de visibilidade de senha
     document.querySelectorAll('.toggle-password').forEach(btn => {
@@ -229,6 +422,52 @@
         setTimeout(() => blop.remove(), 600);
     }
 
+    function showLoadingScreen() {
+        // Remover loading screen anterior se existir
+        const existingLoading = document.getElementById('loadingScreen');
+        if (existingLoading) {
+            existingLoading.remove();
+        }
+
+        // Prevenir scroll no body quando loading está ativo
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+
+        const loadingScreen = document.createElement('div');
+        loadingScreen.className = 'loading-screen';
+        loadingScreen.id = 'loadingScreen';
+        loadingScreen.innerHTML = `
+            <h1 class="app-title animate-in">ECHOVIEW</h1>
+            <div class="loader">
+                <div class="circle">
+                    <div class="dot"></div>
+                    <div class="outline"></div>
+                </div>
+                <div class="circle">
+                    <div class="dot"></div>
+                    <div class="outline"></div>
+                </div>
+                <div class="circle">
+                    <div class="dot"></div>
+                    <div class="outline"></div>
+                </div>
+                <div class="circle">
+                    <div class="dot"></div>
+                    <div class="outline"></div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(loadingScreen);
+
+        // Mostrar loader após animação de entrada (aguardar mais tempo)
+        setTimeout(() => {
+            const loader = loadingScreen.querySelector('.loader');
+            if (loader) {
+                loader.classList.add('visible');
+            }
+        }, 2500);
+    }
+
     // Tratamento do Formulário de Login
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -257,8 +496,10 @@
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('userEmail', email);
                 showMessage('Login realizado com sucesso! Redirecionando...', 'success');
+                // Mostrar tela de loading antes de redirecionar
+                showLoadingScreen();
                 setTimeout(() => {
-                    window.location.href = 'dashboard.html';
+                    window.location.href = 'catalogo.html';
                 }, 1000);
             } else {
                 // Erro: Mostrar a mensagem de erro da API
@@ -273,9 +514,15 @@
         }
     });
 
-    // Modal de Recuperação de Senha (Código de Backup)
+    // Modal de Recuperação de Senha (Fluxo em 3 etapas)
+    let recoverStep = 1; // 1: email/nome, 2: código backup, 3: nova senha
+    let recoverUserIdentifier = ''; // Armazena email ou nome de usuário
+
     function openForgotPasswordModal(e) {
         e.preventDefault();
+        recoverStep = 1;
+        recoverUserIdentifier = '';
+        
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
         modal.id = 'recoverPasswordModal';
@@ -285,24 +532,23 @@
                     <span class="material-symbols-outlined">close</span>
                 </button>
                 <div class="w-full text-center">
-                    <h2 class="text-text-light text-2xl font-bold leading-tight">Redefinir Senha</h2>
-                    <p class="text-text-subtle text-base font-normal leading-normal pt-1">Use seu Código de Backup para redefinir a senha</p>
+                    <h2 class="text-text-light text-2xl font-bold leading-tight">Recuperar Senha</h2>
+                    <p class="text-text-subtle text-base font-normal leading-normal pt-1">Passo 1 de 3: Identifique sua conta</p>
                 </div>
                 <form id="recoverPasswordForm" class="w-full space-y-4">
                     <div id="recoverMessage" class="text-sm p-3 rounded text-center hidden"></div>
                     <label class="flex w-full flex-col">
-                        <p class="text-text-light text-base font-medium leading-normal pb-2">E-mail</p>
+                        <p class="text-text-light text-base font-medium leading-normal pb-2">E-mail ou Nome de Usuário</p>
                         <div class="relative flex w-full items-center">
-                            <span class="material-symbols-outlined absolute left-4 text-text-subtle">mail</span>
-                            <input type="email" id="recoverEmail" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface-dark h-14 placeholder:text-text-subtle p-4 pl-12 text-base font-normal leading-normal" placeholder="seuemail@exemplo.com" required/>
+                            <span class="material-symbols-outlined absolute left-4 text-text-subtle">person</span>
+                            <input type="text" id="recoverIdentifier" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface-dark h-14 placeholder:text-text-subtle p-4 pl-12 text-base font-normal leading-normal" placeholder="seuemail@exemplo.com ou nome de usuário" required/>
                         </div>
                     </label>
-                    <button type="submit" class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-base font-bold text-white transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background-dark active:scale-95" onclick="createBlop(event)">Redefinir Senha</button>
+                    <button type="submit" class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-base font-bold text-white transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background-dark active:scale-95" onclick="createBlop(event)">Continuar</button>
                 </form>
             </div>
         `;
         document.body.appendChild(modal);
-        // Adicionar animação de blop ao modal
         const modalContent1 = modal.querySelector('.relative');
         modalContent1.classList.add('modal-blop');
         modal.addEventListener('click', (e) => {
@@ -311,101 +557,155 @@
         
         document.getElementById('recoverPasswordForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('recoverEmail').value.trim();
-            const backupCode = document.getElementById('backupCode').value.trim();
-            const newPassword = document.getElementById('recoverNewPassword').value;
+            const identifier = document.getElementById('recoverIdentifier').value.trim();
             const btn = e.target.querySelector('button[type="submit"]');
             const messageEl = document.getElementById('recoverMessage');
             
-            if (!email || !backupCode || !newPassword) {
-                messageEl.textContent = 'Preencha todos os campos';
+            if (!identifier) {
+                messageEl.textContent = 'Preencha o campo';
                 messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
                 messageEl.classList.remove('hidden');
                 return;
             }
             
             btn.disabled = true;
-            btn.textContent = 'Redefinindo...';
+            btn.textContent = 'Verificando...';
             
             try {
-                const response = await fetch(`${API_URL}/recover-password`, {
+                // Verificar se o usuário existe (email ou nome)
+                const response = await fetch(`${API_URL}/verify-user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, backupCode, newPassword })
+                    body: JSON.stringify({ identifier })
                 });
                 
                 const data = await response.json();
                 
                 if (!response.ok) {
-                    messageEl.textContent = data.error || 'Erro ao redefinir senha';
+                    messageEl.textContent = data.error || 'Usuário não encontrado';
                     messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
                     messageEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.textContent = 'Continuar';
                     return;
                 }
                 
-                messageEl.textContent = 'Senha redefinida com sucesso!';
-                messageEl.className = 'text-sm p-3 rounded text-center bg-green-900 text-green-200';
-                messageEl.classList.remove('hidden');
-                
-                setTimeout(() => {
-                    modal.remove();
-                    window.location.href = 'login.html';
-                }, 1500);
+                // Usuário encontrado, ir para passo 2 (código de backup)
+                recoverUserIdentifier = identifier;
+                recoverStep = 2;
+                showRecoverStep2(modal);
                 
             } catch (error) {
                 messageEl.textContent = 'Erro ao conectar com o servidor';
                 messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
                 messageEl.classList.remove('hidden');
-            } finally {
                 btn.disabled = false;
-                btn.textContent = 'Redefinir Senha';
+                btn.textContent = 'Continuar';
             }
         });
     }
-    
-    // Função antiga removida: openResetPasswordModal(email)
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
-        modal.id = 'resetPasswordModal';
-        modal.innerHTML = `
-            <div class="relative z-10 flex w-full max-w-md flex-col items-center justify-center space-y-6 rounded-xl bg-surface-dark p-8">
-                <button onclick="document.getElementById('resetPasswordModal').remove()" class="absolute right-4 top-4 text-text-subtle hover:text-text-light">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-                <div class="w-full text-center">
-                    <h2 class="text-text-light text-2xl font-bold leading-tight">Trocar Senha</h2>
-                    <p class="text-text-subtle text-base font-normal leading-normal pt-1">Digite o código e sua nova senha</p>
-                </div>
-                <form id="resetPasswordForm" class="w-full space-y-4">
-                    <div id="resetMessage" class="text-sm p-3 rounded text-center hidden"></div>
-                    <label class="flex w-full flex-col">
-                        <p class="text-text-light text-base font-medium leading-normal pb-2">Código</p>
-                        <div class="relative flex w-full items-center">
-                            <span class="material-symbols-outlined absolute left-4 text-text-subtle">vpn_key</span>
-                            <input type="text" id="resetCode" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface-dark h-14 placeholder:text-text-subtle p-4 pl-12 text-base font-normal leading-normal" placeholder="Código de 6 dígitos" required/>
-                        </div>
-                    </label>
-                    <label class="flex w-full flex-col">
-                        <p class="text-text-light text-base font-medium leading-normal pb-2">Nova Senha</p>
-                        <div class="relative flex w-full items-center">
-                            <span class="material-symbols-outlined absolute left-4 text-text-subtle">lock</span>
-                            <input type="password" id="newPassword" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface-dark h-14 placeholder:text-text-subtle p-4 pl-12 pr-12 text-base font-normal leading-normal" placeholder="Sua nova senha" required/>
-                            <button type="button" aria-label="Toggle password visibility" class="absolute right-4 text-text-subtle toggle-password" data-target="newPassword">
-                                <span class="material-symbols-outlined">visibility</span>
-                            </button>
-                        </div>
-                    </label>
-                    <button type="submit" class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-base font-bold text-white transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background-dark active:scale-95" onclick="createBlop(event)">Trocar Senha</button>
-                </form>
+
+    function showRecoverStep2(modal) {
+        const formContainer = modal.querySelector('form').parentElement;
+        formContainer.innerHTML = `
+            <div class="w-full text-center">
+                <h2 class="text-text-light text-2xl font-bold leading-tight">Recuperar Senha</h2>
+                <p class="text-text-subtle text-base font-normal leading-normal pt-1">Passo 2 de 3: Digite seu Código de Backup</p>
             </div>
+            <form id="recoverPasswordFormStep2" class="w-full space-y-4">
+                <div id="recoverMessage" class="text-sm p-3 rounded text-center hidden"></div>
+                <label class="flex w-full flex-col">
+                    <p class="text-text-light text-base font-medium leading-normal pb-2">Código de Backup</p>
+                    <div class="relative flex w-full items-center">
+                        <span class="material-symbols-outlined absolute left-4 text-text-subtle">vpn_key</span>
+                        <input type="text" id="backupCode" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface-dark h-14 placeholder:text-text-subtle p-4 pl-12 text-base font-normal leading-normal uppercase" placeholder="Digite seu código de backup" required/>
+                    </div>
+                </label>
+                <button type="submit" class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-base font-bold text-white transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background-dark active:scale-95" onclick="createBlop(event)">Verificar Código</button>
+            </form>
         `;
-        document.body.appendChild(modal);
-        // Adicionar animação de blop ao modal
-        const modalContent2 = modal.querySelector('.relative');
-        modalContent2.classList.add('modal-blop');
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.remove();
+        
+        document.getElementById('recoverPasswordFormStep2').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const backupCode = document.getElementById('backupCode').value.trim().toUpperCase();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const messageEl = document.getElementById('recoverMessage');
+            
+            if (!backupCode) {
+                messageEl.textContent = 'Digite o código de backup';
+                messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
+                messageEl.classList.remove('hidden');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Verificando...';
+            
+            try {
+                // Verificar código de backup
+                const response = await fetch(`${API_URL}/verify-backup-code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identifier: recoverUserIdentifier, backupCode })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    messageEl.textContent = data.error || 'Código de backup incorreto';
+                    messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
+                    messageEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.textContent = 'Verificar Código';
+                    return;
+                }
+                
+                // Código válido, ir para passo 3 (nova senha)
+                recoverStep = 3;
+                showRecoverStep3(modal);
+                
+            } catch (error) {
+                messageEl.textContent = 'Erro ao conectar com o servidor';
+                messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
+                messageEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Verificar Código';
+            }
         });
+    }
+
+    function showRecoverStep3(modal) {
+        const formContainer = modal.querySelector('form').parentElement;
+        formContainer.innerHTML = `
+            <div class="w-full text-center">
+                <h2 class="text-text-light text-2xl font-bold leading-tight">Recuperar Senha</h2>
+                <p class="text-text-subtle text-base font-normal leading-normal pt-1">Passo 3 de 3: Defina sua nova senha</p>
+            </div>
+            <form id="recoverPasswordFormStep3" class="w-full space-y-4">
+                <div id="recoverMessage" class="text-sm p-3 rounded text-center hidden"></div>
+                <label class="flex w-full flex-col">
+                    <p class="text-text-light text-base font-medium leading-normal pb-2">Nova Senha</p>
+                    <div class="relative flex w-full items-center">
+                        <span class="material-symbols-outlined absolute left-4 text-text-subtle">lock</span>
+                        <input type="password" id="recoverNewPassword" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface-dark h-14 placeholder:text-text-subtle p-4 pl-12 pr-12 text-base font-normal leading-normal" placeholder="Digite sua nova senha" required/>
+                        <button type="button" aria-label="Toggle password visibility" class="absolute right-4 text-text-subtle toggle-password" data-target="recoverNewPassword">
+                            <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
+                </label>
+                <label class="flex w-full flex-col">
+                    <p class="text-text-light text-base font-medium leading-normal pb-2">Confirmar Nova Senha</p>
+                    <div class="relative flex w-full items-center">
+                        <span class="material-symbols-outlined absolute left-4 text-text-subtle">lock</span>
+                        <input type="password" id="recoverConfirmPassword" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-surface-dark h-14 placeholder:text-text-subtle p-4 pl-12 pr-12 text-base font-normal leading-normal" placeholder="Confirme sua nova senha" required/>
+                        <button type="button" aria-label="Toggle password visibility" class="absolute right-4 text-text-subtle toggle-password" data-target="recoverConfirmPassword">
+                            <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
+                </label>
+                <button type="submit" class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-base font-bold text-white transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background-dark active:scale-95" onclick="createBlop(event)">Redefinir Senha</button>
+            </form>
+        `;
         
         // Re-adicionar toggle de visibilidade
         modal.querySelectorAll('.toggle-password').forEach(btn => {
@@ -424,40 +724,56 @@
             });
         });
         
-       document.getElementById('recoverPasswordForm').addEventListener('submit', async (e) => {
+        document.getElementById('recoverPasswordFormStep3').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const code = document.getElementById('resetCode').value.trim();
-            const newPassword = document.getElementById('newPassword').value;
+            const newPassword = document.getElementById('recoverNewPassword').value;
+            const confirmPassword = document.getElementById('recoverConfirmPassword').value;
             const btn = e.target.querySelector('button[type="submit"]');
-            const messageEl = document.getElementById('resetMessage');
+            const messageEl = document.getElementById('recoverMessage');
             
-            if (!code || !newPassword) {
+            if (!newPassword || !confirmPassword) {
                 messageEl.textContent = 'Preencha todos os campos';
                 messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
                 messageEl.classList.remove('hidden');
                 return;
             }
             
+            if (newPassword.length < 6) {
+                messageEl.textContent = 'A senha deve ter no mínimo 6 caracteres';
+                messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
+                messageEl.classList.remove('hidden');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                messageEl.textContent = 'As senhas não coincidem';
+                messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
+                messageEl.classList.remove('hidden');
+                return;
+            }
+            
             btn.disabled = true;
-            btn.textContent = 'Alterando...';
+            btn.textContent = 'Redefinindo...';
             
             try {
-                const response = await fetch(`${API_URL}/reset-password`, {
+                const response = await fetch(`${API_URL}/recover-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, code, newPassword })
+                    body: JSON.stringify({ identifier: recoverUserIdentifier, newPassword })
                 });
                 
                 const data = await response.json();
                 
                 if (!response.ok) {
-                    messageEl.textContent = data.error || 'Erro ao trocar senha';
+                    messageEl.textContent = data.error || 'Erro ao redefinir senha';
                     messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
                     messageEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.textContent = 'Redefinir Senha';
                     return;
                 }
                 
-                messageEl.textContent = 'Senha alterada com sucesso!';
+                messageEl.textContent = 'Senha redefinida com sucesso!';
                 messageEl.className = 'text-sm p-3 rounded text-center bg-green-900 text-green-200';
                 messageEl.classList.remove('hidden');
                 
@@ -470,59 +786,11 @@
                 messageEl.textContent = 'Erro ao conectar com o servidor';
                 messageEl.className = 'text-sm p-3 rounded text-center bg-red-900 text-red-200';
                 messageEl.classList.remove('hidden');
-            } finally {
                 btn.disabled = false;
-                btn.textContent = 'Trocar Senha';
+                btn.textContent = 'Redefinir Senha';
             }
         });
-
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        hideMessage();
-
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const loginBtn = document.getElementById('loginBtn');
-
-        if (!email || !password) {
-            showMessage('Preencha todos os campos', 'error');
-            return;
-        }
-
-        loginBtn.disabled = true;
-        loginBtn.textContent = 'Entrando...';
-
-        try {
-            const response = await fetch(`${API_URL}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                showMessage(data.error || 'Erro ao fazer login', 'error');
-                return;
-            }
-
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('userEmail', email);
-
-            showMessage('Login realizado com sucesso!', 'success');
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1000);
-
-        } catch (error) {
-            showMessage('Erro ao conectar com o servidor', 'error');
-        } finally {
-            loginBtn.disabled = false;
-            loginBtn.textContent = 'Entrar';
-        }
-    });
+    }
 </script>
 </body>
 </html>

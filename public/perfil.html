@@ -1,776 +1,543 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html class="dark" lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Perfil - EchoView</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <meta name="theme-color" content="#335b7e"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="EchoView"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="description" content="Perfil do Usuário - EchoView"/>
+    <link rel="manifest" href="manifest.json"/>
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23335b7e' width='100' height='100'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23e2e0df'%3EEV%3C/text%3E%3C/svg%3E"/>
+    <link rel="stylesheet" href="css/mobile.css"/>
+    <title>Perfil do Usuário - ECHOVIEW</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="js/activityCalendar.js"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#335b7e",
+                        "secondary": "#707d9b",
+                        "tertiary": "#a7aabd",
+                        "accent": "#e2e0df",
+                        "background-light": "#e2e0df",
+                        "background-dark": "#051422",
+                        "surface": "#072f57",
+                        "surface-hover": "#335b7e",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                },
+            },
+        };
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .header h1 {
-            color: #667eea;
-            font-size: 2.5em;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .profile-section {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .profile-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .profile-picture {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4em;
-            color: white;
-            overflow: hidden;
-        }
-
-        .profile-picture img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-name {
-            font-size: 1.8em;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .profile-email {
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .profile-bio {
-            color: #555;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            min-height: 80px;
-        }
-
-        .edit-profile-btn {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .edit-profile-btn:hover {
-            background: #5568d3;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .stat-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 1em;
-        }
-
-        .section-title {
-            font-size: 1.8em;
-            color: #333;
-            margin: 40px 0 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn:hover, .tab-btn.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .titles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-        }
-
-        .title-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .title-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .title-card img {
-            width: 100%;
-            height: 270px;
-            object-fit: cover;
-        }
-
-        .title-card .no-poster {
-            width: 100%;
-            height: 270px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3em;
-        }
-
-        .title-info {
-            padding: 12px;
-        }
-
-        .title-info h4 {
-            color: #333;
-            font-size: 0.95em;
-            margin-bottom: 8px;
-            line-height: 1.3;
-            height: 2.6em;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        .user-rating {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #f39c12;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(231, 76, 60, 0.9);
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2em;
+        
+        /* Estilos para notificações */
+        #notificationsList::-webkit-scrollbar {
             display: none;
-            transition: all 0.3s ease;
         }
-
-        .title-card:hover .delete-btn {
-            display: block;
+        
+        #notificationsList {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-
-        .delete-btn:hover {
-            background: #c0392b;
-            transform: scale(1.1);
+        
+        #notificationDropdown {
+            box-sizing: border-box !important;
+            width: 500px !important;
+            max-width: 500px !important;
         }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
+        
+        #notificationsList {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
         }
-
-        .empty-state h3 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
+        
+        #notificationsList > div {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
         }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #667eea;
-            font-size: 1.2em;
+        
+        #notificationsList .notification-item {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
         }
-
-        .favorite-genres {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
+        
+        #notificationsList .notification-item > div {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
         }
-
-        .genre-badge {
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-
-        /* Modal de edição */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            overflow-y: auto;
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
-            position: relative;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #f0f0f0;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 1.5em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .close-modal:hover {
-            background: #e0e0e0;
-            transform: rotate(90deg);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .save-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        @media (max-width: 768px) {
-            .profile-section {
-                grid-template-columns: 1fr;
-            }
+        
+        #notificationsList p {
+            box-sizing: border-box !important;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            white-space: normal !important;
+            margin: 0 !important;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>👤 Meu Perfil</h1>
-            <div class="header-buttons">
-                <a href="catalogo.html" class="btn btn-primary">Catálogo</a>
-                <button class="btn btn-secondary" onclick="logout()">Sair</button>
+<body class="bg-background-light dark:bg-background-dark font-display" style="background: linear-gradient(135deg, #072f57 0%, #051422 50%, #000000 100%); min-height: 100vh;">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+    <div class="layout-container flex h-full grow flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 px-4 md:px-10 py-3 sticky top-0 z-50 bg-background-dark/80 backdrop-blur-sm">
+            <div class="flex items-center gap-4 text-white">
+                <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display cursor-pointer" onclick="window.location.href='catalogo.html'">ECHOVIEW</h2>
             </div>
-        </div>
-
-        <div class="profile-section">
-            <div class="profile-card">
-                <div class="profile-picture" id="profilePicture">
-                    👤
+            <div class="flex flex-1 justify-center items-center gap-4 md:gap-6">
+                <!-- Barra de Busca -->
+                <label class="flex flex-col min-w-40 !h-10 max-w-96 w-full">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full relative">
+                        <div class="text-[#a7aabd] flex border-none bg-[#072f57] items-center justify-center pl-3 rounded-l-lg border-r-0">
+                            <span class="material-symbols-outlined text-[20px]">search</span>
+                        </div>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#072f57] focus:border-none h-full placeholder:text-[#a7aabd] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal font-display" id="searchInput" placeholder="Buscar filmes e séries..." value=""/>
+                        <!-- Dropdown de resultados -->
+                        <div id="searchResultsDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#072f57] rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-[#707d9b]/30">
+                            <div id="searchResultsContent" class="p-2">
+                                <!-- Resultados serão inseridos aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+            <div class="flex items-center gap-3 md:gap-4">
+                <!-- Dashboard (apenas para admin) -->
+                <button id="dashboardBtn" class="hidden flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='dashboard-admin.html'" title="Dashboard Admin">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                </button>
+                <!-- ECHOSOCIAL -->
+                <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='echosocial.html'" title="ECHOSOCIAL">
+                    <span class="material-symbols-outlined text-[20px]">groups</span>
+                </button>
+                <!-- Ícone de Notificação -->
+                <div class="relative">
+                    <button id="notificationBtn" class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors relative" title="Notificações">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                    </button>
+                    <!-- Dropdown de Notificações -->
+                    <div id="notificationDropdown" class="hidden absolute right-0 top-full mt-2 w-[500px] bg-[#072f57] rounded-lg shadow-2xl border border-[#707d9b]/30 z-50 h-[600px] overflow-hidden flex flex-col">
+                        <div class="p-4 border-b border-white/10 flex items-center justify-between flex-shrink-0">
+                            <h3 class="text-white font-bold">Notificações</h3>
+                            <button onclick="NotificationSystem.markAllNotificationsAsRead()" class="text-sm text-[#a7aabd] hover:text-white whitespace-nowrap">Marcar todas como lidas</button>
+                        </div>
+                        <div id="notificationsList" class="flex-1 overflow-y-auto p-2" style="min-height: 0;">
+                            <div class="p-4 text-center text-gray-400 text-sm">Carregando notificações...</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="profile-name" id="profileName">Carregando...</div>
-                <div class="profile-email" id="profileEmail"></div>
-                <div class="profile-bio" id="profileBio">
-                    Sem biografia ainda
-                </div>
-                <button class="edit-profile-btn" onclick="openEditModal()">
-                    ✏️ Editar Perfil
+                <!-- Perfil -->
+                <button class="flex items-center justify-center rounded-full h-10 w-10 bg-[#072f57] text-white hover:bg-[#335b7e] transition-colors overflow-hidden border-2 border-transparent hover:border-[#707d9b]" onclick="window.location.href='perfil.html'" title="Perfil" id="profileButton">
+                    <span class="material-symbols-outlined text-[20px]">person</span>
                 </button>
             </div>
+        </header>
 
-            <div class="stats-grid" id="statsGrid">
-                <div class="loading">Carregando estatísticas...</div>
+        <!-- Main Content -->
+        <main class="flex-1 px-4 sm:px-6 md:px-10 py-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Profile Card -->
+                    <div class="lg:col-span-4 flex flex-col items-center text-center lg:items-start lg:text-left">
+                        <div class="bg-white dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800/50 w-full flex flex-col items-center lg:items-start">
+                            <div class="relative mb-4 group">
+                                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-32 h-32 border-4 border-primary shadow-lg" id="profileAvatar" data-alt="Foto de perfil"></div>
+                                <input type="file" id="profilePictureInput" accept="image/*" class="hidden">
+                                <div class="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="document.getElementById('profilePictureInput').click()">
+                                    <span class="material-symbols-outlined text-white !text-4xl">photo_camera</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]" id="userName">Carregando...</p>
+                            <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
+                            <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
+                                <a class="text-center group" href="#">
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followerCount">0</p>
+                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
+                                </a>
+                                <a class="text-center group" href="#">
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
+                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
+                                </a>
+                            </div>
+                            <div class="w-full text-left space-y-4">
+                                <!-- Nome -->
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Nome</h3>
+                                        <button id="editNameBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                                            <span class="material-symbols-outlined !text-base">edit</span>
+                                            <span>Editar</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userNameDisplay"></p>
+                                    <div id="nameEditForm" class="hidden mt-2 space-y-2">
+                                        <input type="text" id="nameInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Novo nome">
+                                        <input type="password" id="namePasswordInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Senha atual (obrigatória)">
+                                        <div class="flex gap-2">
+                                            <button id="saveNameBtn" class="px-4 py-1 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">Salvar</button>
+                                            <button id="cancelNameBtn" class="px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-sm">Cancelar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Email -->
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Email</h3>
+                                        <button id="editEmailBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                                            <span class="material-symbols-outlined !text-base">edit</span>
+                                            <span>Editar</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userEmailDisplay"></p>
+                                    <div id="emailEditForm" class="hidden mt-2 space-y-2">
+                                        <input type="email" id="emailInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Novo email">
+                                        <input type="password" id="emailPasswordInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Senha atual (obrigatória)">
+                                        <div class="flex gap-2">
+                                            <button id="saveEmailBtn" class="px-4 py-1 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">Salvar</button>
+                                            <button id="cancelEmailBtn" class="px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-sm">Cancelar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Senha -->
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Senha</h3>
+                                        <button id="editPasswordBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                                            <span class="material-symbols-outlined !text-base">edit</span>
+                                            <span>Alterar</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal">••••••••</p>
+                                    <div id="passwordEditForm" class="hidden mt-2 space-y-2">
+                                        <input type="password" id="currentPasswordInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Senha atual (obrigatória)">
+                                        <input type="password" id="newPasswordInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Nova senha">
+                                        <input type="password" id="confirmPasswordInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Confirmar nova senha">
+                                        <div class="flex gap-2">
+                                            <button id="savePasswordBtn" class="px-4 py-1 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">Salvar</button>
+                                            <button id="cancelPasswordBtn" class="px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-sm">Cancelar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Biografia -->
+                                <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Biografia</h3>
+                                        <button id="editBioBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                                        <span class="material-symbols-outlined !text-base">edit</span>
+                                        <span>Editar</span>
+                                    </button>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-relaxed" id="userBio">Apaixonada por cinema e séries.</p>
+                                    <textarea id="bioInput" class="hidden w-full mt-2 p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white resize-none" rows="3" maxlength="500"></textarea>
+                                    <div class="hidden mt-2 gap-2" id="bioActions">
+                                        <button id="saveBioBtn" class="px-4 py-1 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">Salvar</button>
+                                        <button id="cancelBioBtn" class="px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-sm">Cancelar</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Botão de Sair -->
+                                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <button id="logoutBtn" class="w-full flex items-center justify-center p-2 bg-transparent hover:bg-red-600/10 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 rounded-lg transition-colors" title="Sair">
+                                        <span class="material-symbols-outlined !text-xl">logout</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Profile Content -->
+                    <div class="lg:col-span-8 space-y-8">
+                        <!-- Activity Calendar -->
+                        <div class="bg-white dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800/50">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                <h2 class="text-gray-900 dark:text-white text-lg font-bold leading-tight">Calendário de Atividade</h2>
+                            </div>
+                                <div class="flex items-center gap-3">
+                                    <button id="activityPrevMonth" class="p-1 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-colors" title="Mês anterior">
+                                        <span class="material-symbols-outlined text-sm">chevron_left</span>
+                                    </button>
+                                    <span id="activityMonthYear" class="text-sm text-gray-600 dark:text-gray-400 font-medium min-w-[150px] text-center"></span>
+                                    <button id="activityNextMonth" class="p-1 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-colors" title="Próximo mês">
+                                        <span class="material-symbols-outlined text-sm">chevron_right</span>
+                                    </button>
+                                    </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-4">
+                                        <div class="text-sm">
+                                            <span class="text-gray-500 dark:text-gray-400">Sequência: </span>
+                                            <span class="text-green-600 dark:text-green-400 font-bold" id="currentStreak">0</span>
+                                            <span class="text-gray-500 dark:text-gray-400"> dias</span>
+                                        </div>
+                                        <button id="restoreStreakBtn" class="hidden px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition-colors" title="Restaurar sequência (3 vezes por mês)">
+                                            Restaurar
+                                        </button>
+                                    </div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400" id="activityDays">0 dias de uso</p>
+                                </div>
+                            </div>
+                            <div class="pb-4">
+                                <div class="grid grid-cols-7 gap-2 max-w-2xl mx-auto" id="activityGrid">
+                                    <!-- Preenchido dinamicamente -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Watchlist -->
+                        <div class="bg-white dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800/50">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-2">
+                                    <h2 class="text-gray-900 dark:text-white text-lg font-bold leading-tight" id="listTitle">Minha Lista: Quero Assistir</h2>
+                                    <button id="toggleListBtn" class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" title="Alternar lista">
+                                        <span class="material-symbols-outlined text-gray-600 dark:text-gray-400">arrow_forward</span>
+                                    </button>
+                                </div>
+                                <a class="text-sm font-medium text-primary hover:underline" href="#" id="verTodosLink">Ver todos</a>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="watchlist">
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Saída -->
+<div id="logoutModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+        <div class="flex flex-col items-center text-center">
+            <div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-red-600 dark:text-red-400 !text-3xl">logout</span>
+            </div>
+            <h3 class="text-gray-900 dark:text-white text-xl font-bold mb-2">Sair da Conta?</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-6">Tem certeza que deseja sair? Você precisará fazer login novamente para acessar sua conta.</p>
+            <div class="flex gap-3 w-full">
+                <button id="cancelLogoutBtn" class="flex-1 px-4 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                    Cancelar
+                </button>
+                <button id="confirmLogoutBtn" class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                    Sair
+                </button>
             </div>
         </div>
-
-        <h2 class="section-title">Minhas Listas</h2>
-
-        <div class="tabs">
-            <button class="tab-btn active" onclick="loadTitles('watched')">
-                ✓ Assistidos
-            </button>
-            <button class="tab-btn" onclick="loadTitles('want_to_watch')">
-                ★ Quero Ver
-            </button>
-            <button class="tab-btn" onclick="loadTitles('dropped')">
-                ✗ Abandonados
-            </button>
-        </div>
-
-        <div id="titlesContent">
-            <div class="loading">Carregando títulos...</div>
-        </div>
     </div>
+</div>
 
-    <!-- Modal de edição de perfil -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeEditModal()">×</button>
-            <h2 style="margin-bottom: 30px; color: #667eea;">Editar Perfil</h2>
+<script>
+    const API_URL = 'http://localhost:3000';
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+
+    let currentListStatus = 'want_to_watch'; // Estado atual da lista: 'want_to_watch', 'watched', 'dropped'
+    const statusLabels = {
+        'want_to_watch': 'Quero Assistir',
+        'watched': 'Assistido',
+        'dropped': 'Abandonado'
+    };
+    const statusOrder = ['want_to_watch', 'watched', 'dropped'];
+
+    // Carregar dados do perfil
+    async function loadProfile() {
+        try {
+            const response = await fetch(`${API_URL}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             
-            <form id="editForm" onsubmit="saveProfile(event)">
-                <div class="form-group">
-                    <label>Nome</label>
-                    <input type="text" id="editName" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Biografia</label>
-                    <textarea id="editBio" placeholder="Conte um pouco sobre você e seus gostos..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>URL da Foto de Perfil</label>
-                    <input type="url" id="editProfilePicture" placeholder="https://exemplo.com/foto.jpg">
-                    <small style="color: #666; display: block; margin-top: 5px;">
-                        Cole a URL de uma imagem da internet
-                    </small>
-                </div>
-
-                <button type="submit" class="save-btn">Salvar Alterações</button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        const API_URL = 'http://localhost:3000';
-        let currentStatus = 'watched';
-
-        // Verificar autenticação
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = 'login.html';
-        }
-
-        // Carregar dados ao iniciar
-        window.addEventListener('DOMContentLoaded', () => {
-            loadProfile();
-            loadStats();
-            loadTitles('watched');
-        });
-
-        async function loadProfile() {
-            try {
-                const response = await fetch(`${API_URL}/api/profile/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Erro ao carregar perfil');
-
-                const user = await response.json();
+            if (response.ok) {
+                const userData = await response.json();
                 
-                document.getElementById('profileName').textContent = user.name;
-                document.getElementById('profileEmail').textContent = user.email;
-                document.getElementById('profileBio').textContent = user.bio || 'Sem biografia ainda';
-
-                // Atualizar foto de perfil
-                const profilePicture = document.getElementById('profilePicture');
-                if (user.profilePicture) {
-                    profilePicture.innerHTML = `<img src="${user.profilePicture}" alt="${user.name}">`;
+                // Atualizar informações do perfil
+                document.getElementById('userName').textContent = userData.name || 'Usuário';
+                document.getElementById('userNameDisplay').textContent = userData.name || 'Usuário';
+                document.getElementById('userEmailDisplay').textContent = userData.email || '';
+                document.getElementById('userHandle').textContent = '@' + (userData.email?.split('@')[0] || 'usuario');
+                document.getElementById('userBio').textContent = userData.bio || 'Apaixonada por cinema e séries.';
+                document.getElementById('followerCount').textContent = userData.followers || '0';
+                document.getElementById('followingCount').textContent = userData.following || '0';
+                
+                // Avatar
+                const userAvatar = document.getElementById('userAvatar');
+                const profileAvatar = document.getElementById('profileAvatar');
+                
+                if (userData.profilePicture) {
+                    if (userAvatar) userAvatar.style.backgroundImage = `url('${userData.profilePicture}')`;
+                    if (profileAvatar) profileAvatar.style.backgroundImage = `url('${userData.profilePicture}')`;
                 } else {
-                    profilePicture.innerHTML = user.name.charAt(0).toUpperCase();
+                    const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.email || 'user'}`;
+                    if (userAvatar) userAvatar.style.backgroundImage = `url('${defaultAvatar}')`;
+                    if (profileAvatar) profileAvatar.style.backgroundImage = `url('${defaultAvatar}')`;
                 }
-
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao carregar perfil: ' + error.message);
-            }
-        }
-
-        async function loadStats() {
-            try {
-                const response = await fetch(`${API_URL}/api/titles/stats`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Erro ao carregar estatísticas');
-
-                const stats = await response.json();
                 
-                const statsHTML = `
-                    <div class="stat-card">
-                        <div class="stat-icon">✓</div>
-                        <div class="stat-value">${stats.totalWatched}</div>
-                        <div class="stat-label">Assistidos</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">★</div>
-                        <div class="stat-value">${stats.totalWantToWatch}</div>
-                        <div class="stat-label">Quero Ver</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">✗</div>
-                        <div class="stat-value">${stats.totalDropped}</div>
-                        <div class="stat-label">Abandonados</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⭐</div>
-                        <div class="stat-value">${stats.averageRating}</div>
-                        <div class="stat-label">Média de Avaliação</div>
-                    </div>
-                `;
+                // Carregar watchlist
+                loadWatchlist();
+            }
+        } catch (error) {
+            console.error('Erro ao carregar perfil:', error);
+        }
+    }
 
-                document.getElementById('statsGrid').innerHTML = statsHTML;
-
-                // Mostrar gêneros favoritos se houver
-                if (stats.favoriteGenres && stats.favoriteGenres.length > 0) {
-                    const genresHTML = `
-                        <div class="stat-card" style="grid-column: 1 / -1;">
-                            <div class="stat-icon">🎭</div>
-                            <div class="stat-label" style="margin-bottom: 15px;">Gêneros Favoritos</div>
-                            <div class="favorite-genres">
-                                ${stats.favoriteGenres.map(g => 
-                                    `<span class="genre-badge">${g.genre} (${g.count})</span>`
-                                ).join('')}
+    async function loadWatchlist() {
+        try {
+            const response = await fetch(`${API_URL}/api/titles/my-interactions?status=${currentListStatus}&limit=20`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const interactions = data.data || data.interactions || [];
+                const watchlist = document.getElementById('watchlist');
+                watchlist.innerHTML = '';
+                
+                if (interactions.length === 0) {
+                    watchlist.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">Nenhum título nesta lista ainda.</div>';
+                } else {
+                    interactions.forEach(interaction => {
+                        const title = interaction.title;
+                        if (!title) return;
+                        
+                        let posterUrl = title.posterPath || '';
+                        if (posterUrl && !posterUrl.startsWith('http')) {
+                            posterUrl = `https://image.tmdb.org/t/p/w300${posterUrl}`;
+                        } else if (!posterUrl) {
+                            posterUrl = 'https://via.placeholder.com/300x450?text=Sem+Pôster';
+                        }
+                    
+                    const item = document.createElement('div');
+                    item.className = 'group relative aspect-[2/3] overflow-hidden rounded-lg cursor-pointer';
+                    item.innerHTML = `
+                        <div class="bg-center bg-no-repeat aspect-auto bg-cover w-full h-full" style="background-image: url('${posterUrl}');"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex-1">
+                                    <h3 class="text-white font-bold text-sm">${title.title || 'Sem título'}</h3>
+                                    <p class="text-gray-300 text-xs">${title.releaseDate ? new Date(title.releaseDate).getFullYear() : 'N/A'}</p>
+                                </div>
+                                <button onclick="event.stopPropagation(); removeFromList('${interaction.id}')" class="text-red-400 hover:text-red-500 transition-colors p-1" title="Remover da lista">
+                                    <span class="material-symbols-outlined !text-lg">delete</span>
+                                </button>
                             </div>
                         </div>
                     `;
-                    document.getElementById('statsGrid').innerHTML += genresHTML;
-                }
-
-            } catch (error) {
-                console.error('Erro:', error);
-                document.getElementById('statsGrid').innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; color: #e74c3c;">
-                        Erro ao carregar estatísticas
-                    </div>
-                `;
-            }
-        }
-
-        async function loadTitles(status) {
-            currentStatus = status;
-
-            // Atualizar tabs
-            document.querySelectorAll('.tab-btn').forEach((btn, index) => {
-                btn.classList.remove('active');
-                const statuses = ['watched', 'want_to_watch', 'dropped'];
-                if (statuses[index] === status) {
-                    btn.classList.add('active');
-                }
-            });
-
-            try {
-                document.getElementById('titlesContent').innerHTML = '<div class="loading">Carregando...</div>';
-
-                const response = await fetch(`${API_URL}/api/titles/my-interactions?status=${status}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    item.addEventListener('click', () => {
+                        // Abrir modal do filme/série usando a função do catalogo.html
+                        window.location.href = `categoria.html?type=${title.type || 'movie'}&tmdbId=${title.tmdbId}`;
+                    });
+                    watchlist.appendChild(item);
                 });
-
-                if (!response.ok) throw new Error('Erro ao carregar títulos');
-
-                const interactions = await response.json();
-                displayTitles(interactions);
-
-            } catch (error) {
-                console.error('Erro:', error);
-                document.getElementById('titlesContent').innerHTML = `
-                    <div class="empty-state">
-                        <h3>Erro ao carregar títulos</h3>
-                        <p>${error.message}</p>
-                    </div>
-                `;
+                }
             }
+        } catch (error) {
+            console.error('Erro ao carregar watchlist:', error);
+            document.getElementById('watchlist').innerHTML = '<div class="col-span-full text-center py-8 text-red-500">Erro ao carregar lista.</div>';
         }
+    }
 
-        function displayTitles(interactions) {
-            const container = document.getElementById('titlesContent');
-
-            if (!interactions || interactions.length === 0) {
-                const statusLabels = {
-                    'watched': 'assistidos',
-                    'want_to_watch': 'na lista "Quero Ver"',
-                    'dropped': 'abandonados'
-                };
-                
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Nenhum título ${statusLabels[currentStatus]}</h3>
-                        <p>Explore o catálogo e adicione títulos à sua lista!</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const grid = document.createElement('div');
-            grid.className = 'titles-grid';
-
-            interactions.forEach(interaction => {
-                const title = interaction.title;
-                const card = document.createElement('div');
-                card.className = 'title-card';
-
-                const posterHTML = title.posterPath 
-                    ? `<img src="${title.posterPath}" alt="${title.title}">`
-                    : `<div class="no-poster">🎬</div>`;
-
-                const ratingHTML = interaction.rating 
-                    ? `<div class="user-rating">⭐ ${interaction.rating.toFixed(1)}</div>`
-                    : '';
-
-                card.innerHTML = `
-                    ${posterHTML}
-                    <button class="delete-btn" onclick="deleteInteraction('${interaction.id}', event)" title="Remover">×</button>
-                    <div class="title-info">
-                        <h4>${title.title}</h4>
-                        ${ratingHTML}
-                    </div>
-                `;
-
-                grid.appendChild(card);
+    // Remover da lista
+    async function removeFromList(interactionId) {
+        if (!confirm('Tem certeza que deseja remover este título da lista?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/api/titles/interaction/${interactionId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-
-            container.innerHTML = '';
-            container.appendChild(grid);
-        }
-
-        async function deleteInteraction(interactionId, event) {
-            event.stopPropagation();
-
-            if (!confirm('Tem certeza que deseja remover este título da sua lista?')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/api/titles/interaction/${interactionId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Erro ao remover título');
-
-                // Recarregar listas
-                loadTitles(currentStatus);
-                loadStats();
-
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao remover título: ' + error.message);
-            }
-        }
-
-        function openEditModal() {
-            // Preencher formulário com dados atuais
-            document.getElementById('editName').value = document.getElementById('profileName').textContent;
-            document.getElementById('editBio').value = document.getElementById('profileBio').textContent === 'Sem biografia ainda' 
-                ? '' 
-                : document.getElementById('profileBio').textContent;
             
-            document.getElementById('editModal').classList.add('active');
+            if (response.ok) {
+                loadWatchlist();
+            } else {
+                const error = await response.json();
+                alert('Erro ao remover: ' + (error.error || 'Erro desconhecido'));
+            }
+        } catch (error) {
+            console.error('Erro ao remover da lista:', error);
+            alert('Erro ao remover da lista');
         }
+    }
 
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('active');
-        }
+    // Alternar entre listas
+    function toggleList() {
+        const currentIndex = statusOrder.indexOf(currentListStatus);
+        const nextIndex = (currentIndex + 1) % statusOrder.length;
+        currentListStatus = statusOrder[nextIndex];
+        
+        document.getElementById('listTitle').textContent = `Minha Lista: ${statusLabels[currentListStatus]}`;
+        loadWatchlist();
+    }
 
-        async function saveProfile(event) {
-            event.preventDefault();
+    // Editar biografia
+    function setupBioEdit() {
+        const editBtn = document.getElementById('editBioBtn');
+        const bioText = document.getElementById('userBio');
+        const bioInput = document.getElementById('bioInput');
+        const bioActions = document.getElementById('bioActions');
+        const saveBtn = document.getElementById('saveBioBtn');
+        const cancelBtn = document.getElementById('cancelBioBtn');
 
-            const name = document.getElementById('editName').value.trim();
-            const bio = document.getElementById('editBio').value.trim();
-            const profilePicture = document.getElementById('editProfilePicture').value.trim();
+        editBtn.addEventListener('click', () => {
+            bioText.classList.add('hidden');
+            bioInput.classList.remove('hidden');
+            bioActions.classList.remove('hidden');
+            bioInput.value = bioText.textContent;
+            bioInput.focus();
+        });
 
+        cancelBtn.addEventListener('click', () => {
+            bioText.classList.remove('hidden');
+            bioInput.classList.add('hidden');
+            bioActions.classList.add('hidden');
+        });
+
+        saveBtn.addEventListener('click', async () => {
+            const newBio = bioInput.value.trim();
             try {
                 const response = await fetch(`${API_URL}/api/profile/me`, {
                     method: 'PUT',
@@ -778,37 +545,355 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({
-                        name,
-                        bio,
-                        profilePicture
+                    body: JSON.stringify({ bio: newBio })
+                });
+
+                if (response.ok) {
+                    bioText.textContent = newBio || 'Apaixonada por cinema e séries.';
+                    bioText.classList.remove('hidden');
+                    bioInput.classList.add('hidden');
+                    bioActions.classList.add('hidden');
+                } else {
+                    alert('Erro ao salvar biografia');
+                }
+            } catch (error) {
+                console.error('Erro ao salvar biografia:', error);
+                alert('Erro ao salvar biografia');
+            }
+        });
+    }
+
+    // Upload de foto de perfil
+    function setupProfilePictureUpload() {
+        const input = document.getElementById('profilePictureInput');
+        input.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Converter para base64 (simulação - em produção, use upload para servidor)
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const base64Image = event.target.result;
+                try {
+                    const response = await fetch(`${API_URL}/api/profile/me`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ profilePicture: base64Image })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.user && data.user.profilePicture) {
+                            const userAvatar = document.getElementById('userAvatar');
+                            const profileAvatar = document.getElementById('profileAvatar');
+                            if (userAvatar) userAvatar.style.backgroundImage = `url('${data.user.profilePicture}')`;
+                            if (profileAvatar) profileAvatar.style.backgroundImage = `url('${data.user.profilePicture}')`;
+                        }
+                    } else {
+                        alert('Erro ao atualizar foto de perfil');
+                    }
+                } catch (error) {
+                    console.error('Erro ao atualizar foto:', error);
+                    alert('Erro ao atualizar foto de perfil');
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Calendário de atividades agora é gerenciado pela classe ActivityCalendar
+    let activityCalendar = null;
+
+    // Editar nome
+    function setupNameEdit() {
+        const editBtn = document.getElementById('editNameBtn');
+        const nameDisplay = document.getElementById('userNameDisplay');
+        const nameForm = document.getElementById('nameEditForm');
+        const nameInput = document.getElementById('nameInput');
+        const passwordInput = document.getElementById('namePasswordInput');
+        const saveBtn = document.getElementById('saveNameBtn');
+        const cancelBtn = document.getElementById('cancelNameBtn');
+
+        editBtn.addEventListener('click', () => {
+            nameDisplay.classList.add('hidden');
+            nameForm.classList.remove('hidden');
+            nameInput.value = nameDisplay.textContent;
+            nameInput.focus();
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            nameDisplay.classList.remove('hidden');
+            nameForm.classList.add('hidden');
+            nameInput.value = '';
+            passwordInput.value = '';
+        });
+
+        saveBtn.addEventListener('click', async () => {
+            const newName = nameInput.value.trim();
+            const currentPassword = passwordInput.value.trim();
+            
+            if (!newName) {
+                alert('Nome não pode estar vazio');
+                return;
+            }
+            if (!currentPassword) {
+                alert('Senha atual é obrigatória');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/profile/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        name: newName,
+                        currentPassword: currentPassword
                     })
                 });
 
-                if (!response.ok) throw new Error('Erro ao atualizar perfil');
-
-                const result = await response.json();
-                alert('Perfil atualizado com sucesso!');
-                closeEditModal();
-                loadProfile();
-
+                if (response.ok) {
+                    const data = await response.json();
+                    nameDisplay.textContent = data.user.name;
+                    document.getElementById('userName').textContent = data.user.name;
+                    nameDisplay.classList.remove('hidden');
+                    nameForm.classList.add('hidden');
+                    nameInput.value = '';
+                    passwordInput.value = '';
+                } else {
+                    const errorData = await response.json();
+                    alert('Erro ao salvar nome: ' + (errorData.error || 'Erro desconhecido'));
+                }
             } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao atualizar perfil: ' + error.message);
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('token');
-            window.location.href = 'login.html';
-        }
-
-        // Fechar modal ao clicar fora
-        document.getElementById('editModal').addEventListener('click', (e) => {
-            if (e.target.id === 'editModal') {
-                closeEditModal();
+                console.error('Erro ao salvar nome:', error);
+                alert('Erro ao salvar nome');
             }
         });
-    </script>
+    }
+
+    // Editar email
+    function setupEmailEdit() {
+        const editBtn = document.getElementById('editEmailBtn');
+        const emailDisplay = document.getElementById('userEmailDisplay');
+        const emailForm = document.getElementById('emailEditForm');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('emailPasswordInput');
+        const saveBtn = document.getElementById('saveEmailBtn');
+        const cancelBtn = document.getElementById('cancelEmailBtn');
+
+        editBtn.addEventListener('click', () => {
+            emailDisplay.classList.add('hidden');
+            emailForm.classList.remove('hidden');
+            emailInput.value = emailDisplay.textContent;
+            emailInput.focus();
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            emailDisplay.classList.remove('hidden');
+            emailForm.classList.add('hidden');
+            emailInput.value = '';
+            passwordInput.value = '';
+        });
+
+        saveBtn.addEventListener('click', async () => {
+            const newEmail = emailInput.value.trim();
+            const currentPassword = passwordInput.value.trim();
+            
+            if (!newEmail || !newEmail.includes('@')) {
+                alert('Email inválido');
+                return;
+            }
+            if (!currentPassword) {
+                alert('Senha atual é obrigatória');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/profile/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        email: newEmail,
+                        currentPassword: currentPassword
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    emailDisplay.textContent = data.user.email;
+                    document.getElementById('userHandle').textContent = '@' + (data.user.email?.split('@')[0] || 'usuario');
+                    emailDisplay.classList.remove('hidden');
+                    emailForm.classList.add('hidden');
+                    emailInput.value = '';
+                    passwordInput.value = '';
+                } else {
+                    const errorData = await response.json();
+                    alert('Erro ao salvar email: ' + (errorData.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao salvar email:', error);
+                alert('Erro ao salvar email');
+            }
+        });
+    }
+
+    // Editar senha
+    function setupPasswordEdit() {
+        const editBtn = document.getElementById('editPasswordBtn');
+        const passwordForm = document.getElementById('passwordEditForm');
+        const currentPasswordInput = document.getElementById('currentPasswordInput');
+        const newPasswordInput = document.getElementById('newPasswordInput');
+        const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+        const saveBtn = document.getElementById('savePasswordBtn');
+        const cancelBtn = document.getElementById('cancelPasswordBtn');
+
+        editBtn.addEventListener('click', () => {
+            passwordForm.classList.remove('hidden');
+            currentPasswordInput.focus();
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            passwordForm.classList.add('hidden');
+            currentPasswordInput.value = '';
+            newPasswordInput.value = '';
+            confirmPasswordInput.value = '';
+        });
+
+        saveBtn.addEventListener('click', async () => {
+            const currentPassword = currentPasswordInput.value.trim();
+            const newPassword = newPasswordInput.value.trim();
+            const confirmPassword = confirmPasswordInput.value.trim();
+            
+            if (!currentPassword) {
+                alert('Senha atual é obrigatória');
+                return;
+            }
+            if (!newPassword || newPassword.length < 6) {
+                alert('Nova senha deve ter no mínimo 6 caracteres');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                alert('As senhas não coincidem');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/profile/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        password: newPassword,
+                        currentPassword: currentPassword
+                    })
+                });
+
+                if (response.ok) {
+                    passwordForm.classList.add('hidden');
+                    currentPasswordInput.value = '';
+                    newPasswordInput.value = '';
+                    confirmPasswordInput.value = '';
+                    alert('Senha alterada com sucesso!');
+                } else {
+                    const errorData = await response.json();
+                    alert('Erro ao alterar senha: ' + (errorData.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao alterar senha:', error);
+                alert('Erro ao alterar senha');
+            }
+        });
+    }
+
+    // Carregar perfil ao iniciar
+    // Carregar foto de perfil do usuário no header
+    async function loadUserProfile() {
+        try {
+            const response = await fetch(`${API_URL}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const userData = await response.json();
+                const profileButton = document.getElementById('profileButton');
+                
+                if (profileButton) {
+                    if (userData.profilePicture) {
+                        profileButton.innerHTML = `<img src="${userData.profilePicture}" alt="Perfil" class="w-full h-full object-cover rounded-full" onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined text-[20px]\\'>person</span>'">`;
+                    } else if (userData.name) {
+                        const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                        profileButton.innerHTML = `<span class="text-sm font-bold">${initials}</span>`;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar perfil:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProfile();
+        loadUserProfile();
+        setupBioEdit();
+        setupNameEdit();
+        setupEmailEdit();
+        setupPasswordEdit();
+        setupProfilePictureUpload();
+        
+        // Inicializar calendário de atividades
+        if (window.ActivityCalendar) {
+            activityCalendar = new ActivityCalendar('activityGrid', 'activityStatsContainer');
+        }
+        
+        // Configurar botão de alternar lista
+        document.getElementById('toggleListBtn').addEventListener('click', toggleList);
+        
+        // Configurar botão de sair
+        const logoutBtn = document.getElementById('logoutBtn');
+        const logoutModal = document.getElementById('logoutModal');
+        const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+        const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+        
+        logoutBtn.addEventListener('click', function() {
+            logoutModal.classList.remove('hidden');
+        });
+        
+        cancelLogoutBtn.addEventListener('click', function() {
+            logoutModal.classList.add('hidden');
+        });
+        
+        confirmLogoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        });
+        
+        // Fechar modal ao clicar fora
+        logoutModal.addEventListener('click', function(e) {
+            if (e.target === logoutModal) {
+                logoutModal.classList.add('hidden');
+            }
+        });
+    });
+    
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(() => {
+                console.log('Service Worker não disponível');
+            });
+        });
+    }
+</script>
+    <script src="js/notifications.js"></script>
 </body>
 </html>

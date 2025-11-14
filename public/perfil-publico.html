@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-br">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <meta name="theme-color" content="#335b7e"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="EchoView"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="description" content="Perfil Público - EchoView"/>
+    <link rel="manifest" href="manifest.json"/>
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23335b7e' width='100' height='100'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23e2e0df'%3EEV%3C/text%3E%3C/svg%3E"/>
+    <link rel="stylesheet" href="css/mobile.css"/>
+    <title>Perfil - ECHOVIEW</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#335b7e",
+                        "secondary": "#707d9b",
+                        "tertiary": "#a7aabd",
+                        "accent": "#e2e0df",
+                        "background-light": "#e2e0df",
+                        "background-dark": "#051422",
+                        "surface": "#072f57",
+                        "surface-hover": "#335b7e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Estilos para notificações */
+        #notificationsList::-webkit-scrollbar {
+            display: none;
+        }
+        
+        #notificationsList {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        #notificationDropdown {
+            box-sizing: border-box !important;
+            width: 500px !important;
+            max-width: 500px !important;
+        }
+        
+        #notificationsList {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        #notificationsList > div {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+        
+        #notificationsList .notification-item {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+        
+        #notificationsList .notification-item > div {
+            box-sizing: border-box !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        #notificationsList p {
+            box-sizing: border-box !important;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            white-space: normal !important;
+            margin: 0 !important;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display" style="background: linear-gradient(135deg, #072f57 0%, #051422 50%, #000000 100%); min-height: 100vh;">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+    <div class="layout-container flex h-full grow flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 px-4 md:px-10 py-3 sticky top-0 z-50 bg-background-dark/80 backdrop-blur-sm">
+            <div class="flex items-center gap-4 text-white">
+                <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display cursor-pointer" onclick="window.location.href='catalogo.html'">ECHOVIEW</h2>
+            </div>
+            <div class="flex flex-1 justify-center items-center gap-4 md:gap-6">
+                <!-- Barra de Busca -->
+                <label class="flex flex-col min-w-40 !h-10 max-w-96 w-full">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full relative">
+                        <div class="text-[#a7aabd] flex border-none bg-[#072f57] items-center justify-center pl-3 rounded-l-lg border-r-0">
+                            <span class="material-symbols-outlined text-[20px]">search</span>
+                        </div>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#072f57] focus:border-none h-full placeholder:text-[#a7aabd] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal font-display" id="searchInput" placeholder="Buscar filmes e séries..." value=""/>
+                        <!-- Dropdown de resultados -->
+                        <div id="searchResultsDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#072f57] rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-[#707d9b]/30">
+                            <div id="searchResultsContent" class="p-2">
+                                <!-- Resultados serão inseridos aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+            <div class="flex items-center gap-3 md:gap-4">
+                <!-- Dashboard (apenas para admin) -->
+                <button id="dashboardBtn" class="hidden flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='dashboard-admin.html'" title="Dashboard Admin">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                </button>
+                <!-- ECHOSOCIAL -->
+                <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='echosocial.html'" title="ECHOSOCIAL">
+                    <span class="material-symbols-outlined text-[20px]">groups</span>
+                </button>
+                <!-- Ícone de Notificação -->
+                <div class="relative">
+                    <button id="notificationBtn" class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors relative" title="Notificações">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                    </button>
+                    <!-- Dropdown de Notificações -->
+                    <div id="notificationDropdown" class="hidden absolute right-0 top-full mt-2 w-[500px] bg-[#072f57] rounded-lg shadow-2xl border border-[#707d9b]/30 z-50 h-[600px] overflow-hidden flex flex-col">
+                        <div class="p-4 border-b border-white/10 flex items-center justify-between flex-shrink-0">
+                            <h3 class="text-white font-bold">Notificações</h3>
+                            <button onclick="NotificationSystem.markAllNotificationsAsRead()" class="text-sm text-[#a7aabd] hover:text-white whitespace-nowrap">Marcar todas como lidas</button>
+                        </div>
+                        <div id="notificationsList" class="flex-1 overflow-y-auto p-2" style="min-height: 0;">
+                            <div class="p-4 text-center text-gray-400 text-sm">Carregando notificações...</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Perfil -->
+                <button class="flex items-center justify-center rounded-full h-10 w-10 bg-[#072f57] text-white hover:bg-[#335b7e] transition-colors overflow-hidden border-2 border-transparent hover:border-[#707d9b]" onclick="window.location.href='perfil.html'" title="Perfil" id="profileButton">
+                    <span class="material-symbols-outlined text-[20px]">person</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 px-4 sm:px-6 md:px-10 py-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Profile Card -->
+                    <div class="lg:col-span-4 flex flex-col items-center text-center lg:items-start lg:text-left">
+                        <div class="bg-white dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800/50 w-full flex flex-col items-center lg:items-start relative">
+                            <!-- Menu de 3 pontos (apenas para admin) -->
+                            <div id="adminMenuContainer" class="hidden absolute top-4 right-4">
+                                <button id="adminMenuBtn" class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-400">
+                                    <span class="material-symbols-outlined !text-xl">more_vert</span>
+                                </button>
+                                <!-- Dropdown Menu -->
+                                <div id="adminMenuDropdown" class="hidden absolute right-0 top-10 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 min-w-[200px] z-50">
+                                    <button id="banUserBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
+                                        <span class="material-symbols-outlined !text-base">block</span>
+                                        <span id="banUserText">Banir Usuário</span>
+                                    </button>
+                                    <button id="deleteUserBtn" class="hidden w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
+                                        <span class="material-symbols-outlined !text-base">delete</span>
+                                        <span>Deletar Conta</span>
+                                    </button>
+                                    <button id="manageAdminBtn" class="hidden w-full text-left px-4 py-2 text-sm text-yellow-600 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
+                                        <span class="material-symbols-outlined !text-base">admin_panel_settings</span>
+                                        <span>Gerenciar Admin</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="relative mb-4 group">
+                                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-32 h-32 border-4 border-primary shadow-lg" id="profileAvatar" data-alt="Foto de perfil"></div>
+                            </div>
+                            <p class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]" id="userName">Carregando...</p>
+                            <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
+                            <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
+                                <a class="text-center group" href="#">
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followerCount">0</p>
+                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
+                                </a>
+                                <a class="text-center group" href="#">
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
+                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
+                                </a>
+                            </div>
+                            <div class="w-full mb-4">
+                                <button id="followBtn" class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
+                                    Seguir
+                                </button>
+                                <button id="messageBtn" class="w-full mt-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                                    <span class="material-symbols-outlined !text-base mr-2">mail</span>
+                                    Mensagem
+                                </button>
+                            </div>
+                            
+                            <!-- Abas de Navegação -->
+                            <div class="w-full border-b border-gray-200 dark:border-gray-700 mb-4">
+                                <div class="flex gap-4">
+                                    <button id="tabWatchlist" onclick="switchTab('watchlist')" class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary">
+                                        Lista
+                                    </button>
+                                    <button id="tabPosts" onclick="switchTab('posts')" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-primary">
+                                        Posts
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full text-left space-y-4">
+                                <!-- Nome -->
+                                <div>
+                                    <h3 class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Nome</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userNameDisplay"></p>
+                                </div>
+                                
+                                <!-- Email -->
+                                <div>
+                                    <h3 class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Email</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userEmailDisplay"></p>
+                                </div>
+                                
+                                <!-- Biografia -->
+                                <div>
+                                    <h3 class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Biografia</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-relaxed" id="userBio">Apaixonada por cinema e séries.</p>
+                                </div>
+
+                                <!-- Status Badges -->
+                                <div id="statusBadges" class="flex flex-wrap gap-2">
+                                    <!-- Badges serão preenchidos dinamicamente -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Profile Content -->
+                    <div class="lg:col-span-8 space-y-8">
+                        <!-- Watchlist -->
+                        <div id="watchlistSection" class="bg-white dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800/50">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-2">
+                                    <h2 class="text-gray-900 dark:text-white text-lg font-bold leading-tight" id="listTitle">Minha Lista: Quero Assistir</h2>
+                                    <button id="toggleListBtn" class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" title="Alternar lista">
+                                        <span class="material-symbols-outlined text-gray-600 dark:text-gray-400">arrow_forward</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="watchlist">
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                                <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        <!-- Posts do Usuário -->
+                        <div id="postsSection" class="hidden bg-white dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800/50">
+                            <h2 class="text-gray-900 dark:text-white text-lg font-bold leading-tight mb-6">Posts</h2>
+                            <div id="userPosts" class="space-y-4">
+                                <div class="text-center text-gray-400 py-8">Carregando posts...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal de Confirmação -->
+<div id="confirmModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+        <div class="flex flex-col items-center text-center">
+            <div id="confirmIcon" class="w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <!-- Ícone será preenchido dinamicamente -->
+            </div>
+            <h3 id="confirmTitle" class="text-gray-900 dark:text-white text-xl font-bold mb-2"></h3>
+            <p id="confirmMessage" class="text-gray-600 dark:text-gray-400 text-sm mb-6"></p>
+            <div class="flex gap-3 w-full">
+                <button id="cancelConfirmBtn" class="flex-1 px-4 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                    Cancelar
+                </button>
+                <button id="confirmActionBtn" class="flex-1 px-4 py-2.5 rounded-lg transition-colors font-medium text-white">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3000';
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+
+    // Obter userId da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const viewedUserId = urlParams.get('userId');
+    
+    if (!viewedUserId) {
+        window.location.href = 'catalogo.html';
+    }
+
+    let currentListStatus = 'want_to_watch';
+    const statusLabels = {
+        'want_to_watch': 'Quero Assistir',
+        'watched': 'Assistido',
+        'dropped': 'Abandonado'
+    };
+    const statusOrder = ['want_to_watch', 'watched', 'dropped'];
+    
+    let isAdmin = false;
+    let isAdminMaster = false;
+    let viewedUser = null;
+
+    // Verificar se é admin
+    function checkAdminStatus() {
+        try {
+            const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+            isAdmin = tokenPayload.isAdmin || false;
+            isAdminMaster = tokenPayload.isAdminMaster || false;
+            
+            if (isAdmin || isAdminMaster) {
+                document.getElementById('adminMenuContainer').classList.remove('hidden');
+                if (isAdminMaster) {
+                    document.getElementById('deleteUserBtn').classList.remove('hidden');
+                    document.getElementById('manageAdminBtn').classList.remove('hidden');
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao verificar status de admin:', error);
+        }
+    }
+
+    // Carregar dados do perfil
+    async function loadProfile() {
+        try {
+            const response = await fetch(`${API_URL}/api/admin/users/${viewedUserId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                viewedUser = data.user;
+                
+                // Atualizar informações do perfil
+                document.getElementById('userName').textContent = viewedUser.name || 'Usuário';
+                document.getElementById('userNameDisplay').textContent = viewedUser.name || 'Usuário';
+                document.getElementById('userEmailDisplay').textContent = viewedUser.email || '';
+                document.getElementById('userHandle').textContent = '@' + (viewedUser.email?.split('@')[0] || 'usuario');
+                document.getElementById('userBio').textContent = viewedUser.bio || 'Apaixonada por cinema e séries.';
+                document.getElementById('followerCount').textContent = '0';
+                document.getElementById('followingCount').textContent = '0';
+                
+                // Avatar
+                if (viewedUser.profilePicture) {
+                    document.getElementById('profileAvatar').style.backgroundImage = `url('${viewedUser.profilePicture}')`;
+                } else {
+                    const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${viewedUser.email || 'user'}`;
+                    document.getElementById('profileAvatar').style.backgroundImage = `url('${defaultAvatar}')`;
+                }
+
+                // Status badges
+                const statusBadges = document.getElementById('statusBadges');
+                statusBadges.innerHTML = '';
+                if (viewedUser.isBanned) {
+                    statusBadges.innerHTML += '<span class="px-2 py-1 bg-red-900/50 text-red-300 rounded text-xs">Banido</span>';
+                }
+                if (viewedUser.isAdminMaster) {
+                    statusBadges.innerHTML += '<span class="px-2 py-1 bg-purple-900/50 text-purple-300 rounded text-xs">Admin Master</span>';
+                } else if (viewedUser.isAdmin) {
+                    statusBadges.innerHTML += '<span class="px-2 py-1 bg-blue-900/50 text-blue-300 rounded text-xs">Admin</span>';
+                }
+
+                // Atualizar botão de banir
+                const banUserText = document.getElementById('banUserText');
+                banUserText.textContent = viewedUser.isBanned ? 'Desbanir Usuário' : 'Banir Usuário';
+                
+                // Carregar watchlist
+                loadWatchlist();
+                
+                // Verificar se está seguindo e carregar contadores
+                checkFollowStatus();
+                loadFollowCounts();
+            } else {
+                alert('Erro ao carregar perfil do usuário');
+                window.location.href = 'catalogo.html';
+            }
+        } catch (error) {
+            console.error('Erro ao carregar perfil:', error);
+            alert('Erro ao carregar perfil do usuário');
+        }
+    }
+
+    async function loadWatchlist() {
+        try {
+            const response = await fetch(`${API_URL}/api/titles/my-interactions?status=${currentListStatus}&limit=20&userId=${viewedUserId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const interactions = data.data || [];
+                
+                const watchlist = document.getElementById('watchlist');
+                watchlist.innerHTML = '';
+                
+                if (interactions.length === 0) {
+                    watchlist.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">Nenhum título nesta lista ainda.</div>';
+                } else {
+                    interactions.forEach(interaction => {
+                        const title = interaction.title;
+                        if (!title) return;
+                        
+                        const posterUrl = title.posterPath 
+                            ? (title.posterPath.startsWith('http') ? title.posterPath : `https://image.tmdb.org/t/p/w300${title.posterPath}`)
+                            : 'https://via.placeholder.com/300x450?text=Sem+Imagem';
+                        
+                        const item = document.createElement('div');
+                        item.className = 'aspect-[2/3] bg-gray-800 rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform';
+                        item.innerHTML = `
+                            <img src="${posterUrl}" alt="${title.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x450?text=Sem+Imagem'">
+                        `;
+                        item.onclick = () => window.location.href = `categoria.html?tmdbId=${title.tmdbId}&type=${title.type}`;
+                        watchlist.appendChild(item);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar watchlist:', error);
+            document.getElementById('watchlist').innerHTML = '<div class="col-span-full text-center py-8 text-red-500">Erro ao carregar lista.</div>';
+        }
+    }
+
+    function toggleList() {
+        const currentIndex = statusOrder.indexOf(currentListStatus);
+        const nextIndex = (currentIndex + 1) % statusOrder.length;
+        currentListStatus = statusOrder[nextIndex];
+        document.getElementById('listTitle').textContent = `Minha Lista: ${statusLabels[currentListStatus]}`;
+        loadWatchlist();
+    }
+
+    function switchTab(tab) {
+        const watchlistSection = document.getElementById('watchlistSection');
+        const postsSection = document.getElementById('postsSection');
+        const tabWatchlist = document.getElementById('tabWatchlist');
+        const tabPosts = document.getElementById('tabPosts');
+        
+        if (tab === 'watchlist') {
+            watchlistSection.classList.remove('hidden');
+            postsSection.classList.add('hidden');
+            tabWatchlist.classList.add('border-primary', 'text-primary');
+            tabWatchlist.classList.remove('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+            tabPosts.classList.remove('border-primary', 'text-primary');
+            tabPosts.classList.add('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+        } else {
+            watchlistSection.classList.add('hidden');
+            postsSection.classList.remove('hidden');
+            tabPosts.classList.add('border-primary', 'text-primary');
+            tabPosts.classList.remove('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+            tabWatchlist.classList.remove('border-primary', 'text-primary');
+            tabWatchlist.classList.add('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+            loadUserPosts();
+        }
+    }
+
+    async function loadUserPosts() {
+        try {
+            const response = await fetch(`${API_URL}/api/social/posts?userId=${viewedUserId}&limit=50`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                displayUserPosts(data.posts || []);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar posts do usuário:', error);
+        }
+    }
+
+    function displayUserPosts(posts) {
+        const container = document.getElementById('userPosts');
+        
+        if (posts.length === 0) {
+            container.innerHTML = '<div class="text-center text-gray-400 py-8">Este usuário ainda não publicou nenhum post.</div>';
+            return;
+        }
+        
+        // Função auxiliar para obter ID do usuário atual
+        function getCurrentUserId() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return null;
+                return JSON.parse(atob(token.split('.')[1])).id;
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        container.innerHTML = posts.map(post => {
+            const currentUserId = getCurrentUserId();
+            const isRepost = post.repostedBy && post.repostedBy.id === viewedUserId;
+            
+            // Avatar do autor original do post
+            const originalUserAvatar = post.user.profilePicture 
+                ? `<img src="${post.user.profilePicture}" alt="${post.user.name}" class="w-10 h-10 rounded-full object-cover cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">`
+                : `<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">${post.user.name ? post.user.name.charAt(0).toUpperCase() : 'U'}</div>`;
+            
+            return `
+            <div class="bg-gray-100 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                ${isRepost ? `
+                    <div class="flex items-center gap-2 mb-3 text-green-500 dark:text-green-400 text-xs">
+                        <span class="material-symbols-outlined !text-sm">repeat</span>
+                        <span>${post.repostedBy.name} repostou</span>
+                    </div>
+                ` : ''}
+                <div class="flex items-start gap-3 mb-3">
+                    ${originalUserAvatar}
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <p class="text-gray-900 dark:text-white font-bold text-sm">${post.user.name}</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs">@${post.user.email.split('@')[0]}</p>
+                            <span class="text-gray-400">·</span>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                        <p class="text-gray-800 dark:text-gray-200 text-sm whitespace-pre-wrap">${post.content}</p>
+                        ${post.title ? `
+                            <div class="mt-3 p-3 bg-gray-200 dark:bg-gray-700 rounded-lg flex gap-3 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onclick="window.location.href='categoria.html?tmdbId=${post.title.tmdbId}&type=${post.title.type}'">
+                                <img src="${post.title.posterPath ? (post.title.posterPath.startsWith('http') ? post.title.posterPath : `https://image.tmdb.org/t/p/w92${post.title.posterPath}`) : 'https://via.placeholder.com/92x138'}" alt="${post.title.title}" class="w-16 h-24 object-cover rounded">
+                                <div class="flex-1">
+                                    <h4 class="text-gray-900 dark:text-white font-bold text-sm">${post.title.title}</h4>
+                                    <p class="text-gray-600 dark:text-gray-400 text-xs line-clamp-2">${post.title.overview || ''}</p>
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${post.images && post.images.length > 0 ? `
+                            <div class="mt-3 grid grid-cols-2 gap-2">
+                                ${post.images.map(img => `<img src="${img}" alt="Post image" class="w-full h-32 object-cover rounded-lg">`).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="flex items-center gap-4 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs">
+                                <span class="material-symbols-outlined !text-base">favorite</span>
+                                <span>${post.likesCount || 0}</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs">
+                                <span class="material-symbols-outlined !text-base">chat_bubble_outline</span>
+                                <span>${post.commentsCount || 0}</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs">
+                                <span class="material-symbols-outlined !text-base">repeat</span>
+                                <span>${post.repostsCount || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    // Menu de admin
+    document.getElementById('adminMenuBtn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        const dropdown = document.getElementById('adminMenuDropdown');
+        dropdown.classList.toggle('hidden');
+    });
+
+    // Fechar menu ao clicar fora
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#adminMenuContainer')) {
+            document.getElementById('adminMenuDropdown').classList.add('hidden');
+        }
+    });
+
+    // Banir/Desbanir
+    document.getElementById('banUserBtn').addEventListener('click', function() {
+        const isBanned = viewedUser.isBanned;
+        showConfirmModal(
+            isBanned ? 'Desbanir Usuário' : 'Banir Usuário',
+            isBanned ? 'Tem certeza que deseja desbanir este usuário?' : 'Tem certeza que deseja banir este usuário?',
+            'block',
+            'bg-red-100 dark:bg-red-900/30',
+            'text-red-600 dark:text-red-400',
+            'bg-red-600 hover:bg-red-700',
+            async () => {
+                try {
+                    const response = await fetch(`${API_URL}/api/admin/users/${viewedUserId}/ban`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ banned: !isBanned })
+                    });
+
+                    if (response.ok) {
+                        alert(isBanned ? 'Usuário desbanido com sucesso' : 'Usuário banido com sucesso');
+                        loadProfile();
+                    } else {
+                        const errorData = await response.json();
+                        alert('Erro: ' + (errorData.error || 'Erro desconhecido'));
+                    }
+                } catch (error) {
+                    console.error('Erro ao banir/desbanir usuário:', error);
+                    alert('Erro ao banir/desbanir usuário');
+                }
+            }
+        );
+    });
+
+    // Deletar usuário
+    document.getElementById('deleteUserBtn').addEventListener('click', function() {
+        showConfirmModal(
+            'Deletar Conta',
+            'Tem certeza que deseja DELETAR esta conta? Esta ação não pode ser desfeita!',
+            'delete',
+            'bg-red-100 dark:bg-red-900/30',
+            'text-red-600 dark:text-red-400',
+            'bg-red-600 hover:bg-red-700',
+            async () => {
+                try {
+                    const response = await fetch(`${API_URL}/api/admin/users/${viewedUserId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Usuário deletado com sucesso');
+                        window.location.href = 'dashboard-admin.html';
+                    } else {
+                        const errorData = await response.json();
+                        alert('Erro: ' + (errorData.error || 'Erro desconhecido'));
+                    }
+                } catch (error) {
+                    console.error('Erro ao deletar usuário:', error);
+                    alert('Erro ao deletar usuário');
+                }
+            }
+        );
+    });
+
+    // Gerenciar admin
+    document.getElementById('manageAdminBtn').addEventListener('click', function() {
+        const action = prompt('Digite:\n1 - Dar Admin\n2 - Remover Admin\n3 - Dar Admin Master\n4 - Remover Admin Master');
+        
+        if (!action) return;
+
+        let isAdmin = undefined;
+        let isAdminMaster = undefined;
+
+        switch(action.trim()) {
+            case '1':
+                isAdmin = true;
+                break;
+            case '2':
+                isAdmin = false;
+                isAdminMaster = false;
+                break;
+            case '3':
+                isAdminMaster = true;
+                break;
+            case '4':
+                isAdminMaster = false;
+                isAdmin = false;
+                break;
+            default:
+                alert('Opção inválida');
+                return;
+        }
+
+        showConfirmModal(
+            'Gerenciar Permissões',
+            'Tem certeza que deseja alterar as permissões de administrador deste usuário?',
+            'admin_panel_settings',
+            'bg-yellow-100 dark:bg-yellow-900/30',
+            'text-yellow-600 dark:text-yellow-400',
+            'bg-yellow-600 hover:bg-yellow-700',
+            async () => {
+                try {
+                    const response = await fetch(`${API_URL}/api/admin/users/${viewedUserId}/admin`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ isAdmin, isAdminMaster })
+                    });
+
+                    if (response.ok) {
+                        alert('Permissões atualizadas com sucesso');
+                        loadProfile();
+                    } else {
+                        const errorData = await response.json();
+                        alert('Erro: ' + (errorData.error || 'Erro desconhecido'));
+                    }
+                } catch (error) {
+                    console.error('Erro ao atualizar permissões:', error);
+                    alert('Erro ao atualizar permissões');
+                }
+            }
+        );
+    });
+
+    // Função para mostrar modal de confirmação
+    function showConfirmModal(title, message, icon, iconBg, iconColor, buttonColor, onConfirm) {
+        const modal = document.getElementById('confirmModal');
+        const iconDiv = document.getElementById('confirmIcon');
+        const titleEl = document.getElementById('confirmTitle');
+        const messageEl = document.getElementById('confirmMessage');
+        const confirmBtn = document.getElementById('confirmActionBtn');
+        
+        iconDiv.className = `w-16 h-16 rounded-full ${iconBg} flex items-center justify-center mb-4`;
+        iconDiv.innerHTML = `<span class="material-symbols-outlined ${iconColor} !text-3xl">${icon}</span>`;
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        confirmBtn.className = `flex-1 px-4 py-2.5 ${buttonColor} rounded-lg transition-colors font-medium text-white`;
+        
+        modal.classList.remove('hidden');
+        
+        document.getElementById('cancelConfirmBtn').onclick = () => {
+            modal.classList.add('hidden');
+        };
+        
+        confirmBtn.onclick = () => {
+            modal.classList.add('hidden');
+            onConfirm();
+        };
+    }
+
+    // Carregar perfil do usuário logado no header
+    async function loadUserProfile() {
+        try {
+            const response = await fetch(`${API_URL}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const userData = await response.json();
+                const profileButton = document.getElementById('userAvatar');
+                
+                if (userData.profilePicture) {
+                    profileButton.style.backgroundImage = `url('${userData.profilePicture}')`;
+                } else if (userData.name) {
+                    const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                    profileButton.innerHTML = `<span class="text-sm font-bold text-white">${initials}</span>`;
+                }
+                profileButton.onclick = () => window.location.href = 'perfil.html';
+            }
+        } catch (error) {
+            console.warn('Erro ao carregar perfil do usuário:', error);
+        }
+    }
+
+    let isFollowing = false;
+
+    async function checkFollowStatus() {
+        try {
+            const response = await fetch(`${API_URL}/api/social/users/${viewedUserId}/follow-status`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                isFollowing = data.following;
+                updateFollowButton();
+            }
+        } catch (error) {
+            console.error('Erro ao verificar follow:', error);
+        }
+    }
+
+    async function loadFollowCounts() {
+        try {
+            // Buscar contadores de seguidores/seguindo
+            // Por enquanto, vamos deixar como 0
+            // Pode ser implementado depois com uma rota específica
+        } catch (error) {
+            console.error('Erro ao carregar contadores:', error);
+        }
+    }
+
+    function updateFollowButton() {
+        const followBtn = document.getElementById('followBtn');
+        if (followBtn) {
+            followBtn.textContent = isFollowing ? 'Deixar de Seguir' : 'Seguir';
+            followBtn.className = isFollowing 
+                ? 'w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium'
+                : 'w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors font-medium';
+        }
+    }
+
+    async function toggleFollow() {
+        try {
+            const response = await fetch(`${API_URL}/api/social/users/${viewedUserId}/follow`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                isFollowing = data.following;
+                updateFollowButton();
+                loadFollowCounts();
+            }
+        } catch (error) {
+            console.error('Erro ao seguir/deixar de seguir:', error);
+            alert('Erro ao seguir/deixar de seguir usuário');
+        }
+    }
+
+    function openMessage() {
+        window.location.href = `echosocial.html?chat=${viewedUserId}`;
+    }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAdminStatus();
+        loadProfile();
+        loadUserProfile();
+        document.getElementById('toggleListBtn').addEventListener('click', toggleList);
+        document.getElementById('followBtn').addEventListener('click', toggleFollow);
+        document.getElementById('messageBtn').addEventListener('click', openMessage);
+    });
+</script>
+    <script src="js/notifications.js"></script>
+</body>
+</html>
+

@@ -2,10 +2,19 @@
 <html class="dark" lang="pt-br">
 <head>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Crie sua conta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <meta name="theme-color" content="#335b7e"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="EchoView"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="description" content="Criar conta - EchoView"/>
+    <link rel="manifest" href="manifest.json"/>
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23335b7e' width='100' height='100'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%23e2e0df'%3EEV%3C/text%3E%3C/svg%3E"/>
+    <link rel="stylesheet" href="css/mobile.css"/>
+    <title>Crie sua conta - EchoView</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
@@ -13,12 +22,17 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#38BDF8",
-                        "background-light": "#f6f6f8",
-                        "background-dark": "#111827",
+                        "primary": "#335b7e",
+                        "secondary": "#707d9b",
+                        "tertiary": "#a7aabd",
+                        "accent": "#e2e0df",
+                        "background-light": "#e2e0df",
+                        "background-dark": "#051422",
+                        "surface": "#072f57",
+                        "surface-hover": "#335b7e",
                     },
                     fontFamily: {
-                        "display": ["Spline Sans", "sans-serif"]
+                        "display": ["Inter", "sans-serif"]
                     },
                     borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
                 },
@@ -32,6 +46,7 @@
             appearance: none;
         }
         body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: max(884px, 100dvh);
         }
         
@@ -56,12 +71,11 @@
         }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display">
+<body class="bg-background-light dark:bg-background-dark font-display" style="background: linear-gradient(135deg, #072f57 0%, #051422 50%, #000000 100%); min-height: 100vh;">
 <div class="relative flex min-h-screen w-full flex-col items-center justify-center bg-background-light dark:bg-background-dark p-4">
     <div class="w-full max-w-md space-y-6">
         <div class="text-center">
             <div class="flex items-center justify-center mb-4">
-                <span class="material-symbols-outlined text-primary text-5xl">movie_filter</span>
             </div>
             <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Crie sua conta</h1>
             <p class="mt-2 text-base text-gray-600 dark:text-gray-400">Comece a organizar e compartilhar o que você assiste.</p>
@@ -200,6 +214,79 @@
         document.getElementById('message').classList.add('hidden');
     }
 
+    function showBackupCodeModal(backupCode) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm';
+        modal.id = 'backupCodeModal';
+        modal.innerHTML = `
+            <div class="relative z-10 flex w-full max-w-md flex-col items-center justify-center space-y-6 rounded-xl bg-white dark:bg-gray-800 p-8 mx-4 shadow-2xl">
+                <div class="w-full text-center">
+                    <div class="flex items-center justify-center mb-4">
+                        <span class="material-symbols-outlined text-primary text-6xl">vpn_key</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Código de Backup</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        Guarde este código em um local seguro! Você precisará dele para recuperar sua senha.
+                    </p>
+                </div>
+                <div class="w-full">
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 border-2 border-primary border-dashed">
+                        <p class="text-center text-2xl font-mono font-bold text-gray-900 dark:text-white tracking-wider">
+                            ${backupCode}
+                        </p>
+                    </div>
+                </div>
+                <div class="w-full">
+                    <button 
+                        id="copyBackupCodeBtn"
+                        class="w-full px-4 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors font-medium mb-3">
+                        Copiar Código
+                    </button>
+                    <button 
+                        id="closeBackupModalBtn"
+                        class="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg transition-colors font-medium">
+                        Entendi, vou guardar
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Copiar código
+        document.getElementById('copyBackupCodeBtn').addEventListener('click', () => {
+            navigator.clipboard.writeText(backupCode).then(() => {
+                const btn = document.getElementById('copyBackupCodeBtn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Código copiado!';
+                btn.classList.add('bg-green-600');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('bg-green-600');
+                }, 2000);
+            });
+        });
+
+        // Fechar modal e redirecionar
+        document.getElementById('closeBackupModalBtn').addEventListener('click', () => {
+            modal.remove();
+            showMessage('Conta criada com sucesso! Redirecionando...', 'success');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
+        });
+
+        // Fechar ao clicar fora
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+                showMessage('Conta criada com sucesso! Redirecionando...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1000);
+            }
+        });
+    }
+
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         hideMessage();
@@ -255,19 +342,9 @@
                 return;
             }
 
-            // 🚨 NOVO: Exibir o Código de Backup para o usuário salvar
+            // Exibir o Código de Backup em um modal bonito
             const backupCode = data.backupCode;
-            
-            // Usar um alerta simples para garantir que o usuário veja
-            alert(`SUCESSO! Sua conta foi criada.
-🚨 CÓDIGO DE BACKUP: ${backupCode}
-GUARDE ESTE CÓDIGO! Ele será usado para recuperar sua senha.
-Você será redirecionado para o login.`);
-
-            showMessage('Conta criada com sucesso! Redirecionando...', 'success');
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 100); // Redirecionamento mais rápido após o alerta
+            showBackupCodeModal(backupCode);
 
         } catch (error) {
             showMessage('Erro ao conectar com o servidor', 'error');
