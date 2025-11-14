@@ -53,7 +53,7 @@ class ActivityCalendar {
     async loadUserCreatedAt() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:3000/api/profile/me', {
+            const response = await fetch('https://app-backend-api-h67c.onrender.com/api/profile/me', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
@@ -79,7 +79,7 @@ class ActivityCalendar {
     async loadActivities(year) {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/api/activity/calendar?year=${year}`, {
+            const response = await fetch(`https://app-backend-api-h67c.onrender.com/api/activity/calendar?year=${year}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
@@ -97,7 +97,7 @@ class ActivityCalendar {
                 if (!this.activities[todayKey] && todayYear === this.currentYear) {
                     // Tentar corrigir o login de hoje
                     try {
-                        const fixResponse = await fetch('http://localhost:3000/api/activity/fix-today-login', {
+                        const fixResponse = await fetch('https://app-backend-api-h67c.onrender.com/api/activity/fix-today-login', {
                             method: 'POST',
                             headers: { 
                                 'Authorization': `Bearer ${token}`,
@@ -128,7 +128,7 @@ class ActivityCalendar {
     async loadStreak() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:3000/api/activity/streak', {
+            const response = await fetch('https://app-backend-api-h67c.onrender.com/api/activity/streak', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
@@ -192,7 +192,7 @@ class ActivityCalendar {
                 
                 try {
                     const token = localStorage.getItem('token');
-                    const response = await fetch('http://localhost:3000/api/activity/restore-streak', {
+                    const response = await fetch('https://app-backend-api-h67c.onrender.com/api/activity/restore-streak', {
                         method: 'POST',
                         headers: { 
                             'Authorization': `Bearer ${token}`,

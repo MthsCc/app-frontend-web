@@ -4,7 +4,7 @@
  */
 
 const NotificationSystem = {
-    API_URL: 'http://localhost:3000',
+    API_URL: 'https://app-backend-api-h67c.onrender.com',
     token: null,
     pollingInterval: null,
     
