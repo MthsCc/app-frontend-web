@@ -1144,8 +1144,23 @@
             
             if (response.ok) {
                 const data = await response.json();
-                const providers = data.results?.BR?.flatrate || data.results?.BR?.buy || data.results?.BR?.rent || [];
-                displayStreamingProviders(providers);
+                const brProviders = data.results?.BR || {};
+                // Combinar todos os providers (flatrate, buy, rent)
+                const allProviders = [
+                    ...(brProviders.flatrate || []),
+                    ...(brProviders.buy || []),
+                    ...(brProviders.rent || [])
+                ];
+                // Remover duplicatas baseado no provider_id
+                const uniqueProvidersMap = new Map();
+                allProviders.forEach(provider => {
+                    const key = provider.provider_id || provider.provider_name;
+                    if (!uniqueProvidersMap.has(key)) {
+                        uniqueProvidersMap.set(key, provider);
+                    }
+                });
+                const uniqueProviders = Array.from(uniqueProvidersMap.values());
+                displayStreamingProviders(uniqueProviders);
             } else if (response.status === 404) {
                 // Se não houver providers, simplesmente não mostrar
                 document.getElementById('heroStreamingProviders').innerHTML = '';
@@ -1853,8 +1868,18 @@
             return '';
         }
         
+        // Remover duplicatas baseado no provider_id
+        const uniqueProvidersMap = new Map();
+        allProviders.forEach(provider => {
+            const key = provider.provider_id || provider.provider_name;
+            if (!uniqueProvidersMap.has(key)) {
+                uniqueProvidersMap.set(key, provider);
+            }
+        });
+        const uniqueProviders = Array.from(uniqueProvidersMap.values());
+        
         // Filtrar apenas providers permitidos
-        const allowedProviders = allProviders.filter(provider => 
+        const allowedProviders = uniqueProviders.filter(provider => 
             ALLOWED_PROVIDERS.some(allowed => {
                 const providerName = provider.provider_name.toLowerCase();
                 const allowedName = allowed.toLowerCase();
