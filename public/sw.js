@@ -13,10 +13,7 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS_TO_CACHE).catch(() => {
-                // Continuar mesmo se alguns assets não estiverem disponíveis
-                return Promise.resolve();
-            });
+            return cache.addAll(ASSETS_TO_CACHE).catch(() => Promise.resolve());
         })
     );
     self.skipWaiting();
@@ -43,6 +40,16 @@ self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
 
+    // IGNORAR manifest, SW e ícones para evitar 401
+    if (
+        url.pathname.endsWith('manifest.json') ||
+        url.pathname.endsWith('sw.js') ||
+        url.pathname.includes('icon') ||
+        request.headers.get('Accept')?.includes('image/svg+xml')
+    ) {
+        return;
+    }
+
     // Não cachear requisições para API
     if (url.pathname.startsWith('/api/')) {
         event.respondWith(
@@ -50,9 +57,7 @@ self.addEventListener('fetch', (event) => {
                 return new Response(JSON.stringify({ error: 'Offline' }), {
                     status: 503,
                     statusText: 'Service Unavailable',
-                    headers: new Headers({
-                        'Content-Type': 'application/json'
-                    })
+                    headers: new Headers({ 'Content-Type': 'application/json' })
                 });
             })
         );
@@ -63,32 +68,33 @@ self.addEventListener('fetch', (event) => {
     if (request.destination === 'image') {
         event.respondWith(
             caches.match(request).then((response) => {
-                return response || fetch(request).then((response) => {
-                    const clonedResponse = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(request, clonedResponse);
-                    });
-                    return response;
-                }).catch(() => {
-                    return new Response('Image not found', { status: 404 });
-                });
+                return (
+                    response ||
+                    fetch(request)
+                        .then((response) => {
+                            const cloned = response.clone();
+                            caches.open(CACHE_NAME).then((cache) =>
+                                cache.put(request, cloned)
+                            );
+                            return response;
+                        })
+                        .catch(() => new Response('Image not found', { status: 404 }))
+                );
             })
         );
         return;
     }
 
-    // Para outros recursos: Network first, fallback to cache
+    // Para outros recursos: Network first
     event.respondWith(
         fetch(request)
             .then((response) => {
-                const clonedResponse = response.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(request, clonedResponse);
-                });
+                const cloned = response.clone();
+                caches.open(CACHE_NAME).then((cache) =>
+                    cache.put(request, cloned)
+                );
                 return response;
             })
-            .catch(() => {
-                return caches.match(request) || new Response('Offline', { status: 503 });
-            })
+            .catch(() => caches.match(request) || new Response('Offline', { status: 503 }))
     );
 });
