@@ -102,7 +102,8 @@
     <div class="layout-container flex h-full grow flex-col">
         <!-- Header -->
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 px-4 md:px-10 py-3 sticky top-0 z-50 bg-background-dark/80 backdrop-blur-sm">
-            <div class="flex items-center gap-4 text-white">
+            <div class="flex items-center gap-3 text-white">
+                <img src="logo.svg" alt="EchoView Logo" class="w-8 h-8 object-contain cursor-pointer" onclick="window.location.href='catalogo.html'"/>
                 <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display cursor-pointer" onclick="window.location.href='catalogo.html'">ECHOVIEW</h2>
             </div>
             <div class="flex flex-1 justify-center items-center gap-4 md:gap-6">
@@ -305,7 +306,8 @@
 
 <script>
     const API_URL = 'https://app-backend-api-h67c.onrender.com';
-    const token = localStorage.getItem('token');
+    // Verificar token no localStorage ou sessionStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     
     if (!token) {
         window.location.href = 'login.html';
@@ -508,7 +510,8 @@
         // Função auxiliar para obter ID do usuário atual
         function getCurrentUserId() {
             try {
-                const token = localStorage.getItem('token');
+                // Verificar token no localStorage ou sessionStorage
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
                 if (!token) return null;
                 return JSON.parse(atob(token.split('.')[1])).id;
             } catch (e) {
@@ -777,7 +780,7 @@
 
     async function checkFollowStatus() {
         try {
-            const response = await fetch(`${API_URL}/api/social/users/${viewedUserId}/follow-status`, {
+            const response = await fetch(`${API_URL}/api/social/follow/${viewedUserId}/status`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
@@ -813,8 +816,8 @@
 
     async function toggleFollow() {
         try {
-            const response = await fetch(`${API_URL}/api/social/users/${viewedUserId}/follow`, {
-                method: 'POST',
+            const response = await fetch(`${API_URL}/api/social/follow/${viewedUserId}`, {
+                method: isFollowing ? 'DELETE' : 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             

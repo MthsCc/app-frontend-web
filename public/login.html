@@ -298,6 +298,7 @@
     <div class="absolute inset-0 z-0 h-full w-full bg-cover bg-center bg-no-repeat opacity-10" data-alt="Abstract cinematic background pattern" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuByOnjxKYgJYU41wabx0E81IyEWIM0axhPRz15c1lJJuc7OydLi8x9NKIRCSCPB2m1spOVZ-AtQA2_uxrRg3XIh5wB9_qhcJzNfuTyyx0nUIC8qBR7Vit2vsZwt6stPTz1d1n8Y7xqLD4jo5C3L0pODhsWeEpA9aS64_oNyoRqnmBf973pzBMyJkJXTCcySE5eor0oxCFi4bxf_P09SaH4GN5Xz6A90wwZvWGD2-f_CcEt5-0CnVOW9L44qwBG5TtEQNHy6-tTZBWZ9');"></div>
     <div class="relative z-10 flex w-full max-w-md flex-col items-center justify-center space-y-6 min-h-screen sm:min-h-auto py-4 sm:py-0">
         <div class="flex items-center justify-center gap-3 pb-4">
+            <img src="logo.svg" alt="EchoView Logo" class="w-12 h-12 object-contain"/>
         </div>
         <div class="w-full text-center">
             <h1 class="text-text-light tracking-tight text-[28px] sm:text-[32px] font-bold leading-tight">Bem-vindo de volta!</h1>
@@ -340,7 +341,15 @@
 
             <div id="message" class="text-sm p-3 rounded text-center hidden"></div>
 
-            <div class="w-full text-right">
+            <div class="flex items-center justify-between w-full">
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input 
+                        type="checkbox" 
+                        id="rememberMe"
+                        class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-primary focus:ring-2 focus:ring-primary/50 cursor-pointer"
+                        checked>
+                    <span class="text-text-light text-sm font-medium group-hover:text-primary transition-colors">Lembrar-me</span>
+                </label>
                 <a class="text-primary text-sm font-medium leading-normal underline hover:text-primary/80 transition-colors" href="#" onclick="openForgotPasswordModal(event)">Esqueci minha senha?</a>
             </div>
 
@@ -437,7 +446,10 @@
         loadingScreen.className = 'loading-screen';
         loadingScreen.id = 'loadingScreen';
         loadingScreen.innerHTML = `
-            <h1 class="app-title animate-in">ECHOVIEW</h1>
+            <div class="flex flex-col items-center gap-6">
+                <img src="logo.svg" alt="EchoView Logo" class="w-24 h-24 object-contain animate-in" style="filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));"/>
+                <h1 class="app-title animate-in">ECHOVIEW</h1>
+            </div>
             <div class="loader">
                 <div class="circle">
                     <div class="dot"></div>
@@ -468,6 +480,47 @@
         }, 2500);
     }
 
+    // Verificar se há token salvo e fazer login automático
+    async function checkAutoLogin() {
+        const token = localStorage.getItem('token');
+        const rememberMe = localStorage.getItem('rememberMe');
+        
+        // Se não tiver "lembrar-me" ativado, não fazer login automático
+        if (!token || rememberMe !== 'true') {
+            return;
+        }
+        
+        // Verificar se o token ainda é válido
+        try {
+            const response = await fetch(`${API_URL}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                // Token válido, redirecionar automaticamente
+                showMessage('Login automático realizado! Redirecionando...', 'success');
+                showLoadingScreen();
+                setTimeout(() => {
+                    window.location.href = 'catalogo.html';
+                }, 1000);
+            } else {
+                // Token inválido, limpar dados
+                localStorage.removeItem('token');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('rememberMe');
+            }
+        } catch (error) {
+            console.error('Erro ao verificar token:', error);
+            // Em caso de erro, limpar dados
+            localStorage.removeItem('token');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('rememberMe');
+        }
+    }
+    
+    // Verificar login automático ao carregar a página
+    checkAutoLogin();
+
     // Tratamento do Formulário de Login
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -475,6 +528,7 @@
         
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
         const loginBtn = document.getElementById('loginBtn');
         
         loginBtn.disabled = true;
@@ -492,9 +546,25 @@
             const data = await response.json();
 
             if (response.ok) {
-                // Sucesso: Salvar o token JWT e o email do usuário e redirecionar
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userEmail', email);
+                // Salvar preferência de "lembrar-me"
+                if (rememberMe) {
+                    // Salvar no localStorage (persiste após fechar navegador)
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('rememberMe', 'true');
+                    // Limpar sessionStorage se existir
+                    sessionStorage.removeItem('token');
+                    sessionStorage.removeItem('userEmail');
+                } else {
+                    // Se não marcar "lembrar-me", usar sessionStorage (limpa ao fechar navegador)
+                    sessionStorage.setItem('token', data.token);
+                    sessionStorage.setItem('userEmail', email);
+                    // Limpar localStorage
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userEmail');
+                    localStorage.removeItem('rememberMe');
+                }
+                
                 showMessage('Login realizado com sucesso! Redirecionando...', 'success');
                 // Mostrar tela de loading antes de redirecionar
                 showLoadingScreen();

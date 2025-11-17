@@ -3,13 +3,41 @@
  * Funciona em todas as páginas da aplicação
  */
 
+// Adicionar estilos CSS para animações
+if (!document.getElementById('notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'notification-styles';
+    style.textContent = `
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slide-in {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.4s ease-out;
+        }
+        
+        .animate-slide-in {
+            animation: slide-in 0.3s ease-out forwards;
+            opacity: 0;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 const NotificationSystem = {
     API_URL: 'https://app-backend-api-h67c.onrender.com',
     token: null,
     pollingInterval: null,
     
     init() {
-        this.token = localStorage.getItem('token');
+        // Verificar token no localStorage ou sessionStorage
+        this.token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if (!this.token) return;
         
         this.setupEventListeners();
@@ -67,26 +95,30 @@ const NotificationSystem = {
         
         if (!notifications || notifications.length === 0) {
             container.innerHTML = `
-                <div class="p-8 flex flex-col items-center justify-center">
-                    <div class="w-16 h-16 rounded-full bg-[#335b7e]/20 flex items-center justify-center mb-4">
-                        <span class="material-symbols-outlined text-[#707d9b] !text-4xl">notifications_none</span>
+                <div class="p-8 flex flex-col items-center justify-center animate-fade-in">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#335b7e]/30 to-[#707d9b]/20 flex items-center justify-center mb-4 shadow-lg">
+                        <span class="material-symbols-outlined text-[#707d9b] !text-5xl">notifications_none</span>
                     </div>
-                    <p class="text-white font-medium text-base mb-1">Ainda não há notificações</p>
-                    <p class="text-gray-400 text-sm text-center">Quando você receber mensagens ou outras atualizações, elas aparecerão aqui</p>
+                    <p class="text-white font-semibold text-lg mb-2">Nenhuma notificação</p>
+                    <p class="text-gray-400 text-sm text-center max-w-xs">Quando você receber mensagens ou outras atualizações, elas aparecerão aqui</p>
                 </div>
             `;
             return;
         }
         
-        container.innerHTML = notifications.map(conv => {
+        container.innerHTML = notifications.map((conv, index) => {
             const otherUser = conv.otherUser || conv.user;
-            const avatar = this.createAvatarElement(otherUser, 'w-10 h-10');
+            const avatar = this.createAvatarElement(otherUser, 'w-12 h-12');
             let lastMsg = 'Nova mensagem';
+            let msgIcon = 'chat_bubble';
+            
             if (conv.lastMessage) {
                 if (typeof conv.lastMessage === 'string') {
                     lastMsg = conv.lastMessage || 'Mídia';
+                    msgIcon = 'image';
                 } else {
                     lastMsg = conv.lastMessage.content || (conv.lastMessage.hasMedia ? 'Mídia' : 'Nova mensagem');
+                    msgIcon = conv.lastMessage.hasMedia ? 'image' : 'chat_bubble';
                 }
             }
             
@@ -99,19 +131,49 @@ const NotificationSystem = {
                 ? `javascript:void(0);` 
                 : `echosocial.html?chat=${otherUser.id}`;
             
+            // Calcular tempo relativo
+            const timeAgo = this.getTimeAgo(conv.lastMessage?.createdAt || conv.updatedAt || new Date());
+            
             return `
-                <div class="notification-item p-3 hover:bg-[#335b7e] cursor-pointer rounded-lg border-b border-white/5" style="width: 100%; box-sizing: border-box; overflow: hidden;" onclick="window.location.href='${chatUrl}'">
-                    <div class="flex items-start gap-3" style="width: 100%; box-sizing: border-box;">
-                        <div style="flex-shrink: 0; width: 40px;">${avatar}</div>
-                        <div style="flex: 1; min-width: 0; max-width: calc(100% - 60px); overflow: hidden; box-sizing: border-box;">
-                            <p class="text-white font-medium text-sm" style="word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%; overflow: hidden; white-space: normal; margin: 0;">${safeName}</p>
-                            <p class="text-gray-400 text-xs mt-1" style="word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%; overflow: hidden; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; margin: 0; line-height: 1.4;">${safeMsg}</p>
+                <div class="notification-item group relative p-4 hover:bg-gradient-to-r hover:from-[#335b7e]/30 hover:to-[#707d9b]/20 cursor-pointer rounded-xl border-b border-white/5 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg animate-slide-in" style="width: 100%; box-sizing: border-box; overflow: hidden; animation-delay: ${index * 50}ms;" onclick="window.location.href='${chatUrl}'">
+                    <div class="flex items-start gap-4" style="width: 100%; box-sizing: border-box;">
+                        <div class="relative flex-shrink-0" style="width: 48px;">
+                            ${avatar}
+                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md border-2 border-[#051422]">
+                                <span class="material-symbols-outlined text-white !text-xs">${msgIcon}</span>
+                            </div>
                         </div>
-                        <span class="w-2 h-2 bg-blue-500 rounded-full" style="flex-shrink: 0; width: 8px; height: 8px; margin-top: 4px;"></span>
+                        <div class="flex-1 min-w-0" style="max-width: calc(100% - 80px); overflow: hidden; box-sizing: border-box;">
+                            <div class="flex items-start justify-between gap-2 mb-1">
+                                <p class="text-white font-semibold text-sm group-hover:text-blue-300 transition-colors" style="word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%; overflow: hidden; white-space: normal; margin: 0;">${safeName}</p>
+                                <span class="text-gray-500 text-xs whitespace-nowrap flex-shrink-0">${timeAgo}</span>
+                            </div>
+                            <p class="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors" style="word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%; overflow: hidden; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; margin: 0; line-height: 1.5;">${safeMsg}</p>
+                        </div>
+                        <div class="flex-shrink-0 flex flex-col items-center gap-2">
+                            <span class="w-3 h-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full shadow-lg animate-pulse"></span>
+                        </div>
                     </div>
+                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#335b7e]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
             `;
         }).join('');
+    },
+    
+    getTimeAgo(date) {
+        if (!date) return 'Agora';
+        const now = new Date();
+        const then = new Date(date);
+        const diffMs = now - then;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Agora';
+        if (diffMins < 60) return `${diffMins}m`;
+        if (diffHours < 24) return `${diffHours}h`;
+        if (diffDays < 7) return `${diffDays}d`;
+        return then.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
     },
     
     createAvatarElement(user, sizeClass = 'w-10 h-10') {

@@ -188,7 +188,8 @@
     <div class="layout-container flex h-full grow flex-col">
         <!-- Header -->
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 px-4 md:px-10 py-3 sticky top-0 z-50 bg-background-dark/80 backdrop-blur-sm">
-            <div class="flex items-center gap-4 text-white">
+            <div class="flex items-center gap-3 text-white">
+                <img src="logo.svg" alt="EchoView Logo" class="w-8 h-8 object-contain cursor-pointer" onclick="window.location.href='catalogo.html'"/>
                 <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display cursor-pointer" onclick="window.location.href='catalogo.html'">ECHOVIEW</h2>
             </div>
             <div class="flex flex-1 justify-center items-center gap-4 md:gap-6">
@@ -385,7 +386,8 @@
     // CONFIGURAÇÕES E CONSTANTES
     // ============================================
     const API_URL = 'https://app-backend-api-h67c.onrender.com';
-    const token = localStorage.getItem('token');
+    // Verificar token no localStorage ou sessionStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     
     if (!token) {
         window.location.href = 'login.html';
@@ -1439,7 +1441,14 @@
         document.querySelectorAll('.fab-option').forEach(opt => opt.classList.remove('active'));
     }
 
+    let isSubmittingPost = false; // Flag para prevenir posts duplicados
+    
     async function submitPost(type) {
+        // Prevenir múltiplos envios
+        if (isSubmittingPost) {
+            return;
+        }
+        
         const content = document.getElementById('postContent').value.trim();
         
         if (!content) {
@@ -1450,6 +1459,16 @@
         if (type === 'movie' && !AppState.selectedMovie) {
             alert('Por favor, selecione um filme/série');
             return;
+        }
+        
+        isSubmittingPost = true; // Bloquear novos envios
+        
+        // Desabilitar botão de envio
+        const submitBtn = document.querySelector('[onclick*="submitPost"]');
+        const originalBtnText = submitBtn ? submitBtn.textContent : '';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
         }
         
         try {
@@ -1466,7 +1485,7 @@
             // Adicionar mídia se houver
             if (type === 'normal') {
                 const mediaInput = document.getElementById('postMedia');
-                if (mediaInput.files.length > 0) {
+                if (mediaInput && mediaInput.files.length > 0) {
                     const images = [];
                     const videos = [];
                     
@@ -1500,6 +1519,12 @@
             });
             
             if (response.ok) {
+                // Limpar formulário
+                document.getElementById('postContent').value = '';
+                if (document.getElementById('postMedia')) {
+                    document.getElementById('postMedia').value = '';
+                }
+                AppState.selectedMovie = null;
                 closePostModal();
                 loadPosts();
             } else {
@@ -1509,6 +1534,12 @@
         } catch (error) {
             console.error('Erro ao publicar post:', error);
             alert('Erro ao publicar post');
+        } finally {
+            isSubmittingPost = false; // Liberar bloqueio
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+            }
         }
     }
 

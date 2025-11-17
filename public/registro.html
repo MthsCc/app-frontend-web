@@ -266,23 +266,97 @@
             });
         });
 
-        // Fechar modal e redirecionar
-        document.getElementById('closeBackupModalBtn').addEventListener('click', () => {
+        // Fechar modal e fazer login automático
+        document.getElementById('closeBackupModalBtn').addEventListener('click', async () => {
             modal.remove();
-            showMessage('Conta criada com sucesso! Redirecionando...', 'success');
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1000);
+            showMessage('Fazendo login automático...', 'success');
+            
+            // Fazer login automático após registro
+            try {
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                const loginResponse = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const loginData = await loginResponse.json();
+
+                if (loginResponse.ok) {
+                    // Salvar token e email (com "lembrar-me" ativado por padrão após registro)
+                    localStorage.setItem('token', loginData.token);
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('rememberMe', 'true');
+                    
+                    showMessage('Login realizado! Redirecionando...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'catalogo.html';
+                    }, 1000);
+                } else {
+                    // Se login automático falhar, redirecionar para login
+                    showMessage('Conta criada! Faça login para continuar.', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Erro no login automático:', error);
+                showMessage('Conta criada! Faça login para continuar.', 'success');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            }
         });
 
         // Fechar ao clicar fora
-        modal.addEventListener('click', (e) => {
+        modal.addEventListener('click', async (e) => {
             if (e.target === modal) {
                 modal.remove();
-                showMessage('Conta criada com sucesso! Redirecionando...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1000);
+                showMessage('Fazendo login automático...', 'success');
+                
+                // Fazer login automático após registro
+                try {
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value;
+                    
+                    const loginResponse = await fetch(`${API_URL}/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const loginData = await loginResponse.json();
+
+                    if (loginResponse.ok) {
+                        // Salvar token e email (com "lembrar-me" ativado por padrão após registro)
+                        localStorage.setItem('token', loginData.token);
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('rememberMe', 'true');
+                        
+                        showMessage('Login realizado! Redirecionando...', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'catalogo.html';
+                        }, 1000);
+                    } else {
+                        // Se login automático falhar, redirecionar para login
+                        showMessage('Conta criada! Faça login para continuar.', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                    }
+                } catch (error) {
+                    console.error('Erro no login automático:', error);
+                    showMessage('Conta criada! Faça login para continuar.', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                }
             }
         });
     }

@@ -216,8 +216,12 @@
 
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
+        // Limpar tanto localStorage quanto sessionStorage
         localStorage.removeItem('token');
         localStorage.removeItem('userEmail');
+        localStorage.removeItem('rememberMe');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userEmail');
         window.location.href = 'login.html';
     });
 

@@ -52,7 +52,8 @@ class ActivityCalendar {
     
     async loadUserCreatedAt() {
         try {
-            const token = localStorage.getItem('token');
+            // Verificar token no localStorage ou sessionStorage
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             const response = await fetch('https://app-backend-api-h67c.onrender.com/api/profile/me', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -78,7 +79,8 @@ class ActivityCalendar {
     
     async loadActivities(year) {
         try {
-            const token = localStorage.getItem('token');
+            // Verificar token no localStorage ou sessionStorage
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             const response = await fetch(`https://app-backend-api-h67c.onrender.com/api/activity/calendar?year=${year}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -127,7 +129,8 @@ class ActivityCalendar {
     
     async loadStreak() {
         try {
-            const token = localStorage.getItem('token');
+            // Verificar token no localStorage ou sessionStorage
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             const response = await fetch('https://app-backend-api-h67c.onrender.com/api/activity/streak', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -191,7 +194,8 @@ class ActivityCalendar {
                 }
                 
                 try {
-                    const token = localStorage.getItem('token');
+                    // Verificar token no localStorage ou sessionStorage
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
                     const response = await fetch('https://app-backend-api-h67c.onrender.com/api/activity/restore-streak', {
                         method: 'POST',
                         headers: { 

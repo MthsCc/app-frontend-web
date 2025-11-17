@@ -433,7 +433,12 @@
                 });
 
                 if (response.status === 401) {
+                    // Limpar tanto localStorage quanto sessionStorage
                     localStorage.removeItem('token');
+                    localStorage.removeItem('userEmail');
+                    localStorage.removeItem('rememberMe');
+                    sessionStorage.removeItem('token');
+                    sessionStorage.removeItem('userEmail');
                     grid.innerHTML = '<div class="error">Sessão expirada. Redirecionando para login...</div>';
                     setTimeout(() => {
                         window.location.href = 'login.html';
