@@ -796,9 +796,16 @@
 
     async function loadFollowCounts() {
         try {
-            // Buscar contadores de seguidores/seguindo
-            // Por enquanto, vamos deixar como 0
-            // Pode ser implementado depois com uma rota específica
+            // Buscar contadores de seguidores/seguindo do perfil público
+            const response = await fetch(`${API_URL}/api/profile/${viewedUserId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const userData = await response.json();
+                document.getElementById('followerCount').textContent = userData.followersCount || 0;
+                document.getElementById('followingCount').textContent = userData.followingCount || 0;
+            }
         } catch (error) {
             console.error('Erro ao carregar contadores:', error);
         }

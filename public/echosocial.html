@@ -738,7 +738,11 @@
             
             let mediaHtml = '';
             if (msg.images && msg.images.length > 0) {
-                mediaHtml += msg.images.map(img => `<img src="${img}" alt="Imagem" class="max-w-xs rounded-lg mb-2">`).join('');
+                mediaHtml += msg.images.map(img => {
+                    // Garantir que a imagem seja renderizada corretamente
+                    const imgSrc = img.startsWith('data:') ? img : (img.startsWith('http') ? img : `data:image/jpeg;base64,${img}`);
+                    return `<img src="${imgSrc}" alt="Imagem" class="max-w-xs rounded-lg mb-2 cursor-pointer hover:opacity-90 transition-opacity" onerror="this.style.display='none'; console.error('Erro ao carregar imagem:', '${img.substring(0, 50)}...');" loading="lazy">`;
+                }).join('');
             }
             if (msg.videos && msg.videos.length > 0) {
                 mediaHtml += msg.videos.map(vid => `<video src="${vid}" controls class="max-w-xs rounded-lg mb-2"></video>`).join('');
@@ -1104,6 +1108,14 @@
         container.innerHTML = posts.map(post => {
             const currentUserId = getCurrentUserId();
             const isRepost = post.repostedBy && post.repostedBy.id === currentUserId;
+            // Verificar se é admin (para poder deletar qualquer post)
+            let isAdmin = false;
+            try {
+                const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                isAdmin = tokenPayload.isAdmin || tokenPayload.isAdminMaster || false;
+            } catch (e) {
+                console.warn('Erro ao verificar admin:', e);
+            }
             
             // Avatar do autor original do post
             const originalUserAvatar = post.user.profilePicture 
@@ -1133,7 +1145,7 @@
                             <p class="text-gray-400 text-sm cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">@${post.user.email.split('@')[0]}</p>
                             <span class="text-gray-500">·</span>
                             <p class="text-gray-400 text-sm">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</p>
-                            ${post.user.id === currentUserId ? `
+                            ${(post.user.id === currentUserId || isAdmin) ? `
                                 <button onclick="deletePost('${post.id}')" class="ml-auto text-gray-400 hover:text-red-500 transition-colors" title="Deletar post">
                                     <span class="material-symbols-outlined !text-lg">delete</span>
                                 </button>
