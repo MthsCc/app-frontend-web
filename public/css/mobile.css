@@ -198,6 +198,25 @@ button,
     transform: translateZ(0);
 }
 
+/* Marca */
+.brand-logo {
+    padding: 0;
+    background: transparent;
+    border-radius: 12px;
+    box-shadow: none;
+    filter: drop-shadow(0 10px 25px rgba(5, 20, 34, 0.55));
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.brand-logo:hover {
+    transform: translateY(-1px) scale(1.02);
+    filter: drop-shadow(0 14px 30px rgba(5, 20, 34, 0.6));
+}
+
+.brand-logo:active {
+    transform: scale(0.97);
+}
+
 /* Ajustar z-index para mobile */
 .modal {
     z-index: 9999;

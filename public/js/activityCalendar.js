@@ -189,7 +189,18 @@ class ActivityCalendar {
         const restoreBtn = document.getElementById('restoreStreakBtn');
         if (restoreBtn) {
             restoreBtn.onclick = async () => {
-                if (!confirm('Tem certeza que deseja restaurar sua sequência? Você tem ' + this.streakInfo.restoresAvailable + ' restaurações disponíveis este mês.')) {
+                const fallbackConfirm = typeof window.confirm === 'function'
+                    ? window.confirm.bind(window)
+                    : () => true;
+                const confirmed = await (window.showConfirm ? showConfirm({
+                    title: 'Restaurar sequência?',
+                    message: `Você ainda possui ${this.streakInfo.restoresAvailable} restauração(ões) disponível(is) neste mês.`,
+                    confirmText: 'Restaurar',
+                    cancelText: 'Cancelar',
+                    type: 'warning'
+                }) : Promise.resolve(fallbackConfirm('Tem certeza que deseja restaurar sua sequência?')));
+
+                if (!confirmed) {
                     return;
                 }
                 
@@ -208,14 +219,15 @@ class ActivityCalendar {
                         const data = await response.json();
                         this.streakInfo = data;
                         this.updateStreakDisplay();
-                        alert('Sequência restaurada com sucesso!');
+                        showToast ? showToast('Sequência restaurada com sucesso!', 'success') : alert('Sequência restaurada com sucesso!');
                     } else {
                         const errorData = await response.json();
-                        alert('Erro: ' + (errorData.error || 'Não foi possível restaurar a sequência'));
+                        const errorMessage = 'Erro: ' + (errorData.error || 'Não foi possível restaurar a sequência');
+                        showToast ? showToast(errorMessage, 'error') : alert(errorMessage);
                     }
                 } catch (error) {
                     console.error('Erro ao restaurar streak:', error);
-                    alert('Erro ao restaurar sequência');
+                    showToast ? showToast('Erro ao restaurar sequência', 'error') : alert('Erro ao restaurar sequência');
                 }
             };
         }
