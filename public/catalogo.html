@@ -1803,9 +1803,13 @@
         const modal = document.getElementById('titleModal');
         const modalBody = document.getElementById('modalBody');
         
-        // Não fechar o modal se estiver no tutorial
+        // Não fechar o modal se estiver no tutorial (exceto se for chamado pelo próprio tutorial)
         if (document.body.classList.contains('tutorial-active')) {
-            return;
+            // Verificar se é uma chamada permitida (do tutorial)
+            if (!window._tutorialClosingModal) {
+                return;
+            }
+            window._tutorialClosingModal = false;
         }
         
         // Limpar o conteúdo do modal, especialmente iframes de vídeo

@@ -182,7 +182,84 @@ const TutorialSystem = {
     showTutorial() {
         document.body.classList.add('tutorial-active');
         this.pauseAllCarousels();
+        this.blockModalInteractions();
         this.showStep(0);
+    },
+    
+    blockModalInteractions() {
+        // Bloquear botão de fechar modal
+        const closeBtn = document.querySelector('.close-modal');
+        if (closeBtn) {
+            closeBtn.style.pointerEvents = 'none';
+            closeBtn.style.opacity = '0.5';
+            closeBtn.setAttribute('data-tutorial-blocked', 'true');
+        }
+        
+        // Bloquear cliques no modal (exceto elementos destacados)
+        const modal = document.getElementById('titleModal');
+        if (modal) {
+            modal.setAttribute('data-tutorial-blocked', 'true');
+            // Adicionar listener para prevenir cliques (usar arrow function para manter contexto)
+            const preventClick = (e) => {
+                // Permitir cliques apenas em elementos destacados pelo tutorial
+                const target = e.target;
+                const isHighlighted = target.closest('[data-tutorial-visible]') || 
+                                      target.closest('.tutorial-card') ||
+                                      target.closest('.tutorial-highlight');
+                
+                if (!isHighlighted && !target.closest('.tutorial-overlay')) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
+            };
+            modal.addEventListener('click', preventClick, true);
+            modal.setAttribute('data-tutorial-click-handler', 'true');
+        }
+        
+        // Sobrescrever função closeModal temporariamente
+        if (typeof window.closeModal === 'function') {
+            window._originalCloseModal = window.closeModal;
+            window.closeModal = () => {
+                if (document.body.classList.contains('tutorial-active')) {
+                    console.log('Modal bloqueado durante o tutorial');
+                    return;
+                }
+                return window._originalCloseModal();
+            };
+        }
+    },
+    
+    unblockModalInteractions() {
+        // Desbloquear botão de fechar
+        const closeBtn = document.querySelector('.close-modal');
+        if (closeBtn && closeBtn.getAttribute('data-tutorial-blocked')) {
+            closeBtn.style.pointerEvents = '';
+            closeBtn.style.opacity = '';
+            closeBtn.removeAttribute('data-tutorial-blocked');
+        }
+        
+        // Desbloquear modal (remover todos os listeners de click)
+        const modal = document.getElementById('titleModal');
+        if (modal && modal.getAttribute('data-tutorial-click-handler')) {
+            const wasOpen = modal.classList.contains('show');
+            modal.removeAttribute('data-tutorial-blocked');
+            modal.removeAttribute('data-tutorial-click-handler');
+            // Clonar o modal para remover todos os event listeners
+            const newModal = modal.cloneNode(true);
+            modal.parentNode.replaceChild(newModal, modal);
+            // Restaurar classes e atributos
+            if (wasOpen) {
+                newModal.classList.add('show');
+            }
+            // Atualizar ID
+            newModal.id = 'titleModal';
+        }
+        
+        // Restaurar função closeModal
+        if (window._originalCloseModal) {
+            window.closeModal = window._originalCloseModal;
+            delete window._originalCloseModal;
+        }
     },
 
     showStep(stepIndex) {
@@ -193,6 +270,11 @@ const TutorialSystem = {
         
         this.currentStep = stepIndex;
         const step = this.steps[stepIndex];
+        
+        // Se chegou no passo 4 (índice 3), fechar modal automaticamente
+        if (stepIndex === 3) {
+            this.closeModalForTutorial();
+        }
         
         // Parar atualização de posição anterior
         if (this.positionUpdateInterval) {
@@ -439,12 +521,15 @@ const TutorialSystem = {
                         const modal = document.getElementById('titleModal');
                         if (modal && modal.classList.contains('show')) {
                             clearInterval(checkModal);
+                            // Aplicar bloqueio após modal abrir
+                            this.blockModalInteractions();
                             setTimeout(resolve, 1000); // Aguardar conteúdo carregar
                         }
                     }, 100);
                     // Timeout de segurança
                     setTimeout(() => {
                         clearInterval(checkModal);
+                        this.blockModalInteractions();
                         resolve();
                     }, 5000);
                 });
@@ -455,11 +540,14 @@ const TutorialSystem = {
                         const modal = document.getElementById('titleModal');
                         if (modal && modal.classList.contains('show')) {
                             clearInterval(checkModal);
+                            // Aplicar bloqueio após modal abrir
+                            this.blockModalInteractions();
                             setTimeout(resolve, 1000);
                         }
                     }, 100);
                     setTimeout(() => {
                         clearInterval(checkModal);
+                        this.blockModalInteractions();
                         resolve();
                     }, 5000);
                 });
@@ -492,6 +580,26 @@ const TutorialSystem = {
             this.completeTutorial();
         }
     },
+    
+    closeModalForTutorial() {
+        // Fechar modal se estiver aberto
+        const modal = document.getElementById('titleModal');
+        if (modal && modal.classList.contains('show')) {
+            // Marcar flag para permitir fechamento
+            window._tutorialClosingModal = true;
+            
+            if (typeof closeModal === 'function') {
+                closeModal();
+            } else if (typeof window._originalCloseModal === 'function') {
+                window._originalCloseModal();
+            }
+            
+            // Limpar flag após um tempo
+            setTimeout(() => {
+                window._tutorialClosingModal = false;
+            }, 100);
+        }
+    },
 
     completeTutorial() {
         // Parar atualização de posição
@@ -499,6 +607,9 @@ const TutorialSystem = {
             clearInterval(this.positionUpdateInterval);
             this.positionUpdateInterval = null;
         }
+        
+        // Desbloquear interações do modal
+        this.unblockModalInteractions();
         
         localStorage.setItem(this.STORAGE_KEY, 'true');
         document.body.classList.remove('tutorial-active');
