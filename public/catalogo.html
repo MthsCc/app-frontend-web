@@ -442,8 +442,8 @@
         <!-- Header -->
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 px-4 md:px-10 py-3 sticky top-0 z-50 bg-background-dark/80 backdrop-blur-sm">
             <div class="flex items-center gap-3 text-white">
-            <img src="logo.svg" alt="EchoView Logo" class="w-21 h-20 object-contain cursor-pointer brand-logo" onclick="window.location.href='catalogo.html'"/>
-                <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display cursor-pointer" onclick="window.location.href='catalogo.html'">ECHOVIEW</h2>
+            <img src="logo.svg" alt="EchoView Logo" class="w-16 h-16 md:w-20 md:h-20 object-contain cursor-pointer brand-logo" onclick="window.location.href='catalogo.html'"/>
+                <h2 class="text-white text-lg md:text-xl font-bold leading-tight tracking-[-0.015em] font-display cursor-pointer" onclick="window.location.href='catalogo.html'">ECHOVIEW</h2>
             </div>
             <div class="flex flex-1 justify-center items-center gap-4 md:gap-6">
                 <!-- Barra de Busca -->
@@ -477,7 +477,7 @@
                         <span class="material-symbols-outlined text-[20px]">notifications</span>
                     </button>
                     <!-- Dropdown de Notificações -->
-                    <div id="notificationDropdown" class="hidden absolute right-0 top-full mt-2 w-[500px] bg-[#072f57] rounded-lg shadow-2xl border border-[#707d9b]/30 z-50 h-[600px] overflow-hidden flex flex-col">
+                    <div id="notificationDropdown" class="hidden absolute right-0 top-full mt-2 w-[90vw] md:w-[500px] bg-[#072f57] rounded-lg shadow-2xl border border-[#707d9b]/30 z-50 h-[70vh] md:h-[600px] overflow-hidden flex flex-col">
                         <div class="p-4 border-b border-white/10 flex items-center justify-between flex-shrink-0">
                             <h3 class="text-white font-bold">Notificações</h3>
                             <button onclick="NotificationSystem.markAllNotificationsAsRead()" class="text-sm text-[#a7aabd] hover:text-white whitespace-nowrap">Marcar todas como lidas</button>
@@ -499,7 +499,7 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex flex-col gap-8 px-4 sm:px-10 md:px-20 lg:px-40 py-5">
+        <main class="flex flex-col gap-8 px-4 md:px-10 lg:px-20 xl:px-40 py-5">
             <!-- Hero Banner -->
             <div id="heroBanner" class="hero-banner">
                 <img id="heroBannerImg" src="" alt="Hero Banner" loading="lazy" />
@@ -1397,7 +1397,7 @@
             }
             
             const rating = titleData.voteAverage !== undefined && titleData.voteAverage !== null && titleData.voteAverage > 0
-                ? (titleData.voteAverage / 2).toFixed(1) 
+                ? titleData.voteAverage.toFixed(1) 
                 : '';
             
             // Processar trailer
@@ -1473,7 +1473,7 @@
                                         `}
                                     </div>
                                     <p class="text-white text-sm font-medium mt-2 truncate">${similar.title || similar.name}</p>
-                                    ${similar.vote_average && similar.vote_average > 0 ? `<p class="text-[#9dabb9] text-xs">⭐ ${(similar.vote_average / 2).toFixed(1)}/10</p>` : ''}
+                                    ${similar.vote_average && similar.vote_average > 0 ? `<p class="text-[#9dabb9] text-xs">⭐ ${similar.vote_average.toFixed(1)}/5</p>` : ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -1506,7 +1506,7 @@
                                     ${rating ? `
                                         <div class="flex items-center gap-1 text-yellow-400">
                                             <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
-                                            <span class="text-sm font-bold">${rating}/10</span>
+                                            <span class="text-sm font-bold">${rating}/5</span>
                                         </div>
                                     ` : ''}
                                     <span class="px-2 py-1 rounded text-xs font-bold ${title.type === 'tv' ? 'bg-blue-900/50 text-blue-300' : 'bg-red-900/50 text-red-300'}">
@@ -2129,7 +2129,7 @@
     <script src="js/notifications.js"></script>
     
     <!-- Rodapé -->
-    <footer class="bg-[#051422] border-t border-white/10 py-8 px-4 sm:px-10 md:px-20 lg:px-40 mt-16">
+    <footer class="bg-[#051422] border-t border-white/10 py-6 md:py-8 px-4 md:px-10 lg:px-20 xl:px-40 mt-8 md:mt-16">
         <div class="max-w-7xl mx-auto text-center">
             <p class="text-gray-400 text-sm mb-2">
                 Precisa de ajuda? Entre em contato com nosso suporte:
