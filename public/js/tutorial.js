@@ -9,7 +9,7 @@ const TutorialSystem = {
     waitingForClick: false,
     steps: [
         {
-            title: 'Bem-vindo ao EchoView! 🎬',
+            title: 'Bem-vindo ao EchoView!',
             content: 'Olá! Este tutorial vai te guiar por todas as funcionalidades da plataforma. Vamos começar!',
             instruction: 'Clique em "Próximo" para começar o tutorial.',
             target: null,
@@ -19,7 +19,7 @@ const TutorialSystem = {
         {
             title: '1. Catálogo de Filmes e Séries',
             content: 'Aqui você encontra o catálogo completo de filmes e séries do TMDB.',
-            instruction: '👆 Clique em qualquer filme ou série para ver os detalhes e adicionar à sua lista!',
+            instruction: 'Clique em qualquer filme ou série para ver os detalhes e adicionar à sua lista!',
             target: '.grid-item, .carousel-item, [class*="grid"] [class*="item"]',
             position: 'bottom',
             page: 'catalogo.html',
@@ -29,7 +29,7 @@ const TutorialSystem = {
         {
             title: '2. Adicionar à Watchlist',
             content: 'Quando abrir um filme ou série, você verá opções para marcar o status.',
-            instruction: '👆 Clique em "Quero Assistir", "Já Assisti" ou "Abandonado" para adicionar à sua lista!',
+            instruction: 'Clique em "Quero Assistir", "Já Assisti" ou "Abandonado" para adicionar à sua lista!',
             target: 'input[name="status"], label[for*="status"], [onchange*="updateStatus"]',
             position: 'top',
             page: 'catalogo.html',
@@ -39,7 +39,7 @@ const TutorialSystem = {
         {
             title: '3. Comentar em Filmes',
             content: 'Você pode deixar comentários sobre filmes e séries que assistiu.',
-            instruction: '👆 Digite um comentário na caixa de texto e clique em "Enviar"!',
+            instruction: 'Digite um comentário na caixa de texto e clique em "Enviar"!',
             target: '#commentInput, textarea[placeholder*="comentário"]',
             position: 'top',
             page: 'catalogo.html',
@@ -49,7 +49,7 @@ const TutorialSystem = {
         {
             title: '4. Ver seu Perfil',
             content: 'Acesse seu perfil para ver suas estatísticas, watchlist e posts.',
-            instruction: '👆 Clique no botão de perfil (ícone de pessoa) no canto superior direito!',
+            instruction: 'Clique no botão de perfil (ícone de pessoa) no canto superior direito!',
             target: '#profileButton, button[onclick*="perfil"], [href*="perfil.html"]',
             position: 'bottom',
             page: 'catalogo.html',
@@ -59,7 +59,7 @@ const TutorialSystem = {
         {
             title: '5. Ver Seguidores e Seguindo',
             content: 'No perfil, você pode ver quantos seguidores tem e quem está seguindo.',
-            instruction: '👆 Clique nos números de "Seguidores" ou "Seguindo" para ver a lista completa!',
+            instruction: 'Clique nos números de "Seguidores" ou "Seguindo" para ver a lista completa!',
             target: '#followerCount, #followingCount, [onclick*="showFollowers"], [onclick*="showFollowing"]',
             position: 'top',
             page: 'perfil.html',
@@ -69,7 +69,7 @@ const TutorialSystem = {
         {
             title: '6. Seguir Outros Usuários',
             content: 'Visite perfis de outros usuários e siga-os para ver suas atividades.',
-            instruction: '👆 Clique no botão "Seguir" no perfil de outro usuário!',
+            instruction: 'Clique no botão "Seguir" no perfil de outro usuário!',
             target: '#followBtn, button[onclick*="toggleFollow"]',
             position: 'top',
             page: 'perfil-publico.html',
@@ -79,7 +79,7 @@ const TutorialSystem = {
         {
             title: '7. EchoSocial - Rede Social',
             content: 'Compartilhe posts, curta e reposte conteúdo de outros usuários.',
-            instruction: '👆 Clique em "EchoSocial" no menu ou acesse echosocial.html para ver os posts!',
+            instruction: 'Clique em "EchoSocial" no menu ou acesse echosocial.html para ver os posts!',
             target: '#postsContainer, [id*="post"]',
             position: 'bottom',
             page: 'echosocial.html',
@@ -88,7 +88,7 @@ const TutorialSystem = {
         {
             title: '8. Criar um Post',
             content: 'Compartilhe seus pensamentos sobre filmes e séries com outros usuários.',
-            instruction: '👆 Digite algo na caixa "O que você está pensando?" e clique em "Publicar"!',
+            instruction: 'Digite algo na caixa "O que você está pensando?" e clique em "Publicar"!',
             target: '#postContent, textarea[placeholder*="pensando"], input[placeholder*="pensando"]',
             position: 'top',
             page: 'echosocial.html',
@@ -98,7 +98,7 @@ const TutorialSystem = {
         {
             title: '9. Enviar Mensagem Privada',
             content: 'Envie mensagens privadas para outros usuários.',
-            instruction: '👆 Clique em uma conversa na lista à esquerda ou no botão "Mensagem" no perfil de alguém!',
+            instruction: 'Clique em uma conversa na lista à esquerda ou no botão "Mensagem" no perfil de alguém!',
             target: '#messagesList, #chatSection, button[onclick*="openChat"]',
             position: 'right',
             page: 'echosocial.html',
@@ -108,7 +108,7 @@ const TutorialSystem = {
         {
             title: '10. Ver Notificações',
             content: 'Receba notificações sobre novos seguidores, feedbacks e outras atualizações.',
-            instruction: '👆 Clique no ícone de sino (🔔) no canto superior direito para ver suas notificações!',
+            instruction: 'Clique no ícone de sino no canto superior direito para ver suas notificações!',
             target: '#notificationBtn, button[id*="notification"]',
             position: 'bottom',
             page: 'catalogo.html',
@@ -118,7 +118,7 @@ const TutorialSystem = {
         {
             title: '11. Buscar Filmes e Séries',
             content: 'Use a barra de busca para encontrar filmes e séries específicos.',
-            instruction: '👆 Digite o nome de um filme ou série na barra de busca no topo da página!',
+            instruction: 'Digite o nome de um filme ou série na barra de busca no topo da página!',
             target: '#searchInput, input[placeholder*="Buscar"], input[type="search"]',
             position: 'bottom',
             page: 'catalogo.html',
@@ -127,14 +127,14 @@ const TutorialSystem = {
         {
             title: '12. Enviar Feedback',
             content: 'Envie sugestões, reporte problemas ou dê feedback sobre a plataforma.',
-            instruction: '👆 Acesse a página de feedback e preencha o formulário!',
+            instruction: 'Acesse a página de feedback e preencha o formulário!',
             target: '#feedbackForm, form[action*="feedback"]',
             position: 'top',
             page: 'feedback.html',
             waitForClick: false
         },
         {
-            title: 'Tutorial Concluído! 🎉',
+            title: 'Tutorial Concluído!',
             content: 'Parabéns! Agora você conhece todas as funcionalidades principais do EchoView. Divirta-se explorando!',
             instruction: 'Clique em "Concluir" para finalizar o tutorial.',
             target: null,
@@ -204,6 +204,16 @@ const TutorialSystem = {
             body.tutorial-active [data-tutorial-visible],
             body.tutorial-active [data-tutorial-visible] * {
                 filter: none !important;
+            }
+            
+            /* Card do tutorial sempre clicável */
+            body.tutorial-active .tutorial-card,
+            body.tutorial-active .tutorial-card * {
+                pointer-events: auto !important;
+            }
+            
+            /* Elemento destacado clicável */
+            body.tutorial-active [data-tutorial-visible] {
                 pointer-events: auto !important;
             }
             
@@ -214,7 +224,7 @@ const TutorialSystem = {
             }
             
             .tutorial-highlight {
-                position: absolute;
+                position: fixed;
                 border: 4px solid #4ade80;
                 border-radius: 12px;
                 box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85), 
@@ -308,8 +318,8 @@ const TutorialSystem = {
                 max-width: 550px;
                 width: 90%;
                 box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
-                z-index: 100000;
-                position: relative;
+                z-index: 100001 !important;
+                position: fixed !important;
                 animation: tutorialSlideIn 0.4s ease;
             }
             
@@ -543,6 +553,13 @@ const TutorialSystem = {
     },
     
     highlightElement(element, position) {
+        // Verificar se o elemento não é o próprio card do tutorial
+        if (element.closest('.tutorial-card') || element.closest('.tutorial-overlay')) {
+            console.warn('Tentando destacar o próprio card do tutorial, pulando highlight');
+            this.showCardInCenter();
+            return;
+        }
+        
         const rect = element.getBoundingClientRect();
         const highlight = document.createElement('div');
         highlight.id = 'tutorialHighlight';
@@ -566,8 +583,10 @@ const TutorialSystem = {
             child.setAttribute('data-tutorial-visible', 'true');
         });
         
-        // Scroll para o elemento se necessário
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Scroll para o elemento se necessário (mas não se for o card)
+        if (!element.closest('.tutorial-card')) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         
         // Posicionar card próximo ao elemento
         setTimeout(() => {
@@ -607,13 +626,36 @@ const TutorialSystem = {
                 arrowPosition = null;
         }
         
-        // Garantir que o card fique dentro da viewport
-        top = Math.max(20, Math.min(top, window.innerHeight - cardRect.height - 20));
-        left = Math.max(20, Math.min(left, window.innerWidth - cardRect.width - 20));
+        // Garantir que o card fique dentro da viewport e não sobreponha o highlight
+        // Se o card estiver muito próximo do highlight, ajustar posição
+        const padding = 20;
+        top = Math.max(padding, Math.min(top, window.innerHeight - cardRect.height - padding));
+        left = Math.max(padding, Math.min(left, window.innerWidth - cardRect.width - padding));
         
-        card.style.position = 'absolute';
+        // Verificar se o card está sobrepondo o highlight e ajustar
+        const highlightRect = highlight.getBoundingClientRect();
+        const cardBottom = top + cardRect.height;
+        const cardRight = left + cardRect.width;
+        const highlightTop = highlightRect.top;
+        const highlightBottom = highlightRect.bottom;
+        const highlightLeft = highlightRect.left;
+        const highlightRight = highlightRect.right;
+        
+        // Se o card está sobrepondo o highlight, reposicionar
+        if (top < highlightBottom + 10 && cardBottom > highlightTop - 10 && 
+            left < highlightRight + 10 && cardRight > highlightLeft - 10) {
+            // Colocar o card abaixo do highlight se estiver sobrepondo
+            if (position === 'top' || position === 'bottom') {
+                top = highlightBottom + 30;
+            } else if (position === 'left' || position === 'right') {
+                left = highlightRight + 30;
+            }
+        }
+        
+        card.style.position = 'fixed';
         card.style.top = `${top}px`;
         card.style.left = `${left}px`;
+        card.style.transform = 'none';
         
         // Adicionar seta apontando para o elemento
         if (arrowPosition && highlight) {
