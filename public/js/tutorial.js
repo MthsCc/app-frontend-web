@@ -7,6 +7,7 @@ const TutorialSystem = {
     STORAGE_KEY: 'echoview-tutorial-completed',
     currentStep: 0,
     waitingForClick: false,
+    carouselAnimationIds: [], // Armazenar IDs de animação dos carrosséis
     steps: [
         {
             title: 'Bem-vindo ao EchoView!',
@@ -162,9 +163,101 @@ const TutorialSystem = {
     showTutorial() {
         this.injectStyles();
         this.createTutorialOverlay();
+        // Pausar todos os carrosséis ANTES de adicionar blur
+        this.pauseAllCarousels();
         // Adicionar classe ao body para aplicar blur
         document.body.classList.add('tutorial-active');
+        // Aplicar blur manualmente para garantir que funcione
+        this.applyBlurToPage();
         this.showStep(0);
+    },
+    
+    applyBlurToPage() {
+        // Aplicar blur recursivamente em todos os elementos, exceto os que devem estar visíveis
+        const applyBlurRecursive = (element) => {
+            // Pular elementos que não devem ter blur
+            if (element.hasAttribute('data-tutorial-visible') ||
+                element.closest('.tutorial-overlay') ||
+                element.closest('.tutorial-card') ||
+                element.classList.contains('tutorial-overlay') ||
+                element.classList.contains('tutorial-card') ||
+                element.classList.contains('tutorial-highlight')) {
+                return;
+            }
+            
+            // Aplicar blur no elemento
+            if (!element.style.filter || !element.style.filter.includes('none')) {
+                element.style.filter = 'blur(8px)';
+                element.style.pointerEvents = 'none';
+            }
+            
+            // Aplicar recursivamente nos filhos
+            Array.from(element.children).forEach(child => {
+                applyBlurRecursive(child);
+            });
+        };
+        
+        // Aplicar em todos os filhos diretos do body
+        Array.from(document.body.children).forEach(child => {
+            if (!child.classList.contains('tutorial-overlay')) {
+                applyBlurRecursive(child);
+            }
+        });
+    },
+    
+    removeBlurFromPage() {
+        // Remover blur de todos os elementos
+        const allElements = document.querySelectorAll('[style*="blur"]');
+        allElements.forEach(el => {
+            if (!el.closest('.tutorial-overlay') && !el.closest('.tutorial-card')) {
+                el.style.filter = '';
+                el.style.pointerEvents = '';
+            }
+        });
+    },
+    
+    pauseAllCarousels() {
+        // Encontrar todos os carrosséis e pausá-los
+        const carouselWrappers = document.querySelectorAll('.carousel-wrapper, [class*="carousel"]');
+        carouselWrappers.forEach(wrapper => {
+            // Parar qualquer animação de scroll
+            wrapper.style.animationPlayState = 'paused';
+            wrapper.style.scrollBehavior = 'auto';
+            
+            // Tentar encontrar e pausar requestAnimationFrame
+            const carouselContainer = wrapper.closest('.carousel-container');
+            if (carouselContainer) {
+                // Adicionar flag de pausa
+                carouselContainer.dataset.tutorialPaused = 'true';
+            }
+        });
+        
+        // Pausar animações CSS
+        const style = document.createElement('style');
+        style.id = 'tutorial-pause-carousels';
+        style.textContent = `
+            body.tutorial-active .carousel-wrapper,
+            body.tutorial-active [class*="carousel"] {
+                animation-play-state: paused !important;
+            }
+        `;
+        if (!document.getElementById('tutorial-pause-carousels')) {
+            document.head.appendChild(style);
+        }
+    },
+    
+    resumeAllCarousels() {
+        // Remover flag de pausa
+        const carouselContainers = document.querySelectorAll('[data-tutorial-paused]');
+        carouselContainers.forEach(container => {
+            delete container.dataset.tutorialPaused;
+        });
+        
+        // Remover estilo de pausa
+        const pauseStyle = document.getElementById('tutorial-pause-carousels');
+        if (pauseStyle) {
+            pauseStyle.remove();
+        }
     },
     
     injectStyles() {
@@ -189,7 +282,8 @@ const TutorialSystem = {
                 overflow: hidden;
             }
             
-            body.tutorial-active * {
+            /* Aplicar blur em todos os elementos */
+            body.tutorial-active > *:not(.tutorial-overlay) {
                 filter: blur(8px);
                 pointer-events: none;
             }
@@ -212,9 +306,18 @@ const TutorialSystem = {
                 pointer-events: auto !important;
             }
             
-            /* Elemento destacado clicável */
+            /* Elemento destacado clicável e sem blur - PRIORIDADE MÁXIMA */
             body.tutorial-active [data-tutorial-visible] {
                 pointer-events: auto !important;
+                filter: none !important;
+                z-index: 100000 !important;
+                position: relative !important;
+            }
+            
+            /* Garantir que elementos dentro do destacado também sejam clicáveis */
+            body.tutorial-active [data-tutorial-visible] * {
+                pointer-events: auto !important;
+                filter: none !important;
             }
             
             /* Garantir que o overlay não tenha blur */
@@ -466,9 +569,14 @@ const TutorialSystem = {
                 el.removeAttribute('data-tutorial-visible');
                 el.style.position = '';
                 el.style.zIndex = '';
+                el.style.filter = '';
+                el.style.pointerEvents = '';
             });
             oldHighlight.remove();
         }
+        
+        // Reaplicar blur na página (exceto elementos que devem estar visíveis)
+        this.applyBlurToPage();
         
         // Remover card anterior
         const oldCard = document.getElementById('tutorialCard');
@@ -560,37 +668,77 @@ const TutorialSystem = {
             return;
         }
         
-        const rect = element.getBoundingClientRect();
-        const highlight = document.createElement('div');
-        highlight.id = 'tutorialHighlight';
-        highlight.className = 'tutorial-highlight';
-        
-        highlight.style.left = `${rect.left - 6}px`;
-        highlight.style.top = `${rect.top - 6}px`;
-        highlight.style.width = `${rect.width + 12}px`;
-        highlight.style.height = `${rect.height + 12}px`;
-        
-        document.body.appendChild(highlight);
-        
-        // Marcar elemento destacado para não ter blur
-        element.setAttribute('data-tutorial-visible', 'true');
-        element.style.position = 'relative';
-        element.style.zIndex = '100000';
-        
-        // Aplicar aos filhos também
-        const children = element.querySelectorAll('*');
-        children.forEach(child => {
-            child.setAttribute('data-tutorial-visible', 'true');
-        });
-        
-        // Scroll para o elemento se necessário (mas não se for o card)
-        if (!element.closest('.tutorial-card')) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        
-        // Posicionar card próximo ao elemento
+        // Aguardar um pouco para garantir que o elemento está renderizado
         setTimeout(() => {
-            this.positionCard(highlight, rect, position);
+            const rect = element.getBoundingClientRect();
+            
+            // Verificar se o elemento ainda existe e está visível
+            if (!rect.width || !rect.height) {
+                console.warn('Elemento não está visível, tentando novamente...');
+                setTimeout(() => this.highlightElement(element, position), 300);
+                return;
+            }
+            
+            const highlight = document.createElement('div');
+            highlight.id = 'tutorialHighlight';
+            highlight.className = 'tutorial-highlight';
+            
+            highlight.style.left = `${rect.left - 6}px`;
+            highlight.style.top = `${rect.top - 6}px`;
+            highlight.style.width = `${rect.width + 12}px`;
+            highlight.style.height = `${rect.height + 12}px`;
+            
+            document.body.appendChild(highlight);
+            
+            // Marcar elemento destacado para não ter blur - IMPORTANTE: fazer isso ANTES de aplicar blur
+            element.setAttribute('data-tutorial-visible', 'true');
+            element.style.position = 'relative';
+            element.style.zIndex = '100000';
+            element.style.filter = 'none';
+            element.style.pointerEvents = 'auto';
+            
+            // Remover blur do elemento e seus pais
+            let currentEl = element;
+            let depth = 0;
+            while (currentEl && depth < 5 && currentEl !== document.body) {
+                currentEl.setAttribute('data-tutorial-visible', 'true');
+                currentEl.style.filter = 'none';
+                currentEl.style.pointerEvents = 'auto';
+                currentEl = currentEl.parentElement;
+                depth++;
+            }
+            
+            // Aplicar aos filhos também - CRÍTICO para garantir que não tenham blur
+            const children = element.querySelectorAll('*');
+            children.forEach(child => {
+                child.setAttribute('data-tutorial-visible', 'true');
+                child.style.filter = 'none';
+                child.style.pointerEvents = 'auto';
+            });
+            
+            // Forçar atualização do estilo
+            element.offsetHeight; // Trigger reflow
+            
+            // Aguardar um frame para garantir que os estilos foram aplicados
+            requestAnimationFrame(() => {
+                // Verificar novamente e forçar remoção de blur
+                element.style.filter = 'none';
+                element.style.pointerEvents = 'auto';
+                
+                // Reaplicar blur na página (isso vai respeitar o data-tutorial-visible)
+                this.applyBlurToPage();
+            });
+            
+            // Scroll para o elemento se necessário (mas não se for o card)
+            if (!element.closest('.tutorial-card')) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            // Aguardar scroll completar antes de posicionar card
+            setTimeout(() => {
+                const newRect = element.getBoundingClientRect();
+                this.positionCard(highlight, newRect, position);
+            }, 500);
         }, 100);
     },
     
@@ -745,8 +893,14 @@ const TutorialSystem = {
         const highlight = document.getElementById('tutorialHighlight');
         const arrow = document.getElementById('tutorialArrow');
         
+        // Remover blur manualmente
+        this.removeBlurFromPage();
+        
         // Remover blur do body
         document.body.classList.remove('tutorial-active');
+        
+        // Retomar carrosséis
+        this.resumeAllCarousels();
         
         // Remover atributos dos elementos destacados
         const highlightedElements = document.querySelectorAll('[data-tutorial-visible]');
@@ -754,12 +908,21 @@ const TutorialSystem = {
             el.removeAttribute('data-tutorial-visible');
             el.style.position = '';
             el.style.zIndex = '';
+            el.style.filter = '';
+            el.style.pointerEvents = '';
+        });
+        
+        // Remover blur de todos os elementos
+        const allBlurred = document.querySelectorAll('[style*="blur"]');
+        allBlurred.forEach(el => {
+            el.style.filter = '';
+            el.style.pointerEvents = '';
         });
         
         if (overlay) overlay.remove();
         if (highlight) highlight.remove();
         if (arrow) arrow.remove();
-        showToast && showToast('Tutorial concluído! Bem-vindo ao EchoView! 🎉', 'success');
+        showToast && showToast('Tutorial concluído! Bem-vindo ao EchoView!', 'success');
     },
     
     resetTutorial() {

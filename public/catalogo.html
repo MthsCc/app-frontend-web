@@ -759,6 +759,11 @@
                     
                     // Função de animação automática
                     function animateCarousel() {
+                        // Pausar se tutorial estiver ativo
+                        if (document.body.classList.contains('tutorial-active') || carouselContainer.dataset.tutorialPaused === 'true') {
+                            isPaused = true;
+                        }
+                        
                         if (isPaused) {
                             animationId = requestAnimationFrame(animateCarousel);
                             return;
@@ -1039,6 +1044,11 @@
             
             // Função de animação automática
             function animateCarousel() {
+                // Pausar se tutorial estiver ativo
+                if (document.body.classList.contains('tutorial-active') || carouselContainer.dataset.tutorialPaused === 'true') {
+                    isPaused = true;
+                }
+                
                 if (isPaused) {
                     animationId = requestAnimationFrame(animateCarousel);
                     return;
