@@ -598,8 +598,8 @@
             const unreadBadge = conv.unread ? '<span class="absolute top-0 right-0 w-2 h-2 bg-blue-500 rounded-full"></span>' : '';
             
             return `
-            <div class="p-4 hover:bg-[#072f57] cursor-pointer border-b border-white/5 relative" onclick="openChat('${otherUser.id}')">
-                <div class="flex items-center gap-3">
+            <div class="p-4 hover:bg-[#072f57] border-b border-white/5 relative group">
+                <div class="flex items-center gap-3" onclick="openChat('${otherUser.id}')">
                     <div class="relative">
                         ${avatar}
                         ${unreadBadge}
@@ -609,9 +609,47 @@
                         <p class="text-gray-400 text-sm truncate">${lastMessage}</p>
                     </div>
                 </div>
+                <button onclick="event.stopPropagation(); deleteConversation('${otherUser.id}')" class="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 p-1" title="Excluir conversa">
+                    <span class="material-symbols-outlined !text-lg">delete</span>
+                </button>
             </div>
         `;
         }).join('');
+    }
+    
+    async function deleteConversation(userId) {
+        const confirmed = await showConfirm({
+            title: 'Excluir conversa?',
+            message: 'Esta conversa será removida da sua lista. Você ainda poderá receber mensagens desta pessoa.',
+            confirmText: 'Excluir',
+            cancelText: 'Cancelar',
+            type: 'warning'
+        });
+        
+        if (!confirmed) return;
+        
+        try {
+            const response = await fetch(`${API_URL}/api/social/conversations/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                showToast('Conversa excluída', 'success');
+                loadConversations();
+                // Se a conversa aberta for a excluída, fechar o chat
+                if (AppState.currentChatUserId === userId) {
+                    document.getElementById('chatSection').classList.add('hidden');
+                    AppState.currentChatUserId = null;
+                }
+            } else {
+                const errorData = await response.json();
+                showToast('Erro ao excluir conversa: ' + (errorData.error || 'Erro desconhecido'), 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao excluir conversa:', error);
+            showToast('Erro ao excluir conversa', 'error');
+        }
     }
     
     // Event listener para busca de usuários no sidebar
@@ -1917,6 +1955,7 @@
     }
 </script>
     <script src="js/notifications.js"></script>
+    <script src="js/tutorial.js"></script>
 </body>
 </html>
 

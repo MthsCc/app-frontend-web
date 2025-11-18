@@ -997,6 +997,7 @@
     // Inicializar
     document.addEventListener('DOMContentLoaded', () => {
         checkAdminStatus();
+        loadFollowCounts(); // Carregar contadores de seguidores/seguindo
         loadProfile();
         loadUserProfile();
         document.getElementById('toggleListBtn').addEventListener('click', toggleList);

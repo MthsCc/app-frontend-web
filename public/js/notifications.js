@@ -72,17 +72,18 @@ const NotificationSystem = {
     
     async loadNotifications() {
         try {
-            const response = await fetch(`${this.API_URL}/api/social/conversations`, {
+            // Carregar notificações separadas (seguidores, feedbacks, etc)
+            const notificationsResponse = await fetch(`${this.API_URL}/api/social/notifications`, {
                 headers: { 'Authorization': `Bearer ${this.token}` }
             });
             
-            if (response.ok) {
-                const data = await response.json();
-                const conversations = data.conversations || [];
-                const unreadConversations = conversations.filter(c => c.unread);
+            if (notificationsResponse.ok) {
+                const notificationsData = await notificationsResponse.json();
+                const notifications = notificationsData.notifications || [];
+                const unreadCount = notificationsData.unreadCount || 0;
                 
-                this.displayNotifications(unreadConversations);
-                this.updateNotificationBadge(unreadConversations.length);
+                this.displayNotifications(notifications);
+                this.updateNotificationBadge(unreadCount);
             }
         } catch (error) {
             console.error('Erro ao carregar notificações:', error);
@@ -100,47 +101,42 @@ const NotificationSystem = {
                         <span class="material-symbols-outlined text-[#707d9b] !text-5xl">notifications_none</span>
                     </div>
                     <p class="text-white font-semibold text-lg mb-2">Nenhuma notificação</p>
-                    <p class="text-gray-400 text-sm text-center max-w-xs">Quando você receber mensagens ou outras atualizações, elas aparecerão aqui</p>
+                    <p class="text-gray-400 text-sm text-center max-w-xs">Quando você receber novos seguidores, feedbacks ou outras atualizações, elas aparecerão aqui</p>
                 </div>
             `;
             return;
         }
         
-        container.innerHTML = notifications.map((conv, index) => {
-            const otherUser = conv.otherUser || conv.user;
-            const avatar = this.createAvatarElement(otherUser, 'w-12 h-12');
-            let lastMsg = 'Nova mensagem';
-            let msgIcon = 'chat_bubble';
+        container.innerHTML = notifications.map((notif, index) => {
+            const sender = notif.sender || {};
+            const avatar = this.createAvatarElement(sender, 'w-12 h-12');
+            const safeName = (sender.name || notif.title || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeMsg = (notif.message || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const timeAgo = this.getTimeAgo(notif.createdAt);
             
-            if (conv.lastMessage) {
-                if (typeof conv.lastMessage === 'string') {
-                    lastMsg = conv.lastMessage || 'Mídia';
-                    msgIcon = 'image';
-                } else {
-                    lastMsg = conv.lastMessage.content || (conv.lastMessage.hasMedia ? 'Mídia' : 'Nova mensagem');
-                    msgIcon = conv.lastMessage.hasMedia ? 'image' : 'chat_bubble';
+            // Determinar ação baseada no tipo
+            let onClickAction = 'javascript:void(0);';
+            if (notif.action) {
+                if (notif.action.type === 'view_profile' && notif.action.userId) {
+                    onClickAction = `window.location.href='perfil-publico.html?userId=${notif.action.userId}'`;
+                } else if (notif.action.type === 'view_feedback') {
+                    onClickAction = `window.location.href='dashboard-admin.html'`;
                 }
             }
             
-            // Escapar HTML para evitar problemas
-            const safeName = (otherUser.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const safeMsg = lastMsg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            
-            // Criar link para abrir chat (se estiver na página echosocial) ou redirecionar
-            const chatUrl = window.location.pathname.includes('echosocial.html') 
-                ? `javascript:void(0);` 
-                : `echosocial.html?chat=${otherUser.id}`;
-            
-            // Calcular tempo relativo
-            const timeAgo = this.getTimeAgo(conv.lastMessage?.createdAt || conv.updatedAt || new Date());
+            // Ícone baseado no tipo
+            const icon = notif.icon || 'notifications';
+            const iconColor = notif.type === 'follower' ? 'from-green-500 to-green-600' : 
+                            notif.type === 'feedback' ? 'from-yellow-500 to-yellow-600' : 
+                            'from-blue-500 to-blue-600';
             
             return `
-                <div class="notification-item group relative p-4 hover:bg-gradient-to-r hover:from-[#335b7e]/30 hover:to-[#707d9b]/20 cursor-pointer rounded-xl border-b border-white/5 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg animate-slide-in" style="width: 100%; box-sizing: border-box; overflow: hidden; animation-delay: ${index * 50}ms;" onclick="window.location.href='${chatUrl}'">
+                <div class="notification-item group relative p-4 hover:bg-gradient-to-r hover:from-[#335b7e]/30 hover:to-[#707d9b]/20 cursor-pointer rounded-xl border-b border-white/5 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg animate-slide-in ${!notif.read ? 'bg-blue-500/10' : ''}" style="width: 100%; box-sizing: border-box; overflow: hidden; animation-delay: ${index * 50}ms;" onclick="${onClickAction}; NotificationSystem.markNotificationAsRead('${notif.id}')">
                     <div class="flex items-start gap-4" style="width: 100%; box-sizing: border-box;">
                         <div class="relative flex-shrink-0" style="width: 48px;">
                             ${avatar}
-                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md border-2 border-[#051422]">
-                                <span class="material-symbols-outlined text-white !text-xs">${msgIcon}</span>
+                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-br ${iconColor} rounded-full flex items-center justify-center shadow-md border-2 border-[#051422]">
+                                <span class="material-symbols-outlined text-white !text-xs">${icon}</span>
                             </div>
                         </div>
                         <div class="flex-1 min-w-0" style="max-width: calc(100% - 80px); overflow: hidden; box-sizing: border-box;">
@@ -150,9 +146,7 @@ const NotificationSystem = {
                             </div>
                             <p class="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors" style="word-wrap: break-word; word-break: break-word; overflow-wrap: break-word; max-width: 100%; overflow: hidden; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; margin: 0; line-height: 1.5;">${safeMsg}</p>
                         </div>
-                        <div class="flex-shrink-0 flex flex-col items-center gap-2">
-                            <span class="w-3 h-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full shadow-lg animate-pulse"></span>
-                        </div>
+                        ${!notif.read ? '<div class="flex-shrink-0 flex flex-col items-center gap-2"><span class="w-3 h-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full shadow-lg animate-pulse"></span></div>' : ''}
                     </div>
                     <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#335b7e]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
@@ -223,6 +217,19 @@ const NotificationSystem = {
         const dropdown = document.getElementById('notificationDropdown');
         if (dropdown) {
             dropdown.classList.add('hidden');
+        }
+    },
+    
+    async markNotificationAsRead(notificationId) {
+        try {
+            await fetch(`${this.API_URL}/api/social/notifications/${notificationId}/read`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${this.token}` }
+            });
+            // Recarregar notificações após marcar como lida
+            setTimeout(() => this.loadNotifications(), 500);
+        } catch (error) {
+            console.error('Erro ao marcar notificação como lida:', error);
         }
     },
     
