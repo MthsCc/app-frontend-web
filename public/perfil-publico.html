@@ -884,8 +884,18 @@
         modal.classList.remove('hidden');
         
         try {
+            // Obter token atualizado dinamicamente
+            const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (!currentToken) {
+                content.innerHTML = '<div class="text-center text-red-400 py-8">Erro: Token não encontrado. Faça login novamente.</div>';
+                return;
+            }
+            
             const response = await fetch(`${API_URL}/api/social/followers/${viewedUserId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 
+                    'Authorization': `Bearer ${currentToken}`,
+                    'Content-Type': 'application/json'
+                }
             });
             
             if (response.ok) {
@@ -912,7 +922,9 @@
                     }).join('');
                 }
             } else {
-                content.innerHTML = '<div class="text-center text-red-400 py-8">Erro ao carregar seguidores</div>';
+                const errorText = await response.text();
+                console.error('Erro ao carregar seguidores:', response.status, errorText);
+                content.innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar seguidores (${response.status})</div>`;
             }
         } catch (error) {
             console.error('Erro ao carregar seguidores:', error);
@@ -930,8 +942,18 @@
         modal.classList.remove('hidden');
         
         try {
+            // Obter token atualizado dinamicamente
+            const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (!currentToken) {
+                content.innerHTML = '<div class="text-center text-red-400 py-8">Erro: Token não encontrado. Faça login novamente.</div>';
+                return;
+            }
+            
             const response = await fetch(`${API_URL}/api/social/following/${viewedUserId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 
+                    'Authorization': `Bearer ${currentToken}`,
+                    'Content-Type': 'application/json'
+                }
             });
             
             if (response.ok) {
@@ -958,7 +980,9 @@
                     }).join('');
                 }
             } else {
-                content.innerHTML = '<div class="text-center text-red-400 py-8">Erro ao carregar seguindo</div>';
+                const errorText = await response.text();
+                console.error('Erro ao carregar seguindo:', response.status, errorText);
+                content.innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar seguindo (${response.status})</div>`;
             }
         } catch (error) {
             console.error('Erro ao carregar seguindo:', error);

@@ -1473,7 +1473,7 @@
                                         `}
                                     </div>
                                     <p class="text-white text-sm font-medium mt-2 truncate">${similar.title || similar.name}</p>
-                                    ${similar.vote_average && similar.vote_average > 0 ? `<p class="text-[#9dabb9] text-xs">⭐ ${similar.vote_average.toFixed(1)}/5</p>` : ''}
+                                    ${similar.vote_average && similar.vote_average > 0 ? `<p class="text-[#9dabb9] text-xs">⭐ ${similar.vote_average.toFixed(1)}/10</p>` : ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -1506,7 +1506,7 @@
                                     ${rating ? `
                                         <div class="flex items-center gap-1 text-yellow-400">
                                             <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">star</span>
-                                            <span class="text-sm font-bold">${rating}/5</span>
+                                            <span class="text-sm font-bold">${rating}/10</span>
                                         </div>
                                     ` : ''}
                                     <span class="px-2 py-1 rounded text-xs font-bold ${title.type === 'tv' ? 'bg-blue-900/50 text-blue-300' : 'bg-red-900/50 text-red-300'}">
