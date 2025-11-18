@@ -91,6 +91,11 @@ const TutorialSystem = {
                 z-index: 100000;
                 position: fixed;
                 color: white;
+                pointer-events: auto !important;
+            }
+            
+            .tutorial-card * {
+                pointer-events: auto !important;
             }
             
             .tutorial-card h3 {
@@ -119,6 +124,9 @@ const TutorialSystem = {
                 cursor: pointer;
                 border: none;
                 transition: all 0.2s;
+                pointer-events: auto !important;
+                position: relative;
+                z-index: 100001;
             }
             
             .tutorial-btn-primary {
