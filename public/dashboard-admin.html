@@ -54,25 +54,25 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex flex-col gap-8 px-4 sm:px-10 md:px-20 lg:px-40 py-5">
+        <main class="flex flex-col gap-4 sm:gap-6 lg:gap-8 px-2 sm:px-4 md:px-6 lg:px-10 xl:px-20 py-4 sm:py-5">
             <!-- Estatísticas -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="statsGrid">
-                <div class="bg-[#072f57] rounded-lg p-6">
-                    <div class="text-gray-400 text-sm mb-2">Total de Usuários</div>
-                    <div class="text-white text-3xl font-bold" id="totalUsers">0</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" id="statsGrid">
+                <div class="bg-[#072f57] rounded-lg p-4 sm:p-6">
+                    <div class="text-gray-400 text-xs sm:text-sm mb-2">Total de Usuários</div>
+                    <div class="text-white text-2xl sm:text-3xl font-bold" id="totalUsers">0</div>
                 </div>
-                <div class="bg-[#072f57] rounded-lg p-6">
-                    <div class="text-gray-400 text-sm mb-2">Usuários Banidos</div>
-                    <div class="text-red-400 text-3xl font-bold" id="bannedUsers">0</div>
+                <div class="bg-[#072f57] rounded-lg p-4 sm:p-6">
+                    <div class="text-gray-400 text-xs sm:text-sm mb-2">Usuários Banidos</div>
+                    <div class="text-red-400 text-2xl sm:text-3xl font-bold" id="bannedUsers">0</div>
                 </div>
-                <div class="bg-[#072f57] rounded-lg p-6">
-                    <div class="text-gray-400 text-sm mb-2">Administradores</div>
-                    <div class="text-blue-400 text-3xl font-bold" id="adminCount">0</div>
+                <div class="bg-[#072f57] rounded-lg p-4 sm:p-6">
+                    <div class="text-gray-400 text-xs sm:text-sm mb-2">Administradores</div>
+                    <div class="text-blue-400 text-2xl sm:text-3xl font-bold" id="adminCount">0</div>
                 </div>
             </div>
 
             <!-- Painel de Métricas e Testes -->
-            <section class="bg-[#0c1b2e] border border-white/5 rounded-3xl p-6 lg:p-8 shadow-2xl shadow-black/40 space-y-8">
+            <section class="bg-[#0c1b2e] border border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl shadow-black/40 space-y-4 sm:space-y-6 lg:space-y-8">
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.2em] text-blue-300/70 font-semibold">Radar operacional</p>
@@ -85,7 +85,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="metricsCards">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" id="metricsCards">
                     <div class="rounded-2xl bg-gradient-to-br from-[#12304c] to-[#051422] border border-white/5 p-5">
                         <p class="text-gray-400 text-sm">Novos usuários (7 dias)</p>
                         <p class="text-3xl font-bold text-white" id="metric-newUsers">--</p>
@@ -108,7 +108,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     <div class="rounded-2xl border border-white/5 bg-[#081522] p-5 space-y-4">
                         <div class="flex items-center justify-between">
                             <h4 class="text-white font-bold text-lg">Pipeline de testes</h4>
@@ -127,27 +127,138 @@
                 </div>
             </section>
 
+            <!-- Seção de Logs do Sistema -->
+            <section class="bg-[#0c1b2e] border border-white/5 rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl shadow-black/40 space-y-4 sm:space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.2em] text-red-300/70 font-semibold">Monitoramento</p>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white">Logs do Sistema</h3>
+                        <p class="text-gray-400 text-sm">Visualize erros e eventos do sistema em tempo real</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="refreshLogsBtn" class="px-3 sm:px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm font-medium flex items-center gap-2">
+                            <span class="material-symbols-outlined !text-lg">refresh</span>
+                            <span class="hidden sm:inline">Atualizar</span>
+                        </button>
+                        <button id="clearLogsBtn" class="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium flex items-center gap-2">
+                            <span class="material-symbols-outlined !text-lg">delete_sweep</span>
+                            <span class="hidden sm:inline">Limpar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="bg-white/5 rounded-xl p-4 space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <select id="logLevelFilter" class="w-full px-3 py-2 bg-[#072f57] text-white rounded-lg border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="">Todos os níveis</option>
+                            <option value="error">Erros</option>
+                            <option value="warning">Avisos</option>
+                            <option value="info">Info</option>
+                        </select>
+                        <input type="text" id="logEndpointFilter" placeholder="Filtrar por endpoint..." class="w-full px-3 py-2 bg-[#072f57] text-white rounded-lg border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-primary placeholder-gray-400">
+                        <input type="text" id="logMessageFilter" placeholder="Buscar na mensagem..." class="w-full px-3 py-2 bg-[#072f57] text-white rounded-lg border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-primary placeholder-gray-400">
+                        <input type="number" id="logLimitFilter" placeholder="Limite (padrão: 100)" value="100" class="w-full px-3 py-2 bg-[#072f57] text-white rounded-lg border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-primary placeholder-gray-400">
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+                        <span id="logStats" class="px-2 py-1 bg-white/5 rounded">Carregando estatísticas...</span>
+                    </div>
+                </div>
+
+                <!-- Lista de Logs -->
+                <div class="bg-white/5 rounded-xl overflow-hidden">
+                    <div id="logsContainer" class="max-h-[600px] overflow-y-auto">
+                        <div class="text-center text-gray-400 py-8">Carregando logs...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção de Feedback -->
+            <section class="bg-[#0c1b2e] border border-white/5 rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl shadow-black/40 space-y-4 sm:space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.2em] text-blue-300/70 font-semibold">Comunicação</p>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white">Feedback dos Usuários</h3>
+                        <p class="text-gray-400 text-sm">Visualize e gerencie feedbacks enviados pelos usuários</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="refreshFeedbackBtn" class="px-3 sm:px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm font-medium flex items-center gap-2">
+                            <span class="material-symbols-outlined !text-lg">refresh</span>
+                            <span class="hidden sm:inline">Atualizar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Estatísticas de Feedback -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="bg-white/5 rounded-xl p-3 sm:p-4">
+                        <p class="text-gray-400 text-xs mb-1">Total</p>
+                        <p class="text-white text-xl sm:text-2xl font-bold" id="feedbackTotal">0</p>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-3 sm:p-4">
+                        <p class="text-gray-400 text-xs mb-1">Não Lidos</p>
+                        <p class="text-yellow-400 text-xl sm:text-2xl font-bold" id="feedbackUnread">0</p>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-3 sm:p-4">
+                        <p class="text-gray-400 text-xs mb-1">Resolvidos</p>
+                        <p class="text-green-400 text-xl sm:text-2xl font-bold" id="feedbackResolved">0</p>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-3 sm:p-4">
+                        <p class="text-gray-400 text-xs mb-1">Últimos 7 dias</p>
+                        <p class="text-blue-400 text-xl sm:text-2xl font-bold" id="feedbackRecent">0</p>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="bg-white/5 rounded-xl p-4 space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <select id="feedbackReadFilter" class="w-full px-3 py-2 bg-[#072f57] text-white rounded-lg border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="">Todos</option>
+                            <option value="false">Não Lidos</option>
+                            <option value="true">Lidos</option>
+                        </select>
+                        <select id="feedbackResolvedFilter" class="w-full px-3 py-2 bg-[#072f57] text-white rounded-lg border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="">Todos</option>
+                            <option value="false">Não Resolvidos</option>
+                            <option value="true">Resolvidos</option>
+                        </select>
+                        <button id="applyFeedbackFiltersBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm font-medium">
+                            Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de Feedbacks -->
+                <div class="bg-white/5 rounded-xl overflow-hidden">
+                    <div id="feedbacksContainer" class="max-h-[600px] overflow-y-auto">
+                        <div class="text-center text-gray-400 py-8">Carregando feedbacks...</div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Lista de Usuários Recentes -->
-            <div class="bg-[#283039] rounded-lg p-6">
-                <h2 class="text-white text-2xl font-bold mb-6">Contas Recentes</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="border-b border-gray-700">
-                                <th class="text-gray-400 text-sm font-medium pb-3">Nome</th>
-                                <th class="text-gray-400 text-sm font-medium pb-3">Email</th>
-                                <th class="text-gray-400 text-sm font-medium pb-3">ID</th>
-                                <th class="text-gray-400 text-sm font-medium pb-3">Data de Criação</th>
-                                <th class="text-gray-400 text-sm font-medium pb-3">Status</th>
-                                <th class="text-gray-400 text-sm font-medium pb-3">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                            <tr>
-                                <td colspan="6" class="text-center text-gray-400 py-8">Carregando...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="bg-[#283039] rounded-lg p-4 sm:p-6">
+                <h2 class="text-white text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Contas Recentes</h2>
+                <div class="overflow-x-auto -mx-4 sm:mx-0">
+                    <div class="inline-block min-w-full align-middle">
+                        <table class="min-w-full text-left">
+                            <thead>
+                                <tr class="border-b border-gray-700">
+                                    <th class="text-gray-400 text-xs sm:text-sm font-medium pb-3 px-2 sm:px-4">Nome</th>
+                                    <th class="text-gray-400 text-xs sm:text-sm font-medium pb-3 px-2 sm:px-4 hidden sm:table-cell">Email</th>
+                                    <th class="text-gray-400 text-xs sm:text-sm font-medium pb-3 px-2 sm:px-4 hidden lg:table-cell">ID</th>
+                                    <th class="text-gray-400 text-xs sm:text-sm font-medium pb-3 px-2 sm:px-4">Data</th>
+                                    <th class="text-gray-400 text-xs sm:text-sm font-medium pb-3 px-2 sm:px-4">Status</th>
+                                    <th class="text-gray-400 text-xs sm:text-sm font-medium pb-3 px-2 sm:px-4">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-gray-400 py-8">Carregando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
@@ -225,26 +336,30 @@
                         const row = document.createElement('tr');
                         row.className = 'border-b border-gray-700 hover:bg-gray-800/50';
                         row.innerHTML = `
-                            <td class="text-white py-3">${user.name}</td>
-                            <td class="text-gray-400 py-3">${user.email}</td>
-                            <td class="text-gray-500 text-xs py-3 font-mono">${user.id}</td>
-                            <td class="text-gray-400 text-sm py-3">${new Date(user.createdAt).toLocaleDateString('pt-BR')}</td>
-                            <td class="py-3">
-                                ${user.isBanned ? '<span class="px-2 py-1 bg-red-900/50 text-red-300 rounded text-xs">Banido</span>' : ''}
-                                ${user.isAdminMaster ? '<span class="px-2 py-1 bg-purple-900/50 text-purple-300 rounded text-xs ml-1">Master</span>' : ''}
-                                ${user.isAdmin && !user.isAdminMaster ? '<span class="px-2 py-1 bg-blue-900/50 text-blue-300 rounded text-xs ml-1">Admin</span>' : ''}
-                            </td>
-                            <td class="py-3">
-                                <button onclick="window.location.href='perfil-publico.html?userId=${user.id}'" class="text-primary hover:text-blue-400 text-sm font-medium mr-3">Ver Perfil</button>
-                                ${user.isBanned ? 
-                                    `<button onclick="toggleBan('${user.id}', false)" class="text-green-400 hover:text-green-300 text-sm font-medium mr-3">Desbanir</button>` :
-                                    `<button onclick="toggleBan('${user.id}', true)" class="text-red-400 hover:text-red-300 text-sm font-medium mr-3">Banir</button>`
-                                }
-                                ${isAdminMaster ? `
-                                    <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-400 text-sm font-medium mr-3">Deletar</button>
-                                    <button onclick="manageAdmin('${user.id}')" class="text-yellow-400 hover:text-yellow-300 text-sm font-medium">Admin</button>
-                                ` : ''}
-                            </td>
+                                <td class="text-white py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm">${user.name}</td>
+                                <td class="text-gray-400 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm hidden sm:table-cell">${user.email}</td>
+                                <td class="text-gray-500 text-xs py-2 sm:py-3 px-2 sm:px-4 font-mono hidden lg:table-cell">${user.id.substring(0, 8)}...</td>
+                                <td class="text-gray-400 text-xs py-2 sm:py-3 px-2 sm:px-4">${new Date(user.createdAt).toLocaleDateString('pt-BR')}</td>
+                                <td class="py-2 sm:py-3 px-2 sm:px-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        ${user.isBanned ? '<span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-900/50 text-red-300 rounded text-xs">Banido</span>' : ''}
+                                        ${user.isAdminMaster ? '<span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-purple-900/50 text-purple-300 rounded text-xs">Master</span>' : ''}
+                                        ${user.isAdmin && !user.isAdminMaster ? '<span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-900/50 text-blue-300 rounded text-xs">Admin</span>' : ''}
+                                    </div>
+                                </td>
+                                <td class="py-2 sm:py-3 px-2 sm:px-4">
+                                    <div class="flex flex-wrap gap-1 sm:gap-2">
+                                        <button onclick="window.location.href='perfil-publico.html?userId=${user.id}'" class="text-primary hover:text-blue-400 text-xs sm:text-sm font-medium">Ver</button>
+                                        ${user.isBanned ? 
+                                            `<button onclick="toggleBan('${user.id}', false)" class="text-green-400 hover:text-green-300 text-xs sm:text-sm font-medium">Desbanir</button>` :
+                                            `<button onclick="toggleBan('${user.id}', true)" class="text-red-400 hover:text-red-300 text-xs sm:text-sm font-medium">Banir</button>`
+                                        }
+                                        ${isAdminMaster ? `
+                                            <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-400 text-xs sm:text-sm font-medium">Del</button>
+                                            <button onclick="manageAdmin('${user.id}')" class="text-yellow-400 hover:text-yellow-300 text-xs sm:text-sm font-medium">Admin</button>
+                                        ` : ''}
+                                    </div>
+                                </td>
                         `;
                         tbody.appendChild(row);
                     });
@@ -563,11 +678,296 @@
         }
     }
 
+    // Carregar logs
+    async function loadLogs() {
+        try {
+            const level = document.getElementById('logLevelFilter').value;
+            const endpoint = document.getElementById('logEndpointFilter').value;
+            const message = document.getElementById('logMessageFilter').value;
+            const limit = document.getElementById('logLimitFilter').value || 100;
+
+            const params = new URLSearchParams();
+            if (level) params.append('level', level);
+            if (endpoint) params.append('endpoint', endpoint);
+            if (message) params.append('message', message);
+            if (limit) params.append('limit', limit);
+
+            const [logsResponse, statsResponse] = await Promise.all([
+                fetch(`${API_URL}/api/admin/logs?${params.toString()}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }),
+                fetch(`${API_URL}/api/admin/logs/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+            ]);
+
+            if (logsResponse.ok) {
+                const logsData = await logsResponse.json();
+                const logs = logsData.logs || [];
+
+                const container = document.getElementById('logsContainer');
+                if (logs.length === 0) {
+                    container.innerHTML = '<div class="text-center text-gray-400 py-8">Nenhum log encontrado</div>';
+                } else {
+                    container.innerHTML = logs.map(log => {
+                        const date = new Date(log.timestamp);
+                        const levelColor = log.level === 'error' ? 'bg-red-500/20 text-red-300 border-red-500/30' :
+                                         log.level === 'warning' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
+                                         'bg-blue-500/20 text-blue-300 border-blue-500/30';
+                        
+                        return `
+                            <div class="border-b border-white/5 p-3 sm:p-4 hover:bg-white/5 transition-colors">
+                                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                                            <span class="px-2 py-1 rounded text-xs font-bold ${levelColor} border">${log.level.toUpperCase()}</span>
+                                            <span class="text-gray-400 text-xs">${date.toLocaleString('pt-BR')}</span>
+                                            ${log.context?.endpoint ? `<span class="text-gray-500 text-xs font-mono bg-white/5 px-2 py-1 rounded">${log.context.method} ${log.context.endpoint}</span>` : ''}
+                                        </div>
+                                        <p class="text-white text-sm sm:text-base font-medium mb-1 break-words">${log.message || 'Sem mensagem'}</p>
+                                        ${log.stack ? `
+                                            <details class="mt-2">
+                                                <summary class="text-gray-400 text-xs cursor-pointer hover:text-gray-300">Ver stack trace</summary>
+                                                <pre class="mt-2 p-2 bg-black/30 rounded text-xs text-gray-300 overflow-x-auto font-mono">${log.stack}</pre>
+                                            </details>
+                                        ` : ''}
+                                        ${log.context ? `
+                                            <div class="mt-2 flex flex-wrap gap-2 text-xs text-gray-400">
+                                                ${log.context.ip ? `<span>IP: ${log.context.ip}</span>` : ''}
+                                                ${log.context.userId ? `<span>User ID: ${log.context.userId}</span>` : ''}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            } else {
+                const errorData = await logsResponse.json().catch(() => ({ error: 'Erro desconhecido' }));
+                console.error('Erro ao carregar logs:', errorData);
+                document.getElementById('logsContainer').innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar logs: ${errorData.error || 'Erro desconhecido'}</div>`;
+            }
+
+            if (statsResponse.ok) {
+                const statsData = await statsResponse.json();
+                const stats = statsData.stats || {};
+                document.getElementById('logStats').textContent = 
+                    `Total: ${stats.total || 0} | Erros: ${stats.byLevel?.error || 0} | Avisos: ${stats.byLevel?.warning || 0} | Últimas 24h: ${stats.last24Hours || 0}`;
+            } else {
+                document.getElementById('logStats').textContent = 'Erro ao carregar estatísticas';
+            }
+        } catch (error) {
+            console.error('Erro ao carregar logs:', error);
+            document.getElementById('logsContainer').innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar logs: ${error.message || 'Erro desconhecido'}</div>`;
+        }
+    }
+
+    // Carregar feedbacks
+    async function loadFeedbacks() {
+        try {
+            const readFilter = document.getElementById('feedbackReadFilter').value;
+            const resolvedFilter = document.getElementById('feedbackResolvedFilter').value;
+            
+            const params = new URLSearchParams();
+            if (readFilter !== '') params.append('read', readFilter);
+            if (resolvedFilter !== '') params.append('resolved', resolvedFilter);
+            params.append('limit', '50');
+            
+            const response = await fetch(`${API_URL}/api/feedback?${params.toString()}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const feedbacks = data.feedbacks || [];
+                
+                const container = document.getElementById('feedbacksContainer');
+                if (feedbacks.length === 0) {
+                    container.innerHTML = '<div class="text-center text-gray-400 py-8">Nenhum feedback encontrado</div>';
+                } else {
+                    container.innerHTML = feedbacks.map(feedback => {
+                        const date = new Date(feedback.createdAt);
+                        const readBadge = feedback.read ? 
+                            '<span class="px-2 py-1 bg-green-500/20 text-green-300 rounded text-xs border border-green-500/30">Lido</span>' :
+                            '<span class="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded text-xs border border-yellow-500/30">Não Lido</span>';
+                        const resolvedBadge = feedback.resolved ? 
+                            '<span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs border border-blue-500/30">Resolvido</span>' : '';
+                        
+                        return `
+                            <div class="border-b border-white/5 p-3 sm:p-4 hover:bg-white/5 transition-colors ${!feedback.read ? 'bg-yellow-500/5' : ''}">
+                                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                                            ${readBadge}
+                                            ${resolvedBadge}
+                                            <span class="text-gray-400 text-xs">${date.toLocaleString('pt-BR')}</span>
+                                            <span class="text-gray-500 text-xs">de ${feedback.user.name || feedback.user.username || feedback.user.email}</span>
+                                        </div>
+                                        <h4 class="text-white text-sm sm:text-base font-bold mb-1">${feedback.subject}</h4>
+                                        <p class="text-gray-300 text-sm break-words">${feedback.message}</p>
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        ${!feedback.read ? `
+                                            <button onclick="markFeedbackRead('${feedback.id}')" class="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition-colors">
+                                                Marcar como lido
+                                            </button>
+                                        ` : ''}
+                                        ${!feedback.resolved ? `
+                                            <button onclick="markFeedbackResolved('${feedback.id}')" class="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors">
+                                                Resolver
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } else {
+                const errorData = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+                document.getElementById('feedbacksContainer').innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar feedbacks: ${errorData.error || 'Erro desconhecido'}</div>`;
+            }
+        } catch (error) {
+            console.error('Erro ao carregar feedbacks:', error);
+            document.getElementById('feedbacksContainer').innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar feedbacks: ${error.message || 'Erro desconhecido'}</div>`;
+        }
+    }
+
+    // Carregar estatísticas de feedback
+    async function loadFeedbackStats() {
+        try {
+            const response = await fetch(`${API_URL}/api/feedback/stats`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const stats = await response.json();
+                document.getElementById('feedbackTotal').textContent = stats.total || 0;
+                document.getElementById('feedbackUnread').textContent = stats.unread || 0;
+                document.getElementById('feedbackResolved').textContent = stats.resolved || 0;
+                document.getElementById('feedbackRecent').textContent = stats.recent || 0;
+            }
+        } catch (error) {
+            console.error('Erro ao carregar estatísticas de feedback:', error);
+        }
+    }
+
+    // Marcar feedback como lido
+    async function markFeedbackRead(feedbackId) {
+        try {
+            const response = await fetch(`${API_URL}/api/feedback/${feedbackId}/read`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                loadFeedbacks();
+                loadFeedbackStats();
+            } else {
+                const errorData = await response.json();
+                alert('Erro ao marcar feedback como lido: ' + (errorData.error || 'Erro desconhecido'));
+            }
+        } catch (error) {
+            console.error('Erro ao marcar feedback como lido:', error);
+            alert('Erro ao marcar feedback como lido');
+        }
+    }
+
+    // Marcar feedback como resolvido
+    async function markFeedbackResolved(feedbackId) {
+        try {
+            const response = await fetch(`${API_URL}/api/feedback/${feedbackId}/resolve`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                loadFeedbacks();
+                loadFeedbackStats();
+            } else {
+                const errorData = await response.json();
+                alert('Erro ao marcar feedback como resolvido: ' + (errorData.error || 'Erro desconhecido'));
+            }
+        } catch (error) {
+            console.error('Erro ao marcar feedback como resolvido:', error);
+            alert('Erro ao marcar feedback como resolvido');
+        }
+    }
+
+    // Limpar logs antigos
+    async function clearLogs() {
+        const confirmed = await showConfirm({
+            title: 'Limpar logs antigos?',
+            message: 'Isso removerá logs com mais de 30 dias. Esta ação não pode ser desfeita.',
+            confirmText: 'Limpar',
+            cancelText: 'Cancelar',
+            type: 'warning'
+        });
+
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`${API_URL}/api/admin/logs/clear?daysToKeep=30`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                showToast && showToast(`Logs limpos: ${data.deletedCount} entradas removidas`, 'success');
+                loadLogs();
+            } else {
+                const errorData = await response.json();
+                showToast && showToast(errorData.error || 'Erro ao limpar logs', 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao limpar logs:', error);
+            showToast && showToast('Erro ao limpar logs', 'error');
+        }
+    }
+
     // Inicializar
     document.addEventListener('DOMContentLoaded', async () => {
         await checkAdminStatus();
         loadDashboard();
+        loadLogs();
+
+        // Event listeners para logs
+        document.getElementById('refreshLogsBtn').addEventListener('click', loadLogs);
+        document.getElementById('clearLogsBtn').addEventListener('click', clearLogs);
+        document.getElementById('logLevelFilter').addEventListener('change', loadLogs);
+        document.getElementById('logEndpointFilter').addEventListener('input', debounce(loadLogs, 500));
+        document.getElementById('logMessageFilter').addEventListener('input', debounce(loadLogs, 500));
+        
+        // Feedback
+        loadFeedbacks();
+        loadFeedbackStats();
+        document.getElementById('refreshFeedbackBtn').addEventListener('click', () => {
+            loadFeedbacks();
+            loadFeedbackStats();
+        });
+        document.getElementById('applyFeedbackFiltersBtn').addEventListener('click', loadFeedbacks);
+        document.getElementById('logLimitFilter').addEventListener('change', loadLogs);
+
+        // Auto-refresh logs a cada 30 segundos
+        setInterval(loadLogs, 30000);
     });
+
+    // Função debounce para evitar muitas requisições
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
 </script>
 </body>
 </html>

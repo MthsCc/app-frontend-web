@@ -15,6 +15,7 @@
     <title>Perfil do Usuário - ECHOVIEW</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="js/ui-feedback.js"></script>
+    <script src="js/affiliateDisclaimer.js"></script>
     <script src="js/activityCalendar.js"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -120,23 +121,7 @@
             <img src="logo.svg" alt="EchoView Logo" class="w-8 h-8 object-contain cursor-pointer brand-logo" onclick="window.location.href='catalogo.html'"/>
                 <h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display cursor-pointer" onclick="window.location.href='catalogo.html'">ECHOVIEW</h2>
             </div>
-            <div class="flex flex-1 justify-center items-center gap-4 md:gap-6">
-                <!-- Barra de Busca -->
-                <label class="flex flex-col min-w-40 !h-10 max-w-96 w-full">
-                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full relative">
-                        <div class="text-[#a7aabd] flex border-none bg-[#072f57] items-center justify-center pl-3 rounded-l-lg border-r-0">
-                            <span class="material-symbols-outlined text-[20px]">search</span>
-                        </div>
-                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#072f57] focus:border-none h-full placeholder:text-[#a7aabd] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal font-display" id="searchInput" placeholder="Buscar filmes e séries..." value=""/>
-                        <!-- Dropdown de resultados -->
-                        <div id="searchResultsDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#072f57] rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-[#707d9b]/30">
-                            <div id="searchResultsContent" class="p-2">
-                                <!-- Resultados serão inseridos aqui -->
-                            </div>
-                        </div>
-                    </div>
-                </label>
-            </div>
+            <!-- Barra de busca removida do perfil -->
             <div class="flex items-center gap-3 md:gap-4">
                 <!-- Dashboard (apenas para admin) -->
                 <button id="dashboardBtn" class="hidden flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='dashboard-admin.html'" title="Dashboard Admin">
@@ -195,19 +180,82 @@
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
                                 </a>
                             </div>
-                            <div class="w-full text-left space-y-4">
+                            <!-- Abas de Navegação -->
+                            <div class="w-full border-b border-gray-200 dark:border-gray-700 mb-4">
+                                <div class="flex gap-4">
+                                    <button id="tabProfile" onclick="switchProfileTab('profile')" class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary">
+                                        Perfil
+                                    </button>
+                                    <button id="tabSecurity" onclick="switchProfileTab('security')" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-primary">
+                                        Segurança
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Conteúdo da Aba Perfil (visão pública) -->
+                            <div id="profileTabContent" class="w-full text-left space-y-4">
                                 <!-- Nome -->
                                 <div>
+                                    <h3 class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Nome</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userNameDisplay"></p>
+                                </div>
+                                
+                                <!-- Username -->
+                                <div>
+                                    <h3 class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Username</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userUsernameDisplay">@usuario</p>
+                                </div>
+                                
+                                <!-- Biografia -->
+                                <div>
+                                    <h3 class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Biografia</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-relaxed" id="userBio">Apaixonada por cinema e séries.</p>
+                                </div>
+                                
+                                <!-- Botão de Sair -->
+                                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <button id="logoutBtn" class="w-full flex items-center justify-center p-2 bg-transparent hover:bg-red-600/10 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 rounded-lg transition-colors" title="Sair">
+                                        <span class="material-symbols-outlined !text-xl">logout</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Conteúdo da Aba Segurança -->
+                            <div id="securityTabContent" class="hidden w-full text-left space-y-4">
+                                <!-- Username (editável) -->
+                                <div>
                                     <div class="flex items-center justify-between mb-2">
-                                        <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Nome</h3>
+                                        <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Username</h3>
+                                        <button id="editUsernameBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                                            <span class="material-symbols-outlined !text-base">edit</span>
+                                            <span>Editar</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userUsernameDisplaySecurity">@usuario</p>
+                                    <p class="text-gray-500 dark:text-gray-500 text-xs mt-1">Seu username é único e pode ser alterado</p>
+                                    <div id="usernameEditForm" class="hidden mt-2 space-y-2">
+                                        <input type="text" id="usernameInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Novo username (apenas letras e números)" pattern="[a-zA-Z0-9]+" minlength="3" maxlength="20">
+                                        <input type="password" id="usernamePasswordInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Senha atual (obrigatória)">
+                                        <div class="flex gap-2">
+                                            <button id="saveUsernameBtn" class="px-4 py-1 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">Salvar</button>
+                                            <button id="cancelUsernameBtn" class="px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-sm">Cancelar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Nome (Nickname) -->
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Nome (Nickname)</h3>
                                         <button id="editNameBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
                                             <span class="material-symbols-outlined !text-base">edit</span>
                                             <span>Editar</span>
                                         </button>
                                     </div>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userNameDisplay"></p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userNameDisplaySecurity"></p>
+                                    <p class="text-gray-500 dark:text-gray-500 text-xs mt-1" id="nicknameChangeInfo"></p>
                                     <div id="nameEditForm" class="hidden mt-2 space-y-2">
-                                        <input type="text" id="nameInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Novo nome">
+                                        <input type="text" id="nameInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Novo nickname">
                                         <input type="password" id="namePasswordInput" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" placeholder="Senha atual (obrigatória)">
                                         <div class="flex gap-2">
                                             <button id="saveNameBtn" class="px-4 py-1 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">Salvar</button>
@@ -216,12 +264,29 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Email -->
+                                <!-- Biografia (editável) -->
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
-                                        <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Email</h3>
-                                        <button id="editEmailBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                                        <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Biografia</h3>
+                                        <button id="editBioBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
                                             <span class="material-symbols-outlined !text-base">edit</span>
+                                            <span>Editar</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-relaxed" id="userBioSecurity">Apaixonada por cinema e séries.</p>
+                                    <textarea id="bioInput" class="hidden w-full mt-2 p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white resize-none" rows="3" maxlength="500"></textarea>
+                                    <div class="hidden mt-2 gap-2" id="bioActions">
+                                        <button id="saveBioBtn" class="px-4 py-1 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">Salvar</button>
+                                        <button id="cancelBioBtn" class="px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-sm">Cancelar</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Email -->
+                                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="text-gray-700 dark:text-gray-300 font-medium text-sm">Email</h4>
+                                        <button id="editEmailBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-xs font-medium">
+                                            <span class="material-symbols-outlined !text-sm">edit</span>
                                             <span>Editar</span>
                                         </button>
                                     </div>
@@ -239,9 +304,9 @@
                                 <!-- Senha -->
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
-                                        <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Senha</h3>
-                                        <button id="editPasswordBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
-                                            <span class="material-symbols-outlined !text-base">edit</span>
+                                        <h4 class="text-gray-700 dark:text-gray-300 font-medium text-sm">Senha</h4>
+                                        <button id="editPasswordBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-xs font-medium">
+                                            <span class="material-symbols-outlined !text-sm">edit</span>
                                             <span>Alterar</span>
                                         </button>
                                     </div>
@@ -255,30 +320,6 @@
                                             <button id="cancelPasswordBtn" class="px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-sm">Cancelar</button>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <!-- Biografia -->
-                                <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="text-gray-800 dark:text-gray-200 font-semibold">Biografia</h3>
-                                        <button id="editBioBtn" class="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
-                                        <span class="material-symbols-outlined !text-base">edit</span>
-                                        <span>Editar</span>
-                                    </button>
-                                </div>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-relaxed" id="userBio">Apaixonada por cinema e séries.</p>
-                                    <textarea id="bioInput" class="hidden w-full mt-2 p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white resize-none" rows="3" maxlength="500"></textarea>
-                                    <div class="hidden mt-2 gap-2" id="bioActions">
-                                        <button id="saveBioBtn" class="px-4 py-1 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">Salvar</button>
-                                        <button id="cancelBioBtn" class="px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-sm">Cancelar</button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Botão de Sair -->
-                                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-                                    <button id="logoutBtn" class="w-full flex items-center justify-center p-2 bg-transparent hover:bg-red-600/10 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 rounded-lg transition-colors" title="Sair">
-                                        <span class="material-symbols-outlined !text-xl">logout</span>
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -389,8 +430,15 @@
     // Carregar dados do perfil
     async function loadProfile() {
         try {
+            // Verificar token novamente (pode ter mudado)
+            const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (!currentToken) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
             const response = await fetch(`${API_URL}/api/profile/me`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${currentToken}` }
             });
             
             if (response.ok) {
@@ -400,10 +448,47 @@
                 document.getElementById('userName').textContent = userData.name || 'Usuário';
                 document.getElementById('userNameDisplay').textContent = userData.name || 'Usuário';
                 document.getElementById('userEmailDisplay').textContent = userData.email || '';
-                document.getElementById('userHandle').textContent = '@' + (userData.email?.split('@')[0] || 'usuario');
+                // Se não tiver username, mostrar "user" temporariamente até ser gerado
+                const displayUsername = userData.username || 'user';
+                // Aba Perfil (visão pública)
+                document.getElementById('userUsernameDisplay').textContent = '@' + displayUsername;
+                document.getElementById('userHandle').textContent = '@' + displayUsername;
                 document.getElementById('userBio').textContent = userData.bio || 'Apaixonada por cinema e séries.';
                 document.getElementById('followerCount').textContent = userData.followers || '0';
                 document.getElementById('followingCount').textContent = userData.following || '0';
+                
+                // Aba Segurança
+                const usernameDisplaySecurity = document.getElementById('userUsernameDisplaySecurity');
+                if (usernameDisplaySecurity) {
+                    usernameDisplaySecurity.textContent = '@' + displayUsername;
+                }
+                const userNameDisplaySecurity = document.getElementById('userNameDisplaySecurity');
+                if (userNameDisplaySecurity) {
+                    userNameDisplaySecurity.textContent = userData.name || 'Usuário';
+                }
+                const userBioSecurity = document.getElementById('userBioSecurity');
+                if (userBioSecurity) {
+                    userBioSecurity.textContent = userData.bio || 'Apaixonada por cinema e séries.';
+                }
+                
+                // Mostrar informação sobre mudança de nickname
+                const nicknameInfo = document.getElementById('nicknameChangeInfo');
+                if (userData.nicknameLastChanged) {
+                    const daysSinceLastChange = Math.floor(
+                        (new Date() - new Date(userData.nicknameLastChanged)) / (1000 * 60 * 60 * 24)
+                    );
+                    const daysRemaining = Math.max(0, 15 - daysSinceLastChange);
+                    if (daysRemaining > 0) {
+                        nicknameInfo.textContent = `Você pode mudar seu nickname em ${daysRemaining} dia(s).`;
+                        nicknameInfo.className = 'text-yellow-600 dark:text-yellow-400 text-xs mt-1';
+                    } else {
+                        nicknameInfo.textContent = 'Você pode mudar seu nickname agora.';
+                        nicknameInfo.className = 'text-green-600 dark:text-green-400 text-xs mt-1';
+                    }
+                } else {
+                    nicknameInfo.textContent = 'Você pode mudar seu nickname agora.';
+                    nicknameInfo.className = 'text-green-600 dark:text-green-400 text-xs mt-1';
+                }
                 
                 // Avatar
                 const userAvatar = document.getElementById('userAvatar');
@@ -449,7 +534,7 @@
                         if (posterUrl && !posterUrl.startsWith('http')) {
                             posterUrl = `https://image.tmdb.org/t/p/w300${posterUrl}`;
                         } else if (!posterUrl) {
-                            posterUrl = 'https://via.placeholder.com/300x450?text=Sem+Pôster';
+                            posterUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450"%3E%3Crect width="300" height="450" fill="%231a1f2e"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="16" fill="%239dabb9" text-anchor="middle" dy=".3em"%3ESem Pôster%3C/text%3E%3C/svg%3E';
                         }
                     
                     const item = document.createElement('div');
@@ -527,11 +612,14 @@
     // Editar biografia
     function setupBioEdit() {
         const editBtn = document.getElementById('editBioBtn');
-        const bioText = document.getElementById('userBio');
+        const bioText = document.getElementById('userBioSecurity');
+        const bioTextPublic = document.getElementById('userBio');
         const bioInput = document.getElementById('bioInput');
         const bioActions = document.getElementById('bioActions');
         const saveBtn = document.getElementById('saveBioBtn');
         const cancelBtn = document.getElementById('cancelBioBtn');
+        
+        if (!editBtn || !bioText) return;
 
         editBtn.addEventListener('click', () => {
             bioText.classList.add('hidden');
@@ -560,16 +648,20 @@
                 });
 
                 if (response.ok) {
-                    bioText.textContent = newBio || 'Apaixonada por cinema e séries.';
+                    const updatedBio = newBio || 'Apaixonada por cinema e séries.';
+                    bioText.textContent = updatedBio;
+                    if (bioTextPublic) bioTextPublic.textContent = updatedBio;
                     bioText.classList.remove('hidden');
                     bioInput.classList.add('hidden');
                     bioActions.classList.add('hidden');
+                    showToast('Bio atualizada com sucesso!', 'success');
                 } else {
-                    alert('Erro ao salvar biografia');
+                    const errorData = await response.json();
+                    showToast(errorData.error || 'Erro ao salvar biografia', 'error');
                 }
             } catch (error) {
                 console.error('Erro ao salvar biografia:', error);
-                alert('Erro ao salvar biografia');
+                showToast('Erro ao salvar biografia', 'error');
             }
         });
     }
@@ -676,9 +768,16 @@
                     nameForm.classList.add('hidden');
                     nameInput.value = '';
                     passwordInput.value = '';
+                    
+                    // Atualizar informação sobre mudança de nickname
+                    const nicknameInfo = document.getElementById('nicknameChangeInfo');
+                    nicknameInfo.textContent = 'Você pode mudar seu nickname novamente em 15 dias.';
+                    nicknameInfo.className = 'text-yellow-600 dark:text-yellow-400 text-xs mt-1';
+                    
+                    showToast('Nickname atualizado com sucesso!', 'success');
                 } else {
                     const errorData = await response.json();
-                    alert('Erro ao salvar nome: ' + (errorData.error || 'Erro desconhecido'));
+                    showToast(errorData.error || 'Erro ao salvar nickname', 'error');
                 }
             } catch (error) {
                 console.error('Erro ao salvar nome:', error);
@@ -752,6 +851,128 @@
             } catch (error) {
                 console.error('Erro ao salvar email:', error);
                 alert('Erro ao salvar email');
+            }
+        });
+    }
+
+    // Função para trocar entre abas Perfil e Segurança
+    function switchProfileTab(tab) {
+        const profileTab = document.getElementById('tabProfile');
+        const securityTab = document.getElementById('tabSecurity');
+        const profileContent = document.getElementById('profileTabContent');
+        const securityContent = document.getElementById('securityTabContent');
+        
+        if (tab === 'profile') {
+            profileTab.classList.add('border-primary', 'text-primary');
+            profileTab.classList.remove('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+            securityTab.classList.remove('border-primary', 'text-primary');
+            securityTab.classList.add('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+            profileContent.classList.remove('hidden');
+            securityContent.classList.add('hidden');
+        } else {
+            securityTab.classList.add('border-primary', 'text-primary');
+            securityTab.classList.remove('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+            profileTab.classList.remove('border-primary', 'text-primary');
+            profileTab.classList.add('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+            securityContent.classList.remove('hidden');
+            profileContent.classList.add('hidden');
+        }
+    }
+
+    // Editar username
+    function setupUsernameEdit() {
+        const editBtn = document.getElementById('editUsernameBtn');
+        const usernameDisplay = document.getElementById('userUsernameDisplaySecurity');
+        const usernameForm = document.getElementById('usernameEditForm');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('usernamePasswordInput');
+        const saveBtn = document.getElementById('saveUsernameBtn');
+        const cancelBtn = document.getElementById('cancelUsernameBtn');
+
+        if (!editBtn || !usernameDisplay) return;
+
+        editBtn.addEventListener('click', () => {
+            const currentUsername = usernameDisplay.textContent.replace('@', '');
+            usernameDisplay.classList.add('hidden');
+            usernameForm.classList.remove('hidden');
+            usernameInput.value = currentUsername;
+            usernameInput.focus();
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            usernameDisplay.classList.remove('hidden');
+            usernameForm.classList.add('hidden');
+            usernameInput.value = '';
+            passwordInput.value = '';
+        });
+
+        saveBtn.addEventListener('click', async () => {
+            const newUsername = usernameInput.value.trim().toLowerCase();
+            const currentPassword = passwordInput.value.trim();
+            
+            if (!newUsername) {
+                showToast('Username não pode estar vazio', 'error');
+                return;
+            }
+            if (newUsername.length < 3) {
+                showToast('Username deve ter no mínimo 3 caracteres', 'error');
+                return;
+            }
+            if (newUsername.length > 20) {
+                showToast('Username deve ter no máximo 20 caracteres', 'error');
+                return;
+            }
+            if (!/^[a-z0-9]+$/.test(newUsername)) {
+                showToast('Username deve conter apenas letras e números', 'error');
+                return;
+            }
+            if (!currentPassword) {
+                showToast('Senha atual é obrigatória', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/profile/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        username: newUsername,
+                        currentPassword: currentPassword
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const updatedUsername = data.user.username || newUsername;
+                    
+                    // Atualizar em ambos os lugares
+                    const usernameDisplayEl = document.getElementById('userUsernameDisplay');
+                    const usernameDisplaySecurityEl = document.getElementById('userUsernameDisplaySecurity');
+                    const userHandleEl = document.getElementById('userHandle');
+                    
+                    if (usernameDisplayEl) usernameDisplayEl.textContent = '@' + updatedUsername;
+                    if (usernameDisplaySecurityEl) usernameDisplaySecurityEl.textContent = '@' + updatedUsername;
+                    if (userHandleEl) userHandleEl.textContent = '@' + updatedUsername;
+                    
+                    // Recarregar o perfil completo para garantir que tudo está sincronizado
+                    // Isso garante que após F5, o username correto será carregado do servidor
+                    await loadProfile();
+                    
+                    usernameDisplay.classList.remove('hidden');
+                    usernameForm.classList.add('hidden');
+                    usernameInput.value = '';
+                    passwordInput.value = '';
+                    showToast('Username atualizado com sucesso!', 'success');
+                } else {
+                    const errorData = await response.json();
+                    showToast(errorData.error || 'Erro ao salvar username', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao salvar username:', error);
+                showToast('Erro ao salvar username', 'error');
             }
         });
     }
@@ -857,6 +1078,7 @@
         loadUserProfile();
         setupBioEdit();
         setupNameEdit();
+        setupUsernameEdit();
         setupEmailEdit();
         setupPasswordEdit();
         setupProfilePictureUpload();

@@ -15,6 +15,7 @@
     <title>ECHOVIEW - Catálogo de Filmes e Séries</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="js/ui-feedback.js"></script>
+    <script src="js/affiliateDisclaimer.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <script>
@@ -485,6 +486,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- Feedback -->
+                <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='feedback.html'" title="Enviar Feedback">
+                    <span class="material-symbols-outlined text-[20px]">feedback</span>
+                </button>
                 <!-- Perfil -->
                 <button class="flex items-center justify-center rounded-full h-10 w-10 bg-[#072f57] text-white hover:bg-[#335b7e] transition-colors overflow-hidden border-2 border-transparent hover:border-[#707d9b]" onclick="window.location.href='perfil.html'" title="Perfil" id="profileButton">
                     <span class="material-symbols-outlined text-[20px]">person</span>
@@ -504,12 +509,14 @@
                         <button class="hero-btn hero-btn-primary" onclick="openHeroModal()">
                             <span class="material-symbols-outlined">play_arrow</span>
                             Assistir Agora
+                            <span class="text-xs opacity-75 ml-1 hidden sm:inline">(pode conter link de afiliado)</span>
                         </button>
                         <button class="hero-btn hero-btn-secondary" onclick="openHeroModal()">
                             <span class="material-symbols-outlined">info</span>
                             Mais Informações
                         </button>
                     </div>
+                    <p class="text-xs text-gray-400 mt-2 sm:hidden">⚠️ Pode conter link de afiliado</p>
                     <!-- Streaming Providers -->
                     <div id="heroStreamingProviders" class="flex items-center gap-3 mt-2">
                         <!-- Ícones de streaming serão inseridos aqui -->
@@ -611,8 +618,19 @@
 
             if (firstResponse.ok) {
                 const firstData = await firstResponse.json();
-                // Filtrar apenas títulos com backdrop_path, poster_path e ID válidos
-                heroTitles = firstData.results.filter(t => t.backdrop_path && t.poster_path && t.id).slice(0, 5);
+                // Filtrar apenas títulos com backdrop_path, poster_path, ID válidos e overview
+                // Garantir que o título tenha dados completos para evitar erros
+                // Excluir "Pluribus" do hero banner
+                heroTitles = firstData.results.filter(t => 
+                    t.backdrop_path && 
+                    t.poster_path && 
+                    t.id && 
+                    t.overview && 
+                    t.overview.trim().length > 0 &&
+                    (t.title || t.name) &&
+                    !(t.title && t.title.toLowerCase().includes('pluribus')) &&
+                    !(t.name && t.name.toLowerCase().includes('pluribus'))
+                ).slice(0, 5);
                 if (heroTitles.length > 0) {
                     updateHeroBanner();
                     setInterval(updateHeroBanner, 8000);
@@ -976,13 +994,13 @@
                 
                 const posterUrl = item.poster_path 
                     ? `https://image.tmdb.org/t/p/w300${item.poster_path}`
-                    : 'https://via.placeholder.com/300x450?text=Sem+Pôster';
+                    : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450"%3E%3Crect width="300" height="450" fill="%231a1f2e"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="16" fill="%239dabb9" text-anchor="middle" dy=".3em"%3ESem Pôster%3C/text%3E%3C/svg%3E';
                 
                 itemDiv.innerHTML = `
                     <img src="${posterUrl}" 
                          alt="${item.title || item.name}" 
                          loading="lazy"
-                         onerror="this.src='https://via.placeholder.com/300x450?text=Sem+Pôster'">
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'450\'%3E%3Crect width=\'300\' height=\'450\' fill=\'%231a1f2e\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-family=\'Arial\' font-size=\'16\' fill=\'%239dabb9\' text-anchor=\'middle\' dy=\'.3em\'%3ESem Pôster%3C/text%3E%3C/svg%3E'">
                 `;
                 
                 itemDiv.addEventListener('click', () => {
@@ -1119,15 +1137,19 @@
         // backdrop_path pode vir como URL completa ou caminho relativo
         let backdropUrl = '';
         if (title.backdrop_path) {
-            if (title.backdrop_path.startsWith('http')) {
+            if (title.backdrop_path.startsWith('http://') || title.backdrop_path.startsWith('https://')) {
                 backdropUrl = title.backdrop_path;
             } else {
                 backdropUrl = `https://image.tmdb.org/t/p/w1280${title.backdrop_path}`;
             }
         }
+        // Usar data URI como fallback se não houver backdrop
+        if (!backdropUrl) {
+            backdropUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1280" height="720"%3E%3Crect width="1280" height="720" fill="%231a1f2e"/%3E%3C/svg%3E';
+        }
         document.getElementById('heroBannerImg').src = backdropUrl;
-        document.getElementById('heroTitle').textContent = title.title || title.name;
-        document.getElementById('heroDescription').textContent = title.overview?.substring(0, 150) + '...';
+        document.getElementById('heroTitle').textContent = title.title || title.name || 'Sem título';
+        document.getElementById('heroDescription').textContent = (title.overview?.substring(0, 150) || 'Descrição não disponível') + '...';
         
         // Buscar providers de streaming
         const type = title.media_type || (title.title ? 'movie' : 'tv');
@@ -1141,8 +1163,14 @@
     
     async function loadStreamingProviders(tmdbId, type) {
         try {
+            // Verificar token novamente
+            const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (!currentToken) {
+                return; // Se não houver token, não buscar providers
+            }
+            
             const response = await fetch(`${API_URL}/api/tmdb/${type}/${tmdbId}/watch/providers`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${currentToken}` }
             });
             
             if (response.ok) {
@@ -1203,14 +1231,41 @@
         }).join('');
     }
     
-    function openHeroModal() {
+    async function openHeroModal() {
         if (currentHeroTitle) {
-            const title = {
-                id: currentHeroTitle.id,
-                tmdbId: currentHeroTitle.id,
-                type: currentHeroTitle.media_type || (currentHeroTitle.title ? 'movie' : 'tv')
+            // Garantir que temos o tmdbId correto
+            const tmdbId = currentHeroTitle.tmdbId || currentHeroTitle.id;
+            const type = currentHeroTitle.media_type || (currentHeroTitle.title ? 'movie' : 'tv');
+            const title = currentHeroTitle.title || currentHeroTitle.name;
+            
+            if (!tmdbId) {
+                console.error('Erro: tmdbId não encontrado no título do hero banner', currentHeroTitle);
+                alert('Erro ao abrir título. Tente novamente.');
+                return;
+            }
+            
+            // Usar exatamente a mesma estrutura que o catálogo usa
+            const titleData = {
+                id: tmdbId,
+                tmdbId: tmdbId,
+                title: title,
+                type: type
             };
-            openModal(title);
+            
+            // Usar a mesma lógica do openModalFromSearch para garantir consistência
+            // Fechar modal anterior se estiver aberto
+            const modal = document.getElementById('titleModal');
+            if (modal && modal.classList.contains('show')) {
+                closeModal();
+                // Aguardar um pouco para garantir que o modal foi fechado
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            // Abrir o modal (mesmo comportamento do catálogo)
+            openModal(titleData);
+        } else {
+            console.error('Erro: currentHeroTitle não está definido');
+            alert('Erro ao abrir título. Tente novamente.');
         }
     }
 
@@ -1218,12 +1273,24 @@
         const modal = document.getElementById('titleModal');
         const modalBody = document.getElementById('modalBody');
         
+        // Verificar token novamente (pode ter expirado ou sido removido)
+        const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (!currentToken) {
+            alert('Sessão expirada. Por favor, faça login novamente.');
+            window.location.href = 'login.html';
+            return;
+        }
+        
         // Se o modal já está aberto e é o mesmo título, não fazer nada
         if (modal.classList.contains('show') && selectedTitle && selectedTitle.id === title.id) {
             return;
         }
         
         selectedTitle = title;
+        
+        // Armazenar tmdbId e type no modal para uso posterior
+        modal.setAttribute('data-current-tmdb-id', title.tmdbId || title.id);
+        modal.setAttribute('data-current-type', title.type || 'movie');
         
         // Se o modal já está aberto, apenas atualizar o conteúdo sem fechar
         if (modal.classList.contains('show')) {
@@ -1247,7 +1314,7 @@
             }
             
             const detailsResponse = await fetch(`${API_URL}/api/titles/tmdb/${titleId}?type=${titleType}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${currentToken}` }
             });
             
             let titleData = {};
@@ -1272,7 +1339,7 @@
             let comments = [];
             try {
                 const commentsResponse = await fetch(`${API_URL}/api/titles/${titleId}/comments`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
                 });
                 
                 if (commentsResponse.ok) {
@@ -1287,7 +1354,7 @@
             let interaction = null;
             try {
                 const interactionResponse = await fetch(`${API_URL}/api/titles/${titleId}/my-interaction`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
                 });
                 
                 if (interactionResponse.ok) {
@@ -1302,7 +1369,7 @@
             let similarTitles = { results: [] };
             try {
                 const similarResponse = await fetch(`${API_URL}/api/titles/similar/${titleId}?type=${titleType}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
                 });
                 
                 if (similarResponse.ok) {
@@ -1419,6 +1486,10 @@
                 </div>
             ` : '';
             
+            // Armazenar dados do título atual no modal para uso no comentário
+            modal.setAttribute('data-current-tmdb-id', titleId);
+            modal.setAttribute('data-current-type', titleType);
+            
             modalBody.innerHTML = `
                 <div class="p-6">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -1499,15 +1570,31 @@
     }
 
     async function updateStatus(status) {
-        if (!selectedTitle) return;
+        const modal = document.getElementById('titleModal');
+        if (!modal) return;
+        
+        // Verificar token novamente
+        const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (!currentToken) {
+            alert('Sessão expirada. Por favor, faça login novamente.');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        // Obter dados do título atual do modal (não de selectedTitle que pode ter mudado)
+        const titleId = modal.getAttribute('data-current-tmdb-id');
+        const titleType = modal.getAttribute('data-current-type') || 'movie';
+        
+        if (!titleId) {
+            console.error('ID do título não encontrado no modal');
+            return;
+        }
         
         try {
-            const titleType = selectedTitle.type || 'movie';
-            const titleId = selectedTitle.id;
             
             // Buscar dados do título do TMDB
             const detailsResponse = await fetch(`${API_URL}/api/titles/tmdb/${titleId}?type=${titleType}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${currentToken}` }
             });
             
             let titleData = {};
@@ -1520,7 +1607,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${currentToken}`
                 },
                 body: JSON.stringify({
                     tmdbId: titleId,
@@ -1536,8 +1623,12 @@
             });
             
             if (response.ok) {
-                // Recarregar o modal para atualizar o status marcado
-                await openModal(selectedTitle);
+                // Recarregar o modal para atualizar o status marcado usando os dados armazenados
+                await openModal({
+                    id: parseInt(titleId),
+                    tmdbId: parseInt(titleId),
+                    type: titleType
+                });
             } else {
                 const errorData = await response.json();
                 alert('Erro ao salvar status: ' + (errorData.error || 'Erro desconhecido'));
@@ -1549,7 +1640,25 @@
     }
 
     async function submitComment() {
-        if (!selectedTitle) return;
+        const modal = document.getElementById('titleModal');
+        if (!modal) return;
+        
+        // Verificar token novamente
+        const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (!currentToken) {
+            alert('Sessão expirada. Por favor, faça login novamente.');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        // Obter dados do título atual do modal (não de selectedTitle que pode ter mudado)
+        const titleId = modal.getAttribute('data-current-tmdb-id');
+        const titleType = modal.getAttribute('data-current-type') || 'movie';
+        
+        if (!titleId) {
+            console.error('ID do título não encontrado no modal');
+            return;
+        }
         
         const commentInput = document.getElementById('commentInput');
         const comment = commentInput.value.trim();
@@ -1561,15 +1670,13 @@
         
         try {
             // Primeiro, buscar os dados do título do TMDB e a interação atual
-            const titleType = selectedTitle.type || 'movie';
-            const titleId = selectedTitle.id;
             
             const [detailsResponse, interactionResponse] = await Promise.all([
                 fetch(`${API_URL}/api/titles/tmdb/${titleId}?type=${titleType}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
                 }),
                 fetch(`${API_URL}/api/titles/${titleId}/my-interaction`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
                 })
             ]);
             
@@ -1592,7 +1699,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${currentToken}`
                 },
                 body: JSON.stringify({
                     tmdbId: titleId,
@@ -1610,8 +1717,12 @@
             
             if (response.ok) {
                 commentInput.value = '';
-                // Recarregar o modal para mostrar o novo comentário
-                await openModal(selectedTitle);
+                // Recarregar o modal para mostrar o novo comentário usando os dados armazenados
+                await openModal({
+                    id: parseInt(titleId),
+                    tmdbId: parseInt(titleId),
+                    type: titleType
+                });
             } else {
                 const errorData = await response.json();
                 alert('Erro ao salvar comentário: ' + (errorData.error || 'Erro desconhecido'));
@@ -1696,21 +1807,33 @@
             if (query.length >= 2) {
                 searchTimeout = setTimeout(async () => {
                     try {
-                        const response = await fetch(`${API_URL}/api/tmdb/search?query=${encodeURIComponent(query)}`, {
+                        // Mostrar loading
+                        searchResultsContent.innerHTML = '<div class="p-4 text-center text-gray-400">Buscando...</div>';
+                        searchResultsDropdown.classList.remove('hidden');
+                        
+                        const response = await fetch(`${API_URL}/api/tmdb/search?query=${encodeURIComponent(query)}&page=1`, {
                             headers: { 'Authorization': `Bearer ${token}` }
                         });
                         
                         if (response.ok) {
                             const data = await response.json();
-                            displaySearchResults(data.results || []);
+                            if (data.results && data.results.length > 0) {
+                                displaySearchResults(data.results);
+                            } else {
+                                searchResultsContent.innerHTML = '<div class="p-4 text-center text-gray-400">Nenhum resultado encontrado. Tente uma busca diferente.</div>';
+                                searchResultsDropdown.classList.remove('hidden');
+                            }
                         } else {
-                            hideSearchResults();
+                            const errorData = await response.json().catch(() => ({}));
+                            searchResultsContent.innerHTML = `<div class="p-4 text-center text-red-400">Erro na busca: ${errorData.error || 'Erro desconhecido'}</div>`;
+                            searchResultsDropdown.classList.remove('hidden');
                         }
                     } catch (error) {
                         console.error('Erro na busca:', error);
-                        hideSearchResults();
+                        searchResultsContent.innerHTML = '<div class="p-4 text-center text-red-400">Erro ao buscar. Tente novamente.</div>';
+                        searchResultsDropdown.classList.remove('hidden');
                     }
-                }, 300); // Aguardar 300ms após parar de digitar
+                }, 400); // Aguardar 400ms após parar de digitar para reduzir requisições
             } else {
                 hideSearchResults();
             }
@@ -1738,24 +1861,35 @@
     
     function displaySearchResults(results) {
         if (!results || results.length === 0) {
-            searchResultsContent.innerHTML = '<div class="p-4 text-center text-gray-400">Nenhum resultado encontrado</div>';
+            searchResultsContent.innerHTML = '<div class="p-4 text-center text-gray-400">Nenhum resultado encontrado. Tente uma busca diferente.</div>';
             searchResultsDropdown.classList.remove('hidden');
             return;
         }
         
-        searchResultsContent.innerHTML = results.slice(0, 8).map(item => {
+        // Ordenar por relevância (popularidade/vote_average)
+        const sortedResults = [...results].sort((a, b) => {
+            const scoreA = (a.vote_average || 0) * 10 + (a.popularity || 0);
+            const scoreB = (b.vote_average || 0) * 10 + (b.popularity || 0);
+            return scoreB - scoreA;
+        });
+        
+        searchResultsContent.innerHTML = sortedResults.slice(0, 10).map(item => {
             const posterUrl = item.poster_path 
                 ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
-                : 'https://via.placeholder.com/92x138?text=Sem+Imagem';
+                : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="92" height="138"%3E%3Crect width="92" height="138" fill="%231a1f2e"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="10" fill="%239dabb9" text-anchor="middle" dy=".3em"%3ESem Imagem%3C/text%3E%3C/svg%3E';
             const title = item.title || item.name || 'Sem título';
-            const type = item.media_type || (item.title ? 'movie' : 'tv');
+            const type = item.type || item.media_type || (item.title ? 'movie' : 'tv');
             const year = (item.release_date || item.first_air_date || '').substring(0, 4);
+            const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
             
             return `
                 <div class="flex items-center gap-3 p-3 hover:bg-[#1a1f2e] rounded-lg cursor-pointer transition-colors" onclick="openModalFromSearch(${item.id}, '${type}')">
-                    <img src="${posterUrl}" alt="${title}" class="w-16 h-24 object-cover rounded" onerror="this.src='https://via.placeholder.com/92x138?text=Sem+Imagem'">
+                    <img src="${posterUrl}" alt="${title}" class="w-16 h-24 object-cover rounded flex-shrink-0" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'92\' height=\'138\'%3E%3Crect width=\'92\' height=\'138\' fill=\'%231a1f2e\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-family=\'Arial\' font-size=\'10\' fill=\'%239dabb9\' text-anchor=\'middle\' dy=\'.3em\'%3ESem Imagem%3C/text%3E%3C/svg%3E'">
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-white font-semibold truncate">${title}</h4>
+                        <div class="flex items-center gap-2 mb-1">
+                            <h4 class="text-white font-semibold truncate">${title}</h4>
+                            ${rating ? `<span class="text-yellow-400 text-xs font-bold">⭐ ${rating}</span>` : ''}
+                        </div>
                         <p class="text-gray-400 text-sm">${type === 'movie' ? 'Filme' : 'Série'}${year ? ` • ${year}` : ''}</p>
                         ${item.overview ? `<p class="text-gray-500 text-xs mt-1 line-clamp-2">${item.overview}</p>` : ''}
                     </div>
@@ -1775,14 +1909,17 @@
     // Abrir modal diretamente da busca
     async function openModalFromSearch(tmdbId, type) {
         hideSearchResults();
-        document.getElementById('searchInput').value = '';
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = '';
+        }
         
         // Criar objeto título para passar para openModal
         // Garantir que o ID seja numérico
         const titleId = parseInt(tmdbId);
         if (isNaN(titleId)) {
             console.error('ID inválido:', tmdbId);
-            alert('Erro: ID do título inválido');
+            showToast('Erro: ID do título inválido', 'error');
             return;
         }
         
@@ -1792,7 +1929,14 @@
             type: type || 'movie'
         };
         
-        console.log('Abrindo modal da busca:', title);
+        // Fechar modal anterior se estiver aberto
+        const modal = document.getElementById('titleModal');
+        if (modal && modal.classList.contains('show')) {
+            closeModal();
+            // Aguardar um pouco para garantir que o modal foi fechado
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        
         await openModal(title);
     }
 
@@ -1923,6 +2067,7 @@
         // HTML do botão principal
         const buttonHtml = `
             <div class="border-t border-gray-700 pt-4 mb-4">
+                <p class="text-xs text-gray-400 mb-2">⚠️ Pode conter link de afiliado</p>
                 <a href="${affiliateLink}" 
                    target="_blank" 
                    rel="noopener noreferrer"
@@ -1981,5 +2126,17 @@
 </script>
     <script src="js/affiliateLinks.js"></script>
     <script src="js/notifications.js"></script>
+    
+    <!-- Rodapé -->
+    <footer class="bg-[#051422] border-t border-white/10 py-8 px-4 sm:px-10 md:px-20 lg:px-40 mt-16">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-gray-400 text-sm mb-2">
+                Precisa de ajuda? Entre em contato com nosso suporte:
+            </p>
+            <a href="mailto:suporteechoview@gmail.com" class="text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+                suporteechoview@gmail.com
+            </a>
+        </div>
+    </footer>
 </body>
 </html>

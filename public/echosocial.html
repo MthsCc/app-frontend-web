@@ -15,6 +15,7 @@
     <title>ECHOSOCIAL - ECHOVIEW</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="js/ui-feedback.js"></script>
+    <script src="js/affiliateDisclaimer.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <script>
@@ -500,7 +501,7 @@
                             ${avatar}
                             <div class="flex-1">
                                 <p class="text-white font-medium">${user.name}</p>
-                                <p class="text-gray-400 text-sm">@${user.email.split('@')[0]}</p>
+                                <p class="text-gray-400 text-sm">@${user.username || 'user'}</p>
                             </div>
                         </div>
                     `;
@@ -546,7 +547,7 @@
                     ${avatar}
                     <div>
                         <p class="text-white font-medium">${user.name}</p>
-                        <p class="text-gray-400 text-sm">@${user.email.split('@')[0]}</p>
+                        <p class="text-gray-400 text-sm">@${user.username || 'user'}</p>
                     </div>
                 </div>
             </div>
@@ -694,7 +695,7 @@
                 }
                 
                 document.getElementById('chatUserName').textContent = user.name;
-                document.getElementById('chatUserHandle').textContent = '@' + (user.email.split('@')[0] || 'usuario');
+                document.getElementById('chatUserHandle').textContent = '@' + (user.username || 'user');
             }
         } catch (error) {
             console.error('Erro ao carregar usuário do chat:', error);
@@ -776,7 +777,7 @@
                         <div class="bg-[#072f57] rounded-lg p-3 border border-[#707d9b]/30 mt-2">
                             ${imagePreview}
                             <p class="text-white text-sm">${contentPreview}</p>
-                            <p class="text-gray-400 text-xs mt-1">Post de @${post.user.email.split('@')[0]}</p>
+                            <p class="text-gray-400 text-xs mt-1">Post de @${post.user.username || 'user'}</p>
                         </div>
                     `;
                 }
@@ -1010,6 +1011,7 @@
     
     chatImageInput.addEventListener('change', function(e) {
         chatMediaFiles = Array.from(e.target.files);
+        AppState.chatMediaFiles = chatMediaFiles; // Sincronizar com AppState
         const preview = document.getElementById('chatMediaPreview');
         preview.innerHTML = '';
         
@@ -1031,6 +1033,7 @@
 
     function removeChatMedia(index) {
         chatMediaFiles.splice(index, 1);
+        AppState.chatMediaFiles = chatMediaFiles; // Sincronizar com AppState
         const preview = document.getElementById('chatMediaPreview');
         preview.innerHTML = '';
         chatMediaFiles.forEach((file, idx) => {
@@ -1067,7 +1070,7 @@
             const preview = document.getElementById('chatMediaPreview');
             preview.innerHTML = `
                 <div class="p-3 bg-[#072f57] rounded-lg flex gap-3 items-center">
-                    <img src="${chatSelectedMovie.posterPath ? (chatSelectedMovie.posterPath.startsWith('http') ? chatSelectedMovie.posterPath : `https://image.tmdb.org/t/p/w92${chatSelectedMovie.posterPath}`) : 'https://via.placeholder.com/92x138'}" alt="${chatSelectedMovie.title}" class="w-16 h-24 object-cover rounded">
+                    <img src="${chatSelectedMovie.posterPath ? (chatSelectedMovie.posterPath.startsWith('http') ? chatSelectedMovie.posterPath : `https://image.tmdb.org/t/p/w92${chatSelectedMovie.posterPath}`) : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="92" height="138"%3E%3Crect width="92" height="138" fill="%231a1f2e"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="10" fill="%239dabb9" text-anchor="middle" dy=".3em"%3ESem Imagem%3C/text%3E%3C/svg%3E'}" alt="${chatSelectedMovie.title}" class="w-16 h-24 object-cover rounded">
                     <div class="flex-1">
                         <h4 class="text-white font-bold text-sm">${chatSelectedMovie.title}</h4>
                         <p class="text-gray-400 text-xs line-clamp-2">${chatSelectedMovie.overview || ''}</p>
@@ -1143,7 +1146,7 @@
                     <div class="flex-1">
                         <div class="flex items-center gap-2 mb-1">
                             <p class="text-white font-bold cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">${post.user.name}</p>
-                            <p class="text-gray-400 text-sm cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">@${post.user.email.split('@')[0]}</p>
+                            <p class="text-gray-400 text-sm cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">@${post.user.username || 'user'}</p>
                             <span class="text-gray-500">·</span>
                             <p class="text-gray-400 text-sm">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</p>
                             ${(post.user.id === currentUserId || isAdmin) ? `
@@ -1336,7 +1339,7 @@
         
         container.innerHTML = movies.slice(0, 10).map(movie => `
             <div class="p-4 bg-[#335b7e] rounded-lg hover:bg-[#707d9b] cursor-pointer flex gap-4" onclick="selectMovie(${JSON.stringify(movie).replace(/"/g, '&quot;')})">
-                <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://via.placeholder.com/92x138'}" alt="${movie.title || movie.name}" class="w-16 h-24 object-cover rounded">
+                <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="92" height="138"%3E%3Crect width="92" height="138" fill="%231a1f2e"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="10" fill="%239dabb9" text-anchor="middle" dy=".3em"%3ESem Imagem%3C/text%3E%3C/svg%3E'}" alt="${movie.title || movie.name}" class="w-16 h-24 object-cover rounded">
                 <div class="flex-1">
                     <h4 class="text-white font-bold">${movie.title || movie.name}</h4>
                     <p class="text-gray-400 text-sm">${movie.release_date || movie.first_air_date || ''}</p>
@@ -1760,7 +1763,7 @@
                     ${imagePreview}
                     <div class="flex-1">
                         <p class="text-white text-sm">${contentPreview}</p>
-                        <p class="text-gray-400 text-xs mt-1">Post de @${post.user.email.split('@')[0]}</p>
+                        <p class="text-gray-400 text-xs mt-1">Post de @${post.user.username || 'user'}</p>
                     </div>
                     <button onclick="removeAttachedPost()" class="text-gray-400 hover:text-white">
                         <span class="material-symbols-outlined !text-lg">close</span>
