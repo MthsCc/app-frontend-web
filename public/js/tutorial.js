@@ -199,23 +199,64 @@ const TutorialSystem = {
         // Se tem autoOpenModal, abrir modal primeiro
         if (step.autoOpenModal) {
             this.openExampleModal().then(() => {
-                // Após modal abrir, mostrar card
+                // Aguardar um pouco mais para garantir que o modal está totalmente renderizado
                 setTimeout(() => {
-                    if (step.target) {
-                        const targetElement = document.querySelector(step.target);
-                        if (targetElement) {
-                            this.highlightElement(targetElement);
-                        }
+                    // Verificar se o modal está realmente aberto
+                    const modal = document.getElementById('titleModal');
+                    if (!modal || !modal.classList.contains('show')) {
+                        console.warn('Modal não está aberto, tentando novamente...');
+                        setTimeout(() => this.showStep(stepIndex), 1000);
+                        return;
                     }
+                    
+                    // Criar card do tutorial
+                    console.log('Criando card do tutorial após modal abrir');
                     this.createTutorialCard(step, stepIndex);
-                    // Atualizar posição do card periodicamente
-                    if (this.positionUpdateInterval) {
-                        clearInterval(this.positionUpdateInterval);
+                    
+                    // Verificar se o card foi criado
+                    const card = document.getElementById('tutorialCard');
+                    if (!card) {
+                        console.error('Card não foi criado, tentando novamente...');
+                        setTimeout(() => {
+                            this.createTutorialCard(step, stepIndex);
+                            this.updateCardPosition(step.target);
+                        }, 500);
+                        return;
                     }
-                    this.positionUpdateInterval = setInterval(() => {
-                        this.updateCardPosition(step.target);
-                    }, 100);
-                }, 500);
+                    
+                    console.log('Card criado com sucesso, posicionando...');
+                    
+                    // Aguardar card ser criado e então destacar elemento
+                    setTimeout(() => {
+                        if (step.target) {
+                            const targetElement = document.querySelector(step.target);
+                            if (targetElement) {
+                                console.log('Elemento encontrado, destacando...');
+                                this.highlightElement(targetElement);
+                                // Atualizar posição do card periodicamente
+                                if (this.positionUpdateInterval) {
+                                    clearInterval(this.positionUpdateInterval);
+                                }
+                                this.positionUpdateInterval = setInterval(() => {
+                                    this.updateCardPosition(step.target);
+                                }, 100);
+                            } else {
+                                console.warn('Elemento não encontrado, centralizando card');
+                                // Se não encontrar elemento, centralizar card
+                                this.updateCardPosition(null);
+                            }
+                        } else {
+                            this.updateCardPosition(null);
+                        }
+                    }, 300);
+                }, 1500);
+            }).catch(error => {
+                console.error('Erro ao abrir modal:', error);
+                // Mesmo com erro, mostrar o card
+                setTimeout(() => {
+                    this.createTutorialCard(step, stepIndex);
+                    this.updateCardPosition(step.target);
+                }, 1000);
             });
             return;
         }
@@ -262,6 +303,15 @@ const TutorialSystem = {
 
     createTutorialCard(step, stepIndex) {
         const overlay = document.getElementById('tutorialOverlay');
+        if (!overlay) {
+            console.error('Overlay não encontrado');
+            return;
+        }
+        
+        // Remover card anterior se existir
+        const oldCard = document.getElementById('tutorialCard');
+        if (oldCard) oldCard.remove();
+        
         const card = document.createElement('div');
         card.className = 'tutorial-card';
         card.id = 'tutorialCard';
@@ -280,7 +330,13 @@ const TutorialSystem = {
         
         overlay.appendChild(card);
         
-        // Posicionar card
+        // Forçar visibilidade
+        card.style.display = 'block';
+        card.style.opacity = '1';
+        card.style.visibility = 'visible';
+        card.style.zIndex = '100002';
+        
+        // Posicionar card (será atualizado depois)
         this.positionCard(card, step.target);
     },
 
