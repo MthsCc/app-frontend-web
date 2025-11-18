@@ -424,11 +424,28 @@
             </div>
         `).join('');
 
+        // Carregar estatísticas de feedback para usar dados reais
+        let pendingFeedbacks = 0;
+        loadFeedbackStats().then(() => {
+            const unreadEl = document.getElementById('feedbackUnread');
+            if (unreadEl) {
+                pendingFeedbacks = parseInt(unreadEl.textContent) || 0;
+                // Atualizar indicador de feedbacks pendentes
+                updateStabilityIndicators(banRate, pendingFeedbacks);
+            }
+        }).catch(() => {
+            updateStabilityIndicators(banRate, 0);
+        });
+        
+        updateStabilityIndicators(banRate, pendingFeedbacks);
+    }
+    
+    function updateStabilityIndicators(banRate, pendingFeedbacks) {
         const stabilityIndicators = [
             { label: 'Erros críticos reportados (7d)', value: banRate > 5 ? '3' : '1', status: 'warning' },
-            { label: 'Tempo médio de resposta API', value: '420ms', status: 'info' },
-            { label: 'Incidentes de login', value: '0', status: 'success' },
-            { label: 'Feedbacks pendentes', value: '5', status: 'info' }
+            { label: 'Tempo médio de resposta API', value: '420ms', status: 'info' }, // TODO: Implementar métrica real
+            { label: 'Incidentes de login', value: '0', status: 'success' }, // TODO: Implementar métrica real
+            { label: 'Feedbacks pendentes', value: pendingFeedbacks.toString(), status: pendingFeedbacks > 0 ? 'warning' : 'success' }
         ];
         const indicatorsEl = document.getElementById('stabilityIndicators');
         indicatorsEl.innerHTML = stabilityIndicators.map(item => {
@@ -849,6 +866,17 @@
                 document.getElementById('feedbackUnread').textContent = stats.unread || 0;
                 document.getElementById('feedbackResolved').textContent = stats.resolved || 0;
                 document.getElementById('feedbackRecent').textContent = stats.recent || 0;
+                
+                // Atualizar indicadores de estabilidade com dados reais
+                if (typeof updateStabilityIndicators === 'function') {
+                    const banRateEl = document.getElementById('metric-banRate');
+                    let banRate = 0;
+                    if (banRateEl) {
+                        const banRateText = banRateEl.textContent.replace('%', '');
+                        banRate = parseFloat(banRateText) || 0;
+                    }
+                    updateStabilityIndicators(banRate, stats.unread || 0);
+                }
             }
         } catch (error) {
             console.error('Erro ao carregar estatísticas de feedback:', error);
@@ -954,6 +982,12 @@
 
         // Auto-refresh logs a cada 30 segundos
         setInterval(loadLogs, 30000);
+        
+        // Auto-refresh dashboard principal a cada 60 segundos
+        setInterval(() => {
+            loadDashboard();
+            loadFeedbackStats();
+        }, 60000);
     });
 
     // Função debounce para evitar muitas requisições
