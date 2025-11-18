@@ -66,9 +66,14 @@ const TutorialSystem = {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0, 0, 0, 0.7);
+                background: rgba(0, 0, 0, 0.5);
                 z-index: 99998;
                 pointer-events: none;
+            }
+            
+            /* Modal deve ficar acima do overlay mas abaixo do card do tutorial */
+            .modal.show {
+                z-index: 99999 !important;
             }
             
             .tutorial-highlight {
@@ -88,10 +93,13 @@ const TutorialSystem = {
                 max-width: 500px;
                 width: 90%;
                 box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
-                z-index: 100000;
-                position: fixed;
+                z-index: 100001 !important;
+                position: fixed !important;
                 color: white;
                 pointer-events: auto !important;
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
             
             .tutorial-card * {
@@ -181,9 +189,21 @@ const TutorialSystem = {
         const oldCard = document.getElementById('tutorialCard');
         if (oldCard) oldCard.remove();
         
-        // Se tem autoOpenModal, abrir modal
+        // Se tem autoOpenModal, abrir modal primeiro
         if (step.autoOpenModal) {
-            setTimeout(() => this.openExampleModal(), 300);
+            this.openExampleModal().then(() => {
+                // Após modal abrir, mostrar card
+                setTimeout(() => {
+                    if (step.target) {
+                        const targetElement = document.querySelector(step.target);
+                        if (targetElement) {
+                            this.highlightElement(targetElement);
+                        }
+                    }
+                    this.createTutorialCard(step, stepIndex);
+                }, 500);
+            });
+            return;
         }
         
         // Aguardar um pouco e mostrar highlight se tiver target
@@ -238,41 +258,54 @@ const TutorialSystem = {
     },
 
     positionCard(card, targetSelector) {
-        if (!targetSelector) {
-            // Centralizar se não tiver target
-            card.style.top = '50%';
-            card.style.left = '50%';
-            card.style.transform = 'translate(-50%, -50%)';
-            return;
-        }
-        
-        const targetElement = document.querySelector(targetSelector);
-        if (!targetElement) {
-            card.style.top = '50%';
-            card.style.left = '50%';
-            card.style.transform = 'translate(-50%, -50%)';
-            return;
-        }
-        
-        const rect = targetElement.getBoundingClientRect();
-        const cardHeight = 300;
-        const spacing = 20;
-        
-        // Tentar colocar acima
-        if (rect.top > cardHeight + spacing) {
-            card.style.top = `${rect.top - cardHeight - spacing}px`;
-            card.style.left = `${rect.left}px`;
-        } else {
-            // Colocar abaixo
-            card.style.top = `${rect.bottom + spacing}px`;
-            card.style.left = `${rect.left}px`;
-        }
-        
-        // Garantir que não saia da tela
-        const maxLeft = window.innerWidth - card.offsetWidth - 20;
-        if (parseInt(card.style.left) > maxLeft) {
-            card.style.left = `${maxLeft}px`;
-        }
+        // Aguardar um frame para garantir que o card foi renderizado
+        requestAnimationFrame(() => {
+            if (!targetSelector) {
+                // Centralizar se não tiver target
+                card.style.top = '50%';
+                card.style.left = '50%';
+                card.style.transform = 'translate(-50%, -50%)';
+                return;
+            }
+            
+            const targetElement = document.querySelector(targetSelector);
+            if (!targetElement) {
+                // Se não encontrar target, centralizar
+                card.style.top = '50%';
+                card.style.left = '50%';
+                card.style.transform = 'translate(-50%, -50%)';
+                return;
+            }
+            
+            const rect = targetElement.getBoundingClientRect();
+            const cardRect = card.getBoundingClientRect();
+            const spacing = 20;
+            
+            // Tentar colocar acima
+            if (rect.top > cardRect.height + spacing) {
+                card.style.top = `${rect.top - cardRect.height - spacing}px`;
+                card.style.left = `${Math.max(20, rect.left)}px`;
+            } else if (rect.bottom + cardRect.height + spacing < window.innerHeight) {
+                // Colocar abaixo
+                card.style.top = `${rect.bottom + spacing}px`;
+                card.style.left = `${Math.max(20, rect.left)}px`;
+            } else {
+                // Se não couber, centralizar na tela
+                card.style.top = '50%';
+                card.style.left = '50%';
+                card.style.transform = 'translate(-50%, -50%)';
+            }
+            
+            // Garantir que não saia da tela
+            const maxLeft = window.innerWidth - cardRect.width - 20;
+            const currentLeft = parseInt(card.style.left) || 0;
+            if (currentLeft > maxLeft) {
+                card.style.left = `${maxLeft}px`;
+            }
+            if (currentLeft < 20) {
+                card.style.left = '20px';
+            }
+        });
     },
 
     async openExampleModal() {
@@ -280,10 +313,36 @@ const TutorialSystem = {
             const firstItem = document.querySelector('.carousel-item, .grid-item');
             if (firstItem) {
                 firstItem.click();
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Aguardar modal abrir completamente
+                await new Promise(resolve => {
+                    const checkModal = setInterval(() => {
+                        const modal = document.getElementById('titleModal');
+                        if (modal && modal.classList.contains('show')) {
+                            clearInterval(checkModal);
+                            setTimeout(resolve, 1000); // Aguardar conteúdo carregar
+                        }
+                    }, 100);
+                    // Timeout de segurança
+                    setTimeout(() => {
+                        clearInterval(checkModal);
+                        resolve();
+                    }, 5000);
+                });
             } else if (typeof openModal === 'function') {
                 await openModal({ id: 603, tmdbId: 603, type: 'movie' });
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                await new Promise(resolve => {
+                    const checkModal = setInterval(() => {
+                        const modal = document.getElementById('titleModal');
+                        if (modal && modal.classList.contains('show')) {
+                            clearInterval(checkModal);
+                            setTimeout(resolve, 1000);
+                        }
+                    }, 100);
+                    setTimeout(() => {
+                        clearInterval(checkModal);
+                        resolve();
+                    }, 5000);
+                });
             }
         } catch (error) {
             console.error('Erro ao abrir modal:', error);
