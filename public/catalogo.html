@@ -1500,7 +1500,7 @@
                         </div>
                         <div class="flex flex-col gap-4">
                             <div>
-                                <h2 class="text-white text-2xl font-bold mb-2">${title.title || titleData.title || titleData.name}</h2>
+                                <h2 class="text-white text-2xl font-bold mb-2">${(title.title || titleData.title || titleData.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</h2>
                                 <div class="flex items-center gap-4 flex-wrap mb-4">
                                     ${titleData.releaseDate ? `<span class="text-[#9dabb9] text-sm">${new Date(titleData.releaseDate).getFullYear()}</span>` : ''}
                                     ${rating ? `
@@ -1517,7 +1517,7 @@
                             
                             <div class="border-t border-gray-700 pt-4">
                                 <h3 class="text-white font-bold mb-3">Sinopse</h3>
-                                <p class="text-[#e0e7ff] text-sm leading-relaxed">${titleData.overview && titleData.overview.trim() ? titleData.overview : 'Sinopse não disponível'}</p>
+                                <p class="text-[#e0e7ff] text-sm leading-relaxed">${titleData.overview && titleData.overview.trim() ? titleData.overview.replace(/</g, '&lt;').replace(/>/g, '&gt;') : 'Sinopse não disponível'}</p>
                             </div>
                             
                             ${getWatchNowButton(watchProviders, titleData, titleType, titleId)}
@@ -1543,13 +1543,18 @@
                             <div class="border-t border-gray-700 pt-4">
                                 <h3 class="text-white font-bold mb-3">Comentários (${comments.length})</h3>
                                 <div class="space-y-3 max-h-60 overflow-y-auto mb-3">
-                                    ${comments.length > 0 ? comments.map(comment => `
+                                    ${comments.length > 0 ? comments.map(comment => {
+                                        const commentText = (comment.comment || comment.text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                                        const userName = (comment.userName || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                                        const createdAt = comment.createdAt ? new Date(comment.createdAt).toLocaleDateString('pt-BR') : '';
+                                        return `
                                         <div class="bg-gray-800/50 p-3 rounded">
-                                            <p class="text-white text-sm font-bold">${comment.userName}</p>
-                                            <p class="text-[#9dabb9] text-xs mb-1">${new Date(comment.createdAt).toLocaleDateString('pt-BR')}</p>
-                                            <p class="text-[#e0e7ff] text-sm">${comment.comment || comment.text}</p>
+                                            <p class="text-white text-sm font-bold">${userName}</p>
+                                            <p class="text-[#9dabb9] text-xs mb-1">${createdAt}</p>
+                                            <p class="text-[#e0e7ff] text-sm">${commentText}</p>
                                         </div>
-                                    `).join('') : '<p class="text-gray-400 text-sm">Nenhum comentário ainda</p>'}
+                                    `;
+                                    }).join('') : '<p class="text-gray-400 text-sm">Nenhum comentário ainda</p>'}
                                 </div>
                                 <textarea class="w-full bg-gray-800 text-white text-sm rounded p-2 resize-none" id="commentInput" placeholder="Deixe seu comentário..." rows="2"></textarea>
                                 <button class="w-full mt-2 bg-primary text-white font-bold py-2 rounded hover:bg-blue-700 transition" onclick="submitComment()">Enviar</button>
@@ -2127,6 +2132,12 @@
 </script>
     <script src="js/affiliateLinks.js"></script>
     <script src="js/notifications.js"></script>
+<script>
+    // Garantir que generateAffiliateLink está disponível antes de usar
+    if (typeof window.generateAffiliateLink === 'undefined' && typeof generateAffiliateLink !== 'undefined') {
+        window.generateAffiliateLink = generateAffiliateLink;
+    }
+</script>
     
     <!-- Rodapé -->
     <footer class="bg-[#051422] border-t border-white/10 py-6 md:py-8 px-4 md:px-10 lg:px-20 xl:px-40 mt-8 md:mt-16">

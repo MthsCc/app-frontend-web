@@ -363,9 +363,9 @@
                     const item = document.createElement('div');
                     item.className = 'grid-item group cursor-pointer aspect-[2/3] overflow-hidden rounded-lg';
                     
-                        item.innerHTML = `
-                            <img src="${posterUrl}" alt="${title.title || title.name}" loading="lazy" />
-                        `;
+                    item.innerHTML = `
+                        <img src="${posterUrl}" alt="${title.title || title.name}" loading="lazy" />
+                    `;
                     
                     item.addEventListener('click', () => {
                         openModal({
@@ -646,15 +646,15 @@
                                 <h3 class="text-white font-bold mb-3">Comentários (${comments.length})</h3>
                                 <div class="space-y-3 max-h-60 overflow-y-auto mb-3">
                                     ${comments.length > 0 ? comments.map(comment => {
-                                        const commentText = comment.comment || comment.text || '';
-                                        const userName = comment.userName || 'Usuário';
+                                        const commentText = (comment.comment || comment.text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                                        const userName = (comment.userName || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                                         const createdAt = comment.createdAt ? new Date(comment.createdAt).toLocaleDateString('pt-BR') : '';
                                         return `
                                             <div class="bg-gray-800/50 p-3 rounded">
                                                 <p class="text-white text-sm font-bold">${userName}</p>
                                                 <p class="text-[#a7aabd] text-xs mb-1">${createdAt}</p>
                                                 <p class="text-[#e2e0df] text-sm">${commentText}</p>
-                            </div>
+                                            </div>
                                         `;
                                     }).join('') : '<p class="text-gray-400 text-sm">Nenhum comentário ainda</p>'}
                                             </div>

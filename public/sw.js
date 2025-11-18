@@ -65,17 +65,20 @@ self.addEventListener('fetch', (event) => {
     }
 
     // Para imagens: Cache first, fallback to network
-    if (request.destination === 'image') {
+    // Só processar requisições GET para imagens
+    if (request.destination === 'image' && request.method === 'GET') {
         event.respondWith(
             caches.match(request).then((response) => {
                 return (
                     response ||
                     fetch(request)
                         .then((response) => {
-                            const cloned = response.clone();
-                            caches.open(CACHE_NAME).then((cache) =>
-                                cache.put(request, cloned)
-                            );
+                            if (response.ok) {
+                                const cloned = response.clone();
+                                caches.open(CACHE_NAME).then((cache) =>
+                                    cache.put(request, cloned)
+                                );
+                            }
                             return response;
                         })
                         .catch(() => new Response('Image not found', { status: 404 }))
@@ -86,13 +89,22 @@ self.addEventListener('fetch', (event) => {
     }
 
     // Para outros recursos: Network first
+    // Só cachear requisições GET (POST, PUT, DELETE não podem ser cacheadas)
+    if (request.method !== 'GET') {
+        event.respondWith(fetch(request));
+        return;
+    }
+
     event.respondWith(
         fetch(request)
             .then((response) => {
-                const cloned = response.clone();
-                caches.open(CACHE_NAME).then((cache) =>
-                    cache.put(request, cloned)
-                );
+                // Só cachear respostas válidas e GET requests
+                if (response.ok && request.method === 'GET') {
+                    const cloned = response.clone();
+                    caches.open(CACHE_NAME).then((cache) =>
+                        cache.put(request, cloned)
+                    );
+                }
                 return response;
             })
             .catch(() => caches.match(request) || new Response('Offline', { status: 503 }))

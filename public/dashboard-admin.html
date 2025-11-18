@@ -745,8 +745,6 @@
                         `;
                     }).join('');
                 }
-            }
-
             } else {
                 const errorData = await logsResponse.json().catch(() => ({ error: 'Erro desconhecido' }));
                 console.error('Erro ao carregar logs:', errorData);
