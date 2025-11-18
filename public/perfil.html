@@ -454,8 +454,8 @@
                 document.getElementById('userUsernameDisplay').textContent = '@' + displayUsername;
                 document.getElementById('userHandle').textContent = '@' + displayUsername;
                 document.getElementById('userBio').textContent = userData.bio || 'Apaixonada por cinema e séries.';
-                document.getElementById('followerCount').textContent = userData.followers || '0';
-                document.getElementById('followingCount').textContent = userData.following || '0';
+                document.getElementById('followerCount').textContent = userData.followersCount || 0;
+                document.getElementById('followingCount').textContent = userData.followingCount || 0;
                 
                 // Aba Segurança
                 const usernameDisplaySecurity = document.getElementById('userUsernameDisplaySecurity');

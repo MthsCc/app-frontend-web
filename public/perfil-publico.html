@@ -230,11 +230,6 @@
                                     <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userNameDisplay"></p>
                                 </div>
                                 
-                                <!-- Email -->
-                                <div>
-                                    <h3 class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Email</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal" id="userEmailDisplay"></p>
-                                </div>
                                 
                                 <!-- Biografia -->
                                 <div>
@@ -383,7 +378,7 @@
                 // Atualizar informações do perfil
                 document.getElementById('userName').textContent = viewedUser.name || 'Usuário';
                 document.getElementById('userNameDisplay').textContent = viewedUser.name || 'Usuário';
-                document.getElementById('userEmailDisplay').textContent = viewedUser.email || '';
+                // Email não é exibido em perfil público (privacidade)
                 document.getElementById('userHandle').textContent = '@' + (viewedUser.username || 'user');
                 document.getElementById('userBio').textContent = viewedUser.bio || 'Apaixonada por cinema e séries.';
                 document.getElementById('followerCount').textContent = '0';
@@ -778,15 +773,27 @@
             
             if (response.ok) {
                 const userData = await response.json();
-                const profileButton = document.getElementById('userAvatar');
+                const profileButton = document.getElementById('profileButton');
                 
-                if (userData.profilePicture) {
-                    profileButton.style.backgroundImage = `url('${userData.profilePicture}')`;
-                } else if (userData.name) {
-                    const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                    profileButton.innerHTML = `<span class="text-sm font-bold text-white">${initials}</span>`;
+                if (profileButton) {
+                    // Limpar conteúdo anterior
+                    profileButton.innerHTML = '';
+                    profileButton.style.backgroundImage = '';
+                    profileButton.style.backgroundSize = 'cover';
+                    profileButton.style.backgroundPosition = 'center';
+                    
+                    if (userData.profilePicture) {
+                        profileButton.style.backgroundImage = `url('${userData.profilePicture}')`;
+                        profileButton.style.backgroundSize = 'cover';
+                        profileButton.style.backgroundPosition = 'center';
+                    } else if (userData.name) {
+                        const initials = userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                        profileButton.innerHTML = `<span class="text-sm font-bold text-white">${initials}</span>`;
+                    } else {
+                        profileButton.innerHTML = '<span class="material-symbols-outlined text-[20px]">person</span>';
+                    }
+                    profileButton.onclick = () => window.location.href = 'perfil.html';
                 }
-                profileButton.onclick = () => window.location.href = 'perfil.html';
             }
         } catch (error) {
             console.warn('Erro ao carregar perfil do usuário:', error);
@@ -851,18 +858,10 @@
                 updateFollowButton();
                 // Atualizar contadores do perfil visualizado
                 await loadFollowCounts();
-                // Atualizar contadores do próprio perfil (se estiver na própria página)
-                try {
-                    const myProfileResponse = await fetch(`${API_URL}/api/profile/me`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (myProfileResponse.ok) {
-                        const myData = await myProfileResponse.json();
-                        // Os contadores do próprio perfil serão atualizados quando a página for recarregada
-                    }
-                } catch (e) {
-                    // Ignorar erro ao atualizar próprio perfil
-                }
+                
+                // Notificar que os contadores do próprio perfil precisam ser atualizados
+                // Isso será feito quando o usuário acessar sua própria página de perfil
+                showToast(isFollowing ? 'Agora você está seguindo este usuário' : 'Você deixou de seguir este usuário', 'success');
             }
         } catch (error) {
             console.error('Erro ao seguir/deixar de seguir:', error);
