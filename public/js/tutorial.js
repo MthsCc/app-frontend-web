@@ -72,8 +72,20 @@ const TutorialSystem = {
             }
             
             /* Modal deve ficar acima do overlay mas abaixo do card do tutorial */
+            .modal {
+                z-index: 99999 !important;
+            }
+            
             .modal.show {
                 z-index: 99999 !important;
+            }
+            
+            .modal-content {
+                z-index: 99999 !important;
+            }
+            
+            .tutorial-overlay {
+                z-index: 100000 !important;
             }
             
             .tutorial-highlight {
@@ -81,7 +93,7 @@ const TutorialSystem = {
                 border: 3px solid #4ade80;
                 border-radius: 8px;
                 box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 20px rgba(74, 222, 128, 0.5);
-                z-index: 100000;
+                z-index: 100001 !important;
                 pointer-events: none;
             }
             
@@ -93,7 +105,7 @@ const TutorialSystem = {
                 max-width: 500px;
                 width: 90%;
                 box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
-                z-index: 100002 !important;
+                z-index: 100003 !important;
                 position: fixed !important;
                 color: white;
                 pointer-events: auto !important;
@@ -330,11 +342,12 @@ const TutorialSystem = {
         
         overlay.appendChild(card);
         
-        // Forçar visibilidade
+        // Forçar visibilidade e z-index máximo
         card.style.display = 'block';
         card.style.opacity = '1';
         card.style.visibility = 'visible';
-        card.style.zIndex = '100002';
+        card.style.zIndex = '100003';
+        card.style.position = 'fixed';
         
         // Posicionar card (será atualizado depois)
         this.positionCard(card, step.target);
