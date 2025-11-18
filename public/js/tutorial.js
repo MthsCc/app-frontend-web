@@ -20,32 +20,32 @@ const TutorialSystem = {
         {
             title: '1. Catálogo de Filmes e Séries',
             content: 'Aqui você encontra o catálogo completo de filmes e séries do TMDB.',
-            instruction: 'Clique em qualquer filme ou série para ver os detalhes e adicionar à sua lista!',
+            instruction: 'Você pode clicar em qualquer filme ou série para ver os detalhes e adicionar à sua lista!',
             target: '.grid-item, .carousel-item, [class*="grid"] [class*="item"]',
             position: 'bottom',
             page: 'catalogo.html',
-            waitForClick: true,
-            clickTarget: '.grid-item, .carousel-item'
+            waitForClick: false,
+            autoOpenModal: true // Abrir modal automaticamente após este passo
         },
         {
             title: '2. Adicionar à Watchlist',
             content: 'Quando abrir um filme ou série, você verá opções para marcar o status.',
-            instruction: 'Clique em "Quero Assistir", "Já Assisti" ou "Abandonado" para adicionar à sua lista!',
+            instruction: 'Você pode clicar em "Quero Assistir", "Já Assisti" ou "Abandonado" para adicionar à sua lista!',
             target: 'input[name="status"], label[for*="status"], [onchange*="updateStatus"]',
             position: 'top',
             page: 'catalogo.html',
-            waitForClick: true,
-            clickTarget: 'input[name="status"]'
+            waitForClick: false,
+            modalRequired: true // Este passo só funciona se o modal estiver aberto
         },
         {
             title: '3. Comentar em Filmes',
             content: 'Você pode deixar comentários sobre filmes e séries que assistiu.',
-            instruction: 'Digite um comentário na caixa de texto e clique em "Enviar"!',
+            instruction: 'Digite um comentário na caixa de texto e clique em "Enviar" para compartilhar sua opinião!',
             target: '#commentInput, textarea[placeholder*="comentário"]',
             position: 'top',
             page: 'catalogo.html',
-            waitForClick: true,
-            clickTarget: 'button[onclick*="submitComment"]'
+            waitForClick: false,
+            modalRequired: true // Este passo só funciona se o modal estiver aberto
         },
         {
             title: '4. Ver seu Perfil',
@@ -596,8 +596,22 @@ const TutorialSystem = {
                 return;
             }
             
+            // Se o passo requer modal, aguardar o modal estar aberto
+            const waitForModal = step.modalRequired ? 1500 : 500;
+            
             // Aguardar um pouco para garantir que o DOM está pronto
             setTimeout(() => {
+                // Se requer modal, verificar se está aberto
+                if (step.modalRequired) {
+                    const modal = document.getElementById('titleModal');
+                    if (!modal || !modal.classList.contains('show')) {
+                        // Modal não está aberto, mostrar mensagem e tentar novamente
+                        console.warn('Modal não está aberto, aguardando...');
+                        setTimeout(() => this.showStep(stepIndex), 500);
+                        return;
+                    }
+                }
+                
                 const targetElement = document.querySelector(step.target);
                 if (targetElement) {
                     this.highlightElement(targetElement, step.position);
@@ -608,7 +622,7 @@ const TutorialSystem = {
                     // Se o elemento não existir, mostrar no centro
                     this.showCardInCenter();
                 }
-            }, 500);
+            }, waitForModal);
         } else {
             this.showCardInCenter();
         }
@@ -869,9 +883,105 @@ const TutorialSystem = {
         this.nextStep();
     },
     
-    nextStep() {
+    async nextStep() {
         this.waitingForClick = false;
+        
+        // Verificar se o passo atual tem autoOpenModal
+        const currentStep = this.steps[this.currentStep];
+        if (currentStep && currentStep.autoOpenModal) {
+            // Abrir modal automaticamente
+            await this.openExampleModal();
+        }
+        
         this.showStep(this.currentStep + 1);
+    },
+    
+    async openExampleModal() {
+        // Buscar um filme popular para usar como exemplo
+        try {
+            // Tentar pegar o primeiro item do carrossel ou grid que tenha um evento de clique
+            const firstItem = document.querySelector('.carousel-item, .grid-item');
+            let movieId = null;
+            let movieType = 'movie';
+            
+            if (firstItem) {
+                // Tentar simular o clique no primeiro item (mais confiável)
+                // Isso vai usar os dados reais do item
+                firstItem.click();
+                
+                // Aguardar um pouco e verificar se o modal abriu
+                await new Promise(resolve => setTimeout(resolve, 800));
+                const modal = document.getElementById('titleModal');
+                if (modal && modal.classList.contains('show')) {
+                    // Modal foi aberto pelo clique, aguardar carregar completamente
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Marcar modal como parte do tutorial para não fechar acidentalmente
+                    modal.setAttribute('data-tutorial-modal', 'true');
+                    return;
+                }
+                
+                // Se o clique não funcionou, tentar extrair dados manualmente
+                const onclickAttr = firstItem.getAttribute('onclick');
+                if (onclickAttr) {
+                    const idMatch = onclickAttr.match(/id:\s*(\d+)/);
+                    if (idMatch) {
+                        movieId = parseInt(idMatch[1]);
+                    }
+                }
+                
+                // Tentar pegar de dataset
+                if (!movieId && firstItem.dataset) {
+                    movieId = firstItem.dataset.id || firstItem.dataset.tmdbId;
+                    if (movieId) movieId = parseInt(movieId);
+                }
+            }
+            
+            // Se não encontrou ID, usar um filme popular como exemplo (The Matrix)
+            if (!movieId) {
+                movieId = 603; // The Matrix
+            }
+            
+            // Verificar se a função openModal existe
+            if (typeof openModal === 'function') {
+                await openModal({
+                    id: movieId,
+                    tmdbId: movieId,
+                    type: movieType
+                });
+                
+                // Aguardar o modal carregar completamente
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Marcar modal como parte do tutorial
+                const modal = document.getElementById('titleModal');
+                if (modal) {
+                    modal.setAttribute('data-tutorial-modal', 'true');
+                }
+            } else {
+                console.warn('Função openModal não encontrada');
+            }
+        } catch (error) {
+            console.error('Erro ao abrir modal de exemplo:', error);
+            // Fallback: tentar abrir The Matrix
+            try {
+                if (typeof openModal === 'function') {
+                    await openModal({
+                        id: 603,
+                        tmdbId: 603,
+                        type: 'movie'
+                    });
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    const modal = document.getElementById('titleModal');
+                    if (modal) {
+                        modal.setAttribute('data-tutorial-modal', 'true');
+                    }
+                }
+            } catch (fallbackError) {
+                console.error('Erro no fallback ao abrir modal:', fallbackError);
+            }
+        }
     },
     
     previousStep() {
@@ -918,6 +1028,12 @@ const TutorialSystem = {
             el.style.filter = '';
             el.style.pointerEvents = '';
         });
+        
+        // Remover atributo do modal do tutorial
+        const tutorialModal = document.getElementById('titleModal');
+        if (tutorialModal) {
+            tutorialModal.removeAttribute('data-tutorial-modal');
+        }
         
         if (overlay) overlay.remove();
         if (highlight) highlight.remove();

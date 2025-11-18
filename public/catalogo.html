@@ -1753,12 +1753,26 @@
         const modal = document.getElementById('titleModal');
         const modalBody = document.getElementById('modalBody');
         
+        // Não fechar o modal se estiver no tutorial
+        if (modal && modal.hasAttribute('data-tutorial-modal')) {
+            // Verificar se o tutorial está ativo
+            if (document.body.classList.contains('tutorial-active')) {
+                console.log('Modal não pode ser fechado durante o tutorial');
+                return;
+            }
+        }
+        
         // Limpar o conteúdo do modal, especialmente iframes de vídeo
         modalBody.innerHTML = '';
         
         // Remover a classe show para fechar o modal
         modal.classList.remove('show');
         selectedTitle = null;
+        
+        // Remover atributo do tutorial se existir
+        if (modal) {
+            modal.removeAttribute('data-tutorial-modal');
+        }
     }
 
     // Função para scroll do carrossel infinito (com animação automática)
