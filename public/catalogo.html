@@ -1606,6 +1606,56 @@
             return;
         }
         
+        // Verificar se o status já está marcado (para permitir desmarcar)
+        const currentRadio = document.querySelector(`input[name="status"][value="${status}"]`);
+        if (currentRadio && currentRadio.checked) {
+            // Se já está marcado, desmarcar
+            currentRadio.checked = false;
+            
+            // Remover status do banco (enviar null)
+            try {
+                const detailsResponse = await fetch(`${API_URL}/api/titles/tmdb/${titleId}?type=${titleType}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                let titleData = {};
+                if (detailsResponse.ok) {
+                    titleData = await detailsResponse.json();
+                }
+                
+                const response = await fetch(`${API_URL}/api/titles/interaction`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({
+                        tmdbId: titleId,
+                        type: titleType,
+                        title: titleData.title || selectedTitle.title || 'Título',
+                        releaseDate: titleData.releaseDate || null,
+                        overview: titleData.overview || null,
+                        posterPath: titleData.posterPath || null,
+                        voteAverage: titleData.voteAverage || 0,
+                        genres: titleData.genres || [],
+                        status: null // Remover status
+                    })
+                });
+                
+                if (response.ok) {
+                    // Recarregar o modal para atualizar
+                    await openModal({
+                        id: parseInt(titleId),
+                        tmdbId: parseInt(titleId),
+                        type: titleType
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao remover status:', error);
+            }
+            return;
+        }
+        
         try {
             
             // Buscar dados do título do TMDB

@@ -81,7 +81,7 @@ const TutorialSystem = {
                 border: 3px solid #4ade80;
                 border-radius: 8px;
                 box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 20px rgba(74, 222, 128, 0.5);
-                z-index: 99999;
+                z-index: 100000;
                 pointer-events: none;
             }
             
@@ -93,13 +93,14 @@ const TutorialSystem = {
                 max-width: 500px;
                 width: 90%;
                 box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
-                z-index: 100001 !important;
+                z-index: 100002 !important;
                 position: fixed !important;
                 color: white;
                 pointer-events: auto !important;
                 display: block !important;
                 opacity: 1 !important;
                 visibility: visible !important;
+                transition: top 0.3s ease, left 0.3s ease;
             }
             
             .tutorial-card * {
@@ -181,6 +182,12 @@ const TutorialSystem = {
         this.currentStep = stepIndex;
         const step = this.steps[stepIndex];
         
+        // Parar atualização de posição anterior
+        if (this.positionUpdateInterval) {
+            clearInterval(this.positionUpdateInterval);
+            this.positionUpdateInterval = null;
+        }
+        
         // Remover highlight anterior
         const oldHighlight = document.getElementById('tutorialHighlight');
         if (oldHighlight) oldHighlight.remove();
@@ -201,6 +208,13 @@ const TutorialSystem = {
                         }
                     }
                     this.createTutorialCard(step, stepIndex);
+                    // Atualizar posição do card periodicamente
+                    if (this.positionUpdateInterval) {
+                        clearInterval(this.positionUpdateInterval);
+                    }
+                    this.positionUpdateInterval = setInterval(() => {
+                        this.updateCardPosition(step.target);
+                    }, 100);
                 }, 500);
             });
             return;
@@ -212,9 +226,22 @@ const TutorialSystem = {
                 const targetElement = document.querySelector(step.target);
                 if (targetElement) {
                     this.highlightElement(targetElement);
+                    // Criar card e posicionar próximo ao elemento
+                    this.createTutorialCard(step, stepIndex);
+                    // Atualizar posição do card periodicamente para acompanhar o elemento
+                    if (this.positionUpdateInterval) {
+                        clearInterval(this.positionUpdateInterval);
+                    }
+                    this.positionUpdateInterval = setInterval(() => {
+                        this.updateCardPosition(step.target);
+                    }, 100);
+                } else {
+                    // Se não encontrar elemento, centralizar card
+                    this.createTutorialCard(step, stepIndex);
                 }
+            } else {
+                this.createTutorialCard(step, stepIndex);
             }
-            this.createTutorialCard(step, stepIndex);
         }, step.modalRequired ? 2000 : 500);
     },
 
@@ -260,52 +287,76 @@ const TutorialSystem = {
     positionCard(card, targetSelector) {
         // Aguardar um frame para garantir que o card foi renderizado
         requestAnimationFrame(() => {
-            if (!targetSelector) {
-                // Centralizar se não tiver target
-                card.style.top = '50%';
-                card.style.left = '50%';
-                card.style.transform = 'translate(-50%, -50%)';
-                return;
-            }
-            
-            const targetElement = document.querySelector(targetSelector);
-            if (!targetElement) {
-                // Se não encontrar target, centralizar
-                card.style.top = '50%';
-                card.style.left = '50%';
-                card.style.transform = 'translate(-50%, -50%)';
-                return;
-            }
-            
-            const rect = targetElement.getBoundingClientRect();
-            const cardRect = card.getBoundingClientRect();
-            const spacing = 20;
-            
-            // Tentar colocar acima
-            if (rect.top > cardRect.height + spacing) {
-                card.style.top = `${rect.top - cardRect.height - spacing}px`;
-                card.style.left = `${Math.max(20, rect.left)}px`;
-            } else if (rect.bottom + cardRect.height + spacing < window.innerHeight) {
-                // Colocar abaixo
-                card.style.top = `${rect.bottom + spacing}px`;
-                card.style.left = `${Math.max(20, rect.left)}px`;
-            } else {
-                // Se não couber, centralizar na tela
-                card.style.top = '50%';
-                card.style.left = '50%';
-                card.style.transform = 'translate(-50%, -50%)';
-            }
-            
-            // Garantir que não saia da tela
-            const maxLeft = window.innerWidth - cardRect.width - 20;
-            const currentLeft = parseInt(card.style.left) || 0;
-            if (currentLeft > maxLeft) {
-                card.style.left = `${maxLeft}px`;
-            }
-            if (currentLeft < 20) {
-                card.style.left = '20px';
-            }
+            this.updateCardPosition(targetSelector);
         });
+    },
+
+    updateCardPosition(targetSelector) {
+        const card = document.getElementById('tutorialCard');
+        if (!card) return;
+        
+        if (!targetSelector) {
+            // Centralizar se não tiver target
+            card.style.top = '50%';
+            card.style.left = '50%';
+            card.style.transform = 'translate(-50%, -50%)';
+            return;
+        }
+        
+        const targetElement = document.querySelector(targetSelector);
+        if (!targetElement) {
+            // Se não encontrar target, centralizar
+            card.style.top = '50%';
+            card.style.left = '50%';
+            card.style.transform = 'translate(-50%, -50%)';
+            return;
+        }
+        
+        const rect = targetElement.getBoundingClientRect();
+        const cardRect = card.getBoundingClientRect();
+        const spacing = 20;
+        
+        // Tentar colocar acima
+        if (rect.top > cardRect.height + spacing) {
+            card.style.top = `${rect.top - cardRect.height - spacing}px`;
+            card.style.left = `${Math.max(20, rect.left)}px`;
+            card.style.transform = 'none';
+        } else if (rect.bottom + cardRect.height + spacing < window.innerHeight) {
+            // Colocar abaixo
+            card.style.top = `${rect.bottom + spacing}px`;
+            card.style.left = `${Math.max(20, rect.left)}px`;
+            card.style.transform = 'none';
+        } else {
+            // Se não couber, colocar ao lado direito
+            card.style.top = `${Math.max(20, rect.top)}px`;
+            card.style.left = `${rect.right + spacing}px`;
+            card.style.transform = 'none';
+            
+            // Se não couber à direita, colocar à esquerda
+            if (parseInt(card.style.left) + cardRect.width > window.innerWidth - 20) {
+                card.style.left = `${Math.max(20, rect.left - cardRect.width - spacing)}px`;
+            }
+        }
+        
+        // Garantir que não saia da tela
+        const maxLeft = window.innerWidth - cardRect.width - 20;
+        const currentLeft = parseInt(card.style.left) || 0;
+        if (currentLeft > maxLeft) {
+            card.style.left = `${maxLeft}px`;
+        }
+        if (currentLeft < 20) {
+            card.style.left = '20px';
+        }
+        
+        // Garantir que não saia verticalmente
+        const maxTop = window.innerHeight - cardRect.height - 20;
+        const currentTop = parseInt(card.style.top) || 0;
+        if (currentTop > maxTop) {
+            card.style.top = `${maxTop}px`;
+        }
+        if (currentTop < 20) {
+            card.style.top = '20px';
+        }
     },
 
     async openExampleModal() {
@@ -374,6 +425,12 @@ const TutorialSystem = {
     },
 
     completeTutorial() {
+        // Parar atualização de posição
+        if (this.positionUpdateInterval) {
+            clearInterval(this.positionUpdateInterval);
+            this.positionUpdateInterval = null;
+        }
+        
         localStorage.setItem(this.STORAGE_KEY, 'true');
         document.body.classList.remove('tutorial-active');
         this.resumeAllCarousels();
