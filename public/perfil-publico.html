@@ -193,14 +193,22 @@
                             <p class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]" id="userName">Carregando...</p>
                             <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
                             <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
-                                <a id="followersLink" class="text-center group cursor-pointer" href="javascript:void(0);" onclick="window.showFollowersList(); return false;">
+                                <a id="followersLink" class="text-center group cursor-pointer" href="javascript:void(0);">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followerCount">0</p>
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
                                 </a>
-                                <a id="followingLink" class="text-center group cursor-pointer" href="javascript:void(0);" onclick="window.showFollowingList(); return false;">
-                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
-                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
-                                </a>
+                                <div class="text-center group">
+                                    <div class="flex items-center gap-2 justify-center">
+                                        <a id="followingLink" class="cursor-pointer">
+                                            <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
+                                            <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
+                                        </a>
+                                        <button id="viewFollowingBtn" class="flex items-center gap-1 px-3 py-1.5 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium">
+                                            <span>Ver</span>
+                                            <span class="material-symbols-outlined !text-base">arrow_forward</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                             <div class="w-full mb-4">
                                 <button id="followBtn" class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
@@ -241,6 +249,15 @@
                                 <!-- Status Badges -->
                                 <div id="statusBadges" class="flex flex-wrap gap-2">
                                     <!-- Badges serão preenchidos dinamicamente -->
+                                </div>
+                                
+                                <!-- Botão para restaurar sequência -->
+                                <div id="restoreStreakContainer" class="hidden mt-4">
+                                    <button id="restoreStreakBtn" class="w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined !text-base">restore</span>
+                                        <span>Restaurar Sequência</span>
+                                    </button>
+                                    <p id="restoreStreakInfo" class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center"></p>
                                 </div>
                             </div>
                         </div>
@@ -285,7 +302,12 @@
 <div id="followListModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="z-index: 9999 !important;">
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col" style="z-index: 10000 !important; position: relative;">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
-            <h3 id="followListTitle" class="text-gray-900 dark:text-white text-xl font-bold">Seguidores</h3>
+            <div class="flex items-center gap-3">
+                <button id="switchFollowListBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition-transform hover:scale-110" type="button" title="Alternar entre Seguidores e Seguindo">
+                    <span class="material-symbols-outlined">swap_horiz</span>
+                </button>
+                <h3 id="followListTitle" class="text-gray-900 dark:text-white text-xl font-bold">Seguindo</h3>
+            </div>
             <button id="closeFollowListModalBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer" type="button">
                 <span class="material-symbols-outlined">close</span>
             </button>
@@ -350,6 +372,7 @@
     let isAdmin = false;
     let isAdminMaster = false;
     let viewedUser = null;
+    let currentFollowListType = 'following'; // 'following' ou 'followers'
 
     // Verificar se é admin
     function checkAdminStatus() {
@@ -887,57 +910,29 @@
         window.location.href = `echosocial.html?chat=${viewedUserId}`;
     }
 
-    async function showFollowersList() {
-        console.log('=== showFollowersList chamado ===');
+    async function loadFollowList(type) {
+        currentFollowListType = type;
         const modal = document.getElementById('followListModal');
         const title = document.getElementById('followListTitle');
         const content = document.getElementById('followListContent');
         
-        console.log('Elementos encontrados:', {
-            modal: !!modal,
-            title: !!title,
-            content: !!content
-        });
+        if (!modal || !title || !content) return;
         
-        if (!modal) {
-            console.error('❌ Modal não encontrado');
-            alert('Erro: Modal não encontrado. Verifique o console.');
-            return;
-        }
-        
-        if (!title || !content) {
-            console.error('❌ Elementos do modal não encontrados');
-            alert('Erro: Elementos do modal não encontrados.');
-            return;
-        }
-        
-        console.log('Abrindo modal...');
-        title.textContent = 'Seguidores';
+        title.textContent = type === 'followers' ? 'Seguidores' : 'Seguindo';
         content.innerHTML = '<div class="text-center text-gray-400 py-8">Carregando...</div>';
         
-        // Remover classe hidden e garantir que está visível
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-        modal.style.visibility = 'visible';
-        modal.style.opacity = '1';
-        modal.style.pointerEvents = 'auto';
-        
-        console.log('Modal após abrir:', {
-            classes: modal.className,
-            display: modal.style.display,
-            visibility: modal.style.visibility,
-            opacity: modal.style.opacity
-        });
-        
         try {
-            // Obter token atualizado dinamicamente
             const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
             if (!currentToken) {
                 content.innerHTML = '<div class="text-center text-red-400 py-8">Erro: Token não encontrado. Faça login novamente.</div>';
                 return;
             }
             
-            const response = await fetch(`${API_URL}/api/social/followers/${viewedUserId}`, {
+            const endpoint = type === 'followers' 
+                ? `${API_URL}/api/social/followers/${viewedUserId}`
+                : `${API_URL}/api/social/following/${viewedUserId}`;
+            
+            const response = await fetch(endpoint, {
                 headers: { 
                     'Authorization': `Bearer ${currentToken}`,
                     'Content-Type': 'application/json'
@@ -946,12 +941,12 @@
             
             if (response.ok) {
                 const data = await response.json();
-                const followers = data.followers || [];
+                const users = type === 'followers' ? (data.followers || []) : (data.following || []);
                 
-                if (followers.length === 0) {
-                    content.innerHTML = '<div class="text-center text-gray-400 py-8">Nenhum seguidor ainda</div>';
+                if (users.length === 0) {
+                    content.innerHTML = `<div class="text-center text-gray-400 py-8">${type === 'followers' ? 'Nenhum seguidor ainda' : 'Não está seguindo ninguém ainda'}</div>`;
                 } else {
-                    content.innerHTML = followers.map(user => {
+                    content.innerHTML = users.map(user => {
                         const safeName = (user.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const safeUsername = (user.username || 'user').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const avatar = user.profilePicture 
@@ -971,107 +966,116 @@
                 }
             } else {
                 const errorText = await response.text();
-                console.error('Erro ao carregar seguidores:', response.status, errorText);
-                content.innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar seguidores (${response.status})</div>`;
+                console.error(`Erro ao carregar ${type}:`, response.status, errorText);
+                content.innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar ${type === 'followers' ? 'seguidores' : 'seguindo'} (${response.status})</div>`;
             }
         } catch (error) {
-            console.error('Erro ao carregar seguidores:', error);
-            content.innerHTML = '<div class="text-center text-red-400 py-8">Erro ao carregar seguidores</div>';
+            console.error(`Erro ao carregar ${type}:`, error);
+            content.innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar ${type === 'followers' ? 'seguidores' : 'seguindo'}</div>`;
+        }
+    }
+    
+    async function showFollowingList() {
+        const modal = document.getElementById('followListModal');
+        if (!modal) return;
+        
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        
+        await loadFollowList('following');
+    }
+    
+    async function showFollowersList() {
+        const modal = document.getElementById('followListModal');
+        if (!modal) return;
+        
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        
+        await loadFollowList('followers');
+    }
+    
+    function switchFollowList() {
+        const newType = currentFollowListType === 'following' ? 'followers' : 'following';
+        loadFollowList(newType);
+    }
+    
+    // Função para carregar informações de streak e verificar se pode restaurar
+    async function loadStreakInfo() {
+        try {
+            const response = await fetch(`${API_URL}/api/activity/streak`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const container = document.getElementById('restoreStreakContainer');
+                const info = document.getElementById('restoreStreakInfo');
+                
+                if (!container) return;
+                
+                // Verificar se perdeu a sequência e se foi há menos de 24 horas
+                const lastLogin = data.lastLoginDate ? new Date(data.lastLoginDate) : null;
+                const now = new Date();
+                let canRestore = false;
+                let hoursSinceLoss = 0;
+                
+                if (lastLogin) {
+                    const diffMs = now - lastLogin;
+                    hoursSinceLoss = diffMs / (1000 * 60 * 60);
+                    const daysDiff = Math.floor(hoursSinceLoss / 24);
+                    
+                    // Perdeu a sequência se passou mais de 1 dia desde o último login
+                    // E pode restaurar se foi há menos de 24 horas desde que perdeu
+                    if (daysDiff > 1 && hoursSinceLoss <= 24) {
+                        canRestore = true;
+                    }
+                }
+                
+                if (canRestore && data.restoresAvailable > 0) {
+                    container.classList.remove('hidden');
+                    const hoursLeft = Math.floor(24 - hoursSinceLoss);
+                    info.textContent = `Você pode restaurar sua sequência. Restam ${hoursLeft}h. Restaurações disponíveis: ${data.restoresAvailable}/3`;
+                } else {
+                    container.classList.add('hidden');
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar informações de streak:', error);
+        }
+    }
+    
+    // Função para restaurar a sequência
+    async function restoreStreak() {
+        try {
+            const confirmed = confirm('Tem certeza que deseja restaurar sua sequência? Isso consumirá uma restauração mensal.');
+            if (!confirmed) return;
+            
+            const response = await fetch(`${API_URL}/api/activity/restore-streak`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                showToast && showToast(`Sequência restaurada! Nova sequência: ${data.currentStreak} dias`, 'success');
+                loadStreakInfo();
+            } else {
+                const errorData = await response.json();
+                showToast && showToast(errorData.error || 'Erro ao restaurar sequência', 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao restaurar sequência:', error);
+            showToast && showToast('Erro ao restaurar sequência', 'error');
         }
     }
 
-    async function showFollowingList() {
-        console.log('=== showFollowingList chamado ===');
-        const modal = document.getElementById('followListModal');
-        const title = document.getElementById('followListTitle');
-        const content = document.getElementById('followListContent');
-        
-        console.log('Elementos encontrados:', {
-            modal: !!modal,
-            title: !!title,
-            content: !!content
-        });
-        
-        if (!modal) {
-            console.error('❌ Modal não encontrado');
-            alert('Erro: Modal não encontrado. Verifique o console.');
-            return;
-        }
-        
-        if (!title || !content) {
-            console.error('❌ Elementos do modal não encontrados');
-            alert('Erro: Elementos do modal não encontrados.');
-            return;
-        }
-        
-        console.log('Abrindo modal...');
-        title.textContent = 'Seguindo';
-        content.innerHTML = '<div class="text-center text-gray-400 py-8">Carregando...</div>';
-        
-        // Remover classe hidden e garantir que está visível
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-        modal.style.visibility = 'visible';
-        modal.style.opacity = '1';
-        modal.style.pointerEvents = 'auto';
-        
-        console.log('Modal após abrir:', {
-            classes: modal.className,
-            display: modal.style.display,
-            visibility: modal.style.visibility,
-            opacity: modal.style.opacity
-        });
-        
-        try {
-            // Obter token atualizado dinamicamente
-            const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
-            if (!currentToken) {
-                content.innerHTML = '<div class="text-center text-red-400 py-8">Erro: Token não encontrado. Faça login novamente.</div>';
-                return;
-            }
-            
-            const response = await fetch(`${API_URL}/api/social/following/${viewedUserId}`, {
-                headers: { 
-                    'Authorization': `Bearer ${currentToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                const following = data.following || [];
-                
-                if (following.length === 0) {
-                    content.innerHTML = '<div class="text-center text-gray-400 py-8">Não está seguindo ninguém ainda</div>';
-                } else {
-                    content.innerHTML = following.map(user => {
-                        const safeName = (user.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                        const safeUsername = (user.username || 'user').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                        const avatar = user.profilePicture 
-                            ? `<img src="${user.profilePicture}" alt="${safeName}" class="w-12 h-12 rounded-full object-cover">`
-                            : `<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold">${safeName.charAt(0).toUpperCase()}</div>`;
-                        
-                        return `
-                            <div class="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${user.id}'">
-                                ${avatar}
-                                <div class="flex-1">
-                                    <p class="text-gray-900 dark:text-white font-medium">${safeName}</p>
-                                    <p class="text-gray-500 dark:text-gray-400 text-sm">@${safeUsername}</p>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            } else {
-                const errorText = await response.text();
-                console.error('Erro ao carregar seguindo:', response.status, errorText);
-                content.innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar seguindo (${response.status})</div>`;
-            }
-        } catch (error) {
-            console.error('Erro ao carregar seguindo:', error);
-            content.innerHTML = '<div class="text-center text-red-400 py-8">Erro ao carregar seguindo</div>';
-        }
-    }
 
     function closeFollowListModal() {
         const modal = document.getElementById('followListModal');
@@ -1103,6 +1107,26 @@
         document.getElementById('followBtn').addEventListener('click', toggleFollow);
         document.getElementById('messageBtn').addEventListener('click', openMessage);
         
+        // Botão Ver ao lado de Seguindo
+        const viewFollowingBtn = document.getElementById('viewFollowingBtn');
+        if (viewFollowingBtn) {
+            viewFollowingBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showFollowingList();
+            });
+        }
+        
+        // Botão de alternar no modal
+        const switchBtn = document.getElementById('switchFollowListBtn');
+        if (switchBtn) {
+            switchBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                switchFollowList();
+            });
+        }
+        
         // Fechar modal ao clicar no backdrop e no botão de fechar
         const modal = document.getElementById('followListModal');
         const closeBtn = document.getElementById('closeFollowListModalBtn');
@@ -1123,43 +1147,16 @@
             });
         }
         
-        // Adicionar event listeners diretos
-        const followersLink = document.getElementById('followersLink');
-        const followingLink = document.getElementById('followingLink');
-        
-        console.log('Links encontrados:', {
-            followersLink: !!followersLink,
-            followingLink: !!followingLink
-        });
-        
-        if (followersLink) {
-            followersLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Click em Seguidores detectado - chamando showFollowersList');
-                try {
-                    showFollowersList();
-                } catch (error) {
-                    console.error('Erro ao chamar showFollowersList:', error);
-                }
-            });
-        } else {
-            console.error('Link de seguidores não encontrado');
+        // Botão de restaurar sequência
+        const restoreBtn = document.getElementById('restoreStreakBtn');
+        if (restoreBtn) {
+            restoreBtn.addEventListener('click', restoreStreak);
         }
         
-        if (followingLink) {
-            followingLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Click em Seguindo detectado - chamando showFollowingList');
-                try {
-                    showFollowingList();
-                } catch (error) {
-                    console.error('Erro ao chamar showFollowingList:', error);
-                }
-            });
-        } else {
-            console.error('Link de seguindo não encontrado');
+        // Carregar informações de streak (apenas se for o próprio perfil)
+        const currentUserId = JSON.parse(atob(token.split('.')[1])).id;
+        if (currentUserId === viewedUserId) {
+            loadStreakInfo();
         }
         
         // Teste: verificar se o modal existe
