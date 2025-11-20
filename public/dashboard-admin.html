@@ -437,14 +437,33 @@
             updateStabilityIndicators(banRate, 0);
         });
         
-        updateStabilityIndicators(banRate, pendingFeedbacks);
+        // Atualizar com valores iniciais (será atualizado quando loadFeedbackStats terminar)
+        updateStabilityIndicators(banRate, 0);
     }
     
-    function updateStabilityIndicators(banRate, pendingFeedbacks) {
+    async function updateStabilityIndicators(banRate, pendingFeedbacks) {
+        // Buscar métricas reais da API
+        let averageResponseTime = 0;
+        let loginIncidents = 0;
+        
+        try {
+            const metricsResponse = await fetch(`${API_URL}/api/admin/metrics`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (metricsResponse.ok) {
+                const metricsData = await metricsResponse.json();
+                averageResponseTime = metricsData.averageResponseTime || 0;
+                loginIncidents = metricsData.loginIncidents || 0;
+            }
+        } catch (error) {
+            console.error('Erro ao buscar métricas:', error);
+        }
+        
         const stabilityIndicators = [
             { label: 'Erros críticos reportados (7d)', value: banRate > 5 ? '3' : '1', status: 'warning' },
-            { label: 'Tempo médio de resposta API', value: '420ms', status: 'info' }, // TODO: Implementar métrica real
-            { label: 'Incidentes de login', value: '0', status: 'success' }, // TODO: Implementar métrica real
+            { label: 'Tempo médio de resposta API', value: averageResponseTime > 0 ? `${averageResponseTime}ms` : 'N/A', status: 'info' },
+            { label: 'Incidentes de login', value: loginIncidents.toString(), status: loginIncidents > 0 ? 'warning' : 'success' },
             { label: 'Feedbacks pendentes', value: pendingFeedbacks.toString(), status: pendingFeedbacks > 0 ? 'warning' : 'success' }
         ];
         const indicatorsEl = document.getElementById('stabilityIndicators');
@@ -471,7 +490,11 @@
                     newUsersLast7: last7Days,
                     banRate: banRate.toFixed(2),
                     qaSuites,
-                    stabilityIndicators
+                    stabilityIndicators,
+                    metrics: {
+                        averageResponseTime,
+                        loginIncidents
+                    }
                 };
                 const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);

@@ -282,11 +282,11 @@
 </div>
 
 <!-- Modal de Seguidores/Seguindo -->
-<div id="followListModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col">
+<div id="followListModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="z-index: 9999 !important;">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col" style="z-index: 10000 !important; position: relative;">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
             <h3 id="followListTitle" class="text-gray-900 dark:text-white text-xl font-bold">Seguidores</h3>
-            <button onclick="closeFollowListModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            <button onclick="closeFollowListModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -536,35 +536,43 @@
             const currentUserId = getCurrentUserId();
             const isRepost = post.repostedBy && post.repostedBy.id === viewedUserId;
             
+            // Escapar dados do usuário para prevenir XSS
+            const safeUserName = (post.user.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeUsername = (post.user.username || 'user').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeContent = (post.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeRepostedByName = post.repostedBy ? (post.repostedBy.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            const safeTitleTitle = post.title ? (post.title.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            const safeTitleOverview = post.title ? ((post.title.overview || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')) : '';
+            
             // Avatar do autor original do post
             const originalUserAvatar = post.user.profilePicture 
-                ? `<img src="${post.user.profilePicture}" alt="${post.user.name}" class="w-10 h-10 rounded-full object-cover cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">`
-                : `<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">${post.user.name ? post.user.name.charAt(0).toUpperCase() : 'U'}</div>`;
+                ? `<img src="${post.user.profilePicture}" alt="${safeUserName}" class="w-10 h-10 rounded-full object-cover cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">`
+                : `<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">${safeUserName.charAt(0).toUpperCase()}</div>`;
             
             return `
             <div class="bg-gray-100 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                 ${isRepost ? `
                     <div class="flex items-center gap-2 mb-3 text-green-500 dark:text-green-400 text-xs">
                         <span class="material-symbols-outlined !text-sm">repeat</span>
-                        <span>${post.repostedBy.name} repostou</span>
+                        <span>${safeRepostedByName} repostou</span>
                     </div>
                 ` : ''}
                 <div class="flex items-start gap-3 mb-3">
                     ${originalUserAvatar}
                     <div class="flex-1">
                         <div class="flex items-center gap-2 mb-1">
-                            <p class="text-gray-900 dark:text-white font-bold text-sm">${post.user.name}</p>
-                            <p class="text-gray-500 dark:text-gray-400 text-xs">@${post.user.username || 'user'}</p>
+                            <p class="text-gray-900 dark:text-white font-bold text-sm">${safeUserName}</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs">@${safeUsername}</p>
                             <span class="text-gray-400">·</span>
                             <p class="text-gray-500 dark:text-gray-400 text-xs">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</p>
                         </div>
-                        <p class="text-gray-800 dark:text-gray-200 text-sm whitespace-pre-wrap">${post.content}</p>
+                        <p class="text-gray-800 dark:text-gray-200 text-sm whitespace-pre-wrap">${safeContent}</p>
                         ${post.title ? `
                             <div class="mt-3 p-3 bg-gray-200 dark:bg-gray-700 rounded-lg flex gap-3 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onclick="window.location.href='categoria.html?tmdbId=${post.title.tmdbId}&type=${post.title.type}'">
-                                <img src="${post.title.posterPath ? (post.title.posterPath.startsWith('http') ? post.title.posterPath : `https://image.tmdb.org/t/p/w92${post.title.posterPath}`) : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="92" height="138"%3E%3Crect width="92" height="138" fill="%231a1f2e"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="10" fill="%239dabb9" text-anchor="middle" dy=".3em"%3ESem Imagem%3C/text%3E%3C/svg%3E'}" alt="${post.title.title}" class="w-16 h-24 object-cover rounded">
+                                <img src="${post.title.posterPath ? (post.title.posterPath.startsWith('http') ? post.title.posterPath : `https://image.tmdb.org/t/p/w92${post.title.posterPath}`) : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="92" height="138"%3E%3Crect width="92" height="138" fill="%231a1f2e"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="10" fill="%239dabb9" text-anchor="middle" dy=".3em"%3ESem Imagem%3C/text%3E%3C/svg%3E'}" alt="${safeTitleTitle}" class="w-16 h-24 object-cover rounded">
                                 <div class="flex-1">
-                                    <h4 class="text-gray-900 dark:text-white font-bold text-sm">${post.title.title}</h4>
-                                    <p class="text-gray-600 dark:text-gray-400 text-xs line-clamp-2">${post.title.overview || ''}</p>
+                                    <h4 class="text-gray-900 dark:text-white font-bold text-sm">${safeTitleTitle}</h4>
+                                    <p class="text-gray-600 dark:text-gray-400 text-xs line-clamp-2">${safeTitleOverview}</p>
                                 </div>
                             </div>
                         ` : ''}
@@ -879,9 +887,15 @@
         const title = document.getElementById('followListTitle');
         const content = document.getElementById('followListContent');
         
+        if (!modal) {
+            console.error('Modal não encontrado');
+            return;
+        }
+        
         title.textContent = 'Seguidores';
         content.innerHTML = '<div class="text-center text-gray-400 py-8">Carregando...</div>';
         modal.classList.remove('hidden');
+        modal.style.display = 'flex';
         
         try {
             // Obter token atualizado dinamicamente
@@ -906,16 +920,18 @@
                     content.innerHTML = '<div class="text-center text-gray-400 py-8">Nenhum seguidor ainda</div>';
                 } else {
                     content.innerHTML = followers.map(user => {
+                        const safeName = (user.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const safeUsername = (user.username || 'user').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const avatar = user.profilePicture 
-                            ? `<img src="${user.profilePicture}" alt="${user.name}" class="w-12 h-12 rounded-full object-cover">`
-                            : `<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold">${user.name ? user.name.charAt(0).toUpperCase() : 'U'}</div>`;
+                            ? `<img src="${user.profilePicture}" alt="${safeName}" class="w-12 h-12 rounded-full object-cover">`
+                            : `<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold">${safeName.charAt(0).toUpperCase()}</div>`;
                         
                         return `
                             <div class="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${user.id}'">
                                 ${avatar}
                                 <div class="flex-1">
-                                    <p class="text-gray-900 dark:text-white font-medium">${user.name}</p>
-                                    <p class="text-gray-500 dark:text-gray-400 text-sm">@${user.username || 'user'}</p>
+                                    <p class="text-gray-900 dark:text-white font-medium">${safeName}</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">@${safeUsername}</p>
                                 </div>
                             </div>
                         `;
@@ -937,9 +953,15 @@
         const title = document.getElementById('followListTitle');
         const content = document.getElementById('followListContent');
         
+        if (!modal) {
+            console.error('Modal não encontrado');
+            return;
+        }
+        
         title.textContent = 'Seguindo';
         content.innerHTML = '<div class="text-center text-gray-400 py-8">Carregando...</div>';
         modal.classList.remove('hidden');
+        modal.style.display = 'flex';
         
         try {
             // Obter token atualizado dinamicamente
@@ -964,16 +986,18 @@
                     content.innerHTML = '<div class="text-center text-gray-400 py-8">Não está seguindo ninguém ainda</div>';
                 } else {
                     content.innerHTML = following.map(user => {
+                        const safeName = (user.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const safeUsername = (user.username || 'user').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const avatar = user.profilePicture 
-                            ? `<img src="${user.profilePicture}" alt="${user.name}" class="w-12 h-12 rounded-full object-cover">`
-                            : `<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold">${user.name ? user.name.charAt(0).toUpperCase() : 'U'}</div>`;
+                            ? `<img src="${user.profilePicture}" alt="${safeName}" class="w-12 h-12 rounded-full object-cover">`
+                            : `<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold">${safeName.charAt(0).toUpperCase()}</div>`;
                         
                         return `
                             <div class="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${user.id}'">
                                 ${avatar}
                                 <div class="flex-1">
-                                    <p class="text-gray-900 dark:text-white font-medium">${user.name}</p>
-                                    <p class="text-gray-500 dark:text-gray-400 text-sm">@${user.username || 'user'}</p>
+                                    <p class="text-gray-900 dark:text-white font-medium">${safeName}</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">@${safeUsername}</p>
                                 </div>
                             </div>
                         `;
@@ -991,8 +1015,24 @@
     }
 
     function closeFollowListModal() {
-        document.getElementById('followListModal').classList.add('hidden');
+        const modal = document.getElementById('followListModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
     }
+    
+    // Fechar modal ao clicar no backdrop
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('followListModal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeFollowListModal();
+                }
+            });
+        }
+    });
 
     // Inicializar
     document.addEventListener('DOMContentLoaded', () => {

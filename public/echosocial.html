@@ -1184,8 +1184,8 @@
                     ${originalUserAvatar}
                     <div class="flex-1">
                         <div class="flex items-center gap-2 mb-1">
-                            <p class="text-white font-bold cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">${post.user.name}</p>
-                            <p class="text-gray-400 text-sm cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">@${post.user.username || 'user'}</p>
+                            <p class="text-white font-bold cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">${(post.user.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+                            <p class="text-gray-400 text-sm cursor-pointer hover:underline" onclick="window.location.href='perfil-publico.html?userId=${post.user.id}'">@${(post.user.username || 'user').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
                             <span class="text-gray-500">·</span>
                             <p class="text-gray-400 text-sm">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</p>
                             ${(post.user.id === currentUserId || isAdmin) ? `
@@ -1194,14 +1194,14 @@
                                 </button>
                             ` : ''}
                         </div>
-                        <p class="text-white whitespace-pre-wrap">${post.content}</p>
+                        <p class="text-white whitespace-pre-wrap">${(post.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
                         ${post.title ? `
                             <div class="mt-4 p-4 bg-[#335b7e] rounded-lg flex gap-4 cursor-pointer hover:bg-[#707d9b] transition-colors" onclick="openMovieModal('${post.title.tmdbId}', '${post.title.type}')">
                                 ${post.title.posterPath ? `
                                     <img src="${post.title.posterPath.startsWith('http') ? post.title.posterPath : `https://image.tmdb.org/t/p/w200${post.title.posterPath}`}" alt="${post.title.title}" class="w-20 h-30 object-cover rounded flex-shrink-0">
                                 ` : ''}
                                 <div class="flex-1 min-w-0">
-                                    <h4 class="text-white font-bold ${!post.title.posterPath ? 'text-lg' : ''}">${post.title.title}</h4>
+                                    <h4 class="text-white font-bold ${!post.title.posterPath ? 'text-lg' : ''}">${(post.title.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</h4>
                                     ${post.title.overview ? `<p class="text-gray-400 text-sm line-clamp-2 mt-1">${post.title.overview}</p>` : ''}
                                 </div>
                             </div>
