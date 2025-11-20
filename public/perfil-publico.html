@@ -193,11 +193,11 @@
                             <p class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]" id="userName">Carregando...</p>
                             <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
                             <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
-                                <a id="followersLink" class="text-center group cursor-pointer" href="javascript:void(0);" onclick="showFollowersList(); return false;">
+                                <a id="followersLink" class="text-center group cursor-pointer" href="javascript:void(0);">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followerCount">0</p>
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
                                 </a>
-                                <a id="followingLink" class="text-center group cursor-pointer" href="javascript:void(0);" onclick="showFollowingList(); return false;">
+                                <a id="followingLink" class="text-center group cursor-pointer" href="javascript:void(0);">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
                                 </a>
@@ -282,11 +282,11 @@
 </div>
 
 <!-- Modal de Seguidores/Seguindo -->
-<div id="followListModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="z-index: 9999 !important; display: none;">
+<div id="followListModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="z-index: 9999 !important;">
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col" style="z-index: 10000 !important; position: relative;">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
             <h3 id="followListTitle" class="text-gray-900 dark:text-white text-xl font-bold">Seguidores</h3>
-            <button onclick="closeFollowListModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer" type="button">
+            <button id="closeFollowListModalBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer" type="button">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -883,27 +883,46 @@
     }
 
     async function showFollowersList() {
-        console.log('showFollowersList chamado');
+        console.log('=== showFollowersList chamado ===');
         const modal = document.getElementById('followListModal');
         const title = document.getElementById('followListTitle');
         const content = document.getElementById('followListContent');
         
+        console.log('Elementos encontrados:', {
+            modal: !!modal,
+            title: !!title,
+            content: !!content
+        });
+        
         if (!modal) {
-            console.error('Modal não encontrado');
+            console.error('❌ Modal não encontrado');
+            alert('Erro: Modal não encontrado. Verifique o console.');
             return;
         }
         
         if (!title || !content) {
-            console.error('Elementos do modal não encontrados');
+            console.error('❌ Elementos do modal não encontrados');
+            alert('Erro: Elementos do modal não encontrados.');
             return;
         }
         
+        console.log('Abrindo modal...');
         title.textContent = 'Seguidores';
         content.innerHTML = '<div class="text-center text-gray-400 py-8">Carregando...</div>';
+        
+        // Remover classe hidden e garantir que está visível
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
         modal.style.visibility = 'visible';
         modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        
+        console.log('Modal após abrir:', {
+            classes: modal.className,
+            display: modal.style.display,
+            visibility: modal.style.visibility,
+            opacity: modal.style.opacity
+        });
         
         try {
             // Obter token atualizado dinamicamente
@@ -957,27 +976,46 @@
     }
 
     async function showFollowingList() {
-        console.log('showFollowingList chamado');
+        console.log('=== showFollowingList chamado ===');
         const modal = document.getElementById('followListModal');
         const title = document.getElementById('followListTitle');
         const content = document.getElementById('followListContent');
         
+        console.log('Elementos encontrados:', {
+            modal: !!modal,
+            title: !!title,
+            content: !!content
+        });
+        
         if (!modal) {
-            console.error('Modal não encontrado');
+            console.error('❌ Modal não encontrado');
+            alert('Erro: Modal não encontrado. Verifique o console.');
             return;
         }
         
         if (!title || !content) {
-            console.error('Elementos do modal não encontrados');
+            console.error('❌ Elementos do modal não encontrados');
+            alert('Erro: Elementos do modal não encontrados.');
             return;
         }
         
+        console.log('Abrindo modal...');
         title.textContent = 'Seguindo';
         content.innerHTML = '<div class="text-center text-gray-400 py-8">Carregando...</div>';
+        
+        // Remover classe hidden e garantir que está visível
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
         modal.style.visibility = 'visible';
         modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        
+        console.log('Modal após abrir:', {
+            classes: modal.className,
+            display: modal.style.display,
+            visibility: modal.style.visibility,
+            opacity: modal.style.opacity
+        });
         
         try {
             // Obter token atualizado dinamicamente
@@ -1038,13 +1076,20 @@
         }
     }
     
-    // Tornar funções globais para acesso via onclick (após definição)
-    window.showFollowersList = showFollowersList;
-    window.showFollowingList = showFollowingList;
-    window.closeFollowListModal = closeFollowListModal;
-    
     // Inicializar
     document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOMContentLoaded executado');
+        
+        // Tornar funções globais para acesso via onclick (após definição)
+        window.showFollowersList = showFollowersList;
+        window.showFollowingList = showFollowingList;
+        window.closeFollowListModal = closeFollowListModal;
+        
+        console.log('Funções globais definidas:', {
+            showFollowersList: typeof window.showFollowersList,
+            showFollowingList: typeof window.showFollowingList,
+            closeFollowListModal: typeof window.closeFollowListModal
+        });
         checkAdminStatus();
         loadFollowCounts(); // Carregar contadores de seguidores/seguindo
         loadProfile();
@@ -1053,8 +1098,10 @@
         document.getElementById('followBtn').addEventListener('click', toggleFollow);
         document.getElementById('messageBtn').addEventListener('click', openMessage);
         
-        // Fechar modal ao clicar no backdrop
+        // Fechar modal ao clicar no backdrop e no botão de fechar
         const modal = document.getElementById('followListModal');
+        const closeBtn = document.getElementById('closeFollowListModalBtn');
+        
         if (modal) {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
@@ -1063,31 +1110,76 @@
             });
         }
         
-        // Adicionar event listeners diretos como fallback
+        if (closeBtn) {
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                closeFollowListModal();
+            });
+        }
+        
+        // Adicionar event listeners diretos
         const followersLink = document.getElementById('followersLink');
         const followingLink = document.getElementById('followingLink');
+        
+        console.log('Links encontrados:', {
+            followersLink: !!followersLink,
+            followingLink: !!followingLink
+        });
         
         if (followersLink) {
             followersLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Click em Seguidores detectado');
-                showFollowersList();
+                console.log('Click em Seguidores detectado - chamando showFollowersList');
+                try {
+                    showFollowersList();
+                } catch (error) {
+                    console.error('Erro ao chamar showFollowersList:', error);
+                }
             });
         } else {
-            console.warn('Link de seguidores não encontrado');
+            console.error('Link de seguidores não encontrado');
         }
         
         if (followingLink) {
             followingLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Click em Seguindo detectado');
-                showFollowingList();
+                console.log('Click em Seguindo detectado - chamando showFollowingList');
+                try {
+                    showFollowingList();
+                } catch (error) {
+                    console.error('Erro ao chamar showFollowingList:', error);
+                }
             });
         } else {
-            console.warn('Link de seguindo não encontrado');
+            console.error('Link de seguindo não encontrado');
         }
+        
+        // Teste: verificar se o modal existe
+        const modalTest = document.getElementById('followListModal');
+        console.log('Modal encontrado:', !!modalTest);
+        if (modalTest) {
+            console.log('Modal classes:', modalTest.className);
+            console.log('Modal style.display:', modalTest.style.display);
+        }
+        
+        // Teste manual: adicionar um botão de teste temporário
+        console.log('Testando se as funções funcionam...');
+        setTimeout(() => {
+            console.log('Teste após 1 segundo - verificando funções:', {
+                showFollowersList: typeof showFollowersList,
+                showFollowingList: typeof showFollowingList
+            });
+        }, 1000);
+    });
+    
+    // Teste imediato (fora do DOMContentLoaded)
+    console.log('Script carregado. Funções disponíveis:', {
+        showFollowersList: typeof showFollowersList,
+        showFollowingList: typeof showFollowingList,
+        closeFollowListModal: typeof closeFollowListModal
     });
 </script>
     <script src="js/notifications.js"></script>
