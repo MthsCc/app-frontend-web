@@ -193,11 +193,11 @@
                             <p class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]" id="userName">Carregando...</p>
                             <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
                             <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
-                                <a class="text-center group cursor-pointer" onclick="showFollowersList()">
+                                <a id="followersLink" class="text-center group cursor-pointer" href="javascript:void(0);" onclick="showFollowersList(); return false;">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followerCount">0</p>
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
                                 </a>
-                                <a class="text-center group cursor-pointer" onclick="showFollowingList()">
+                                <a id="followingLink" class="text-center group cursor-pointer" href="javascript:void(0);" onclick="showFollowingList(); return false;">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
                                 </a>
@@ -282,11 +282,11 @@
 </div>
 
 <!-- Modal de Seguidores/Seguindo -->
-<div id="followListModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="z-index: 9999 !important;">
+<div id="followListModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="z-index: 9999 !important; display: none;">
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col" style="z-index: 10000 !important; position: relative;">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
             <h3 id="followListTitle" class="text-gray-900 dark:text-white text-xl font-bold">Seguidores</h3>
-            <button onclick="closeFollowListModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer">
+            <button onclick="closeFollowListModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer" type="button">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -883,6 +883,7 @@
     }
 
     async function showFollowersList() {
+        console.log('showFollowersList chamado');
         const modal = document.getElementById('followListModal');
         const title = document.getElementById('followListTitle');
         const content = document.getElementById('followListContent');
@@ -892,10 +893,17 @@
             return;
         }
         
+        if (!title || !content) {
+            console.error('Elementos do modal não encontrados');
+            return;
+        }
+        
         title.textContent = 'Seguidores';
         content.innerHTML = '<div class="text-center text-gray-400 py-8">Carregando...</div>';
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
         
         try {
             // Obter token atualizado dinamicamente
@@ -949,6 +957,7 @@
     }
 
     async function showFollowingList() {
+        console.log('showFollowingList chamado');
         const modal = document.getElementById('followListModal');
         const title = document.getElementById('followListTitle');
         const content = document.getElementById('followListContent');
@@ -958,10 +967,17 @@
             return;
         }
         
+        if (!title || !content) {
+            console.error('Elementos do modal não encontrados');
+            return;
+        }
+        
         title.textContent = 'Seguindo';
         content.innerHTML = '<div class="text-center text-gray-400 py-8">Carregando...</div>';
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
         
         try {
             // Obter token atualizado dinamicamente
@@ -1022,18 +1038,11 @@
         }
     }
     
-    // Fechar modal ao clicar no backdrop
-    document.addEventListener('DOMContentLoaded', () => {
-        const modal = document.getElementById('followListModal');
-        if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeFollowListModal();
-                }
-            });
-        }
-    });
-
+    // Tornar funções globais para acesso via onclick (após definição)
+    window.showFollowersList = showFollowersList;
+    window.showFollowingList = showFollowingList;
+    window.closeFollowListModal = closeFollowListModal;
+    
     // Inicializar
     document.addEventListener('DOMContentLoaded', () => {
         checkAdminStatus();
@@ -1043,6 +1052,42 @@
         document.getElementById('toggleListBtn').addEventListener('click', toggleList);
         document.getElementById('followBtn').addEventListener('click', toggleFollow);
         document.getElementById('messageBtn').addEventListener('click', openMessage);
+        
+        // Fechar modal ao clicar no backdrop
+        const modal = document.getElementById('followListModal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeFollowListModal();
+                }
+            });
+        }
+        
+        // Adicionar event listeners diretos como fallback
+        const followersLink = document.getElementById('followersLink');
+        const followingLink = document.getElementById('followingLink');
+        
+        if (followersLink) {
+            followersLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Click em Seguidores detectado');
+                showFollowersList();
+            });
+        } else {
+            console.warn('Link de seguidores não encontrado');
+        }
+        
+        if (followingLink) {
+            followingLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Click em Seguindo detectado');
+                showFollowingList();
+            });
+        } else {
+            console.warn('Link de seguindo não encontrado');
+        }
     });
 </script>
     <script src="js/notifications.js"></script>
