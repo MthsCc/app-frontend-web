@@ -198,14 +198,12 @@
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
                                 </a>
                                 <div class="text-center group">
-                                    <div class="flex items-center gap-2 justify-center">
-                                        <a id="followingLink" class="cursor-pointer">
-                                            <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
-                                            <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
-                                        </a>
-                                        <button id="viewFollowingBtn" class="flex items-center gap-1 px-3 py-1.5 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium">
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
+                                    <div class="flex items-center gap-2 justify-center mt-1">
+                                        <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
+                                        <button id="viewFollowingBtn" class="flex items-center gap-1 px-2 py-1 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors text-xs font-medium whitespace-nowrap">
                                             <span>Ver</span>
-                                            <span class="material-symbols-outlined !text-base">arrow_forward</span>
+                                            <span class="material-symbols-outlined !text-sm">arrow_forward</span>
                                         </button>
                                     </div>
                                 </div>
@@ -1109,22 +1107,34 @@
         
         // Botão Ver ao lado de Seguindo
         const viewFollowingBtn = document.getElementById('viewFollowingBtn');
+        console.log('Botão Ver encontrado:', !!viewFollowingBtn);
         if (viewFollowingBtn) {
+            viewFollowingBtn.style.display = 'flex';
+            viewFollowingBtn.style.visibility = 'visible';
             viewFollowingBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('Botão Ver clicado');
                 showFollowingList();
             });
+        } else {
+            console.error('Botão Ver não encontrado!');
         }
         
         // Botão de alternar no modal
         const switchBtn = document.getElementById('switchFollowListBtn');
+        console.log('Botão de alternar encontrado:', !!switchBtn);
         if (switchBtn) {
+            switchBtn.style.display = 'block';
+            switchBtn.style.visibility = 'visible';
             switchBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('Botão de alternar clicado');
                 switchFollowList();
             });
+        } else {
+            console.error('Botão de alternar não encontrado!');
         }
         
         // Fechar modal ao clicar no backdrop e no botão de fechar
@@ -1149,14 +1159,29 @@
         
         // Botão de restaurar sequência
         const restoreBtn = document.getElementById('restoreStreakBtn');
+        const restoreContainer = document.getElementById('restoreStreakContainer');
+        console.log('Botão de restaurar encontrado:', !!restoreBtn);
+        console.log('Container de restaurar encontrado:', !!restoreContainer);
+        
         if (restoreBtn) {
             restoreBtn.addEventListener('click', restoreStreak);
         }
         
         // Carregar informações de streak (apenas se for o próprio perfil)
-        const currentUserId = JSON.parse(atob(token.split('.')[1])).id;
-        if (currentUserId === viewedUserId) {
-            loadStreakInfo();
+        try {
+            const currentUserId = JSON.parse(atob(token.split('.')[1])).id;
+            console.log('IDs:', { currentUserId, viewedUserId });
+            if (currentUserId === viewedUserId) {
+                console.log('É o próprio perfil, carregando informações de streak...');
+                loadStreakInfo();
+            } else {
+                console.log('Não é o próprio perfil, ocultando botão de restaurar');
+                if (restoreContainer) {
+                    restoreContainer.classList.add('hidden');
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao verificar usuário atual:', error);
         }
         
         // Teste: verificar se o modal existe
