@@ -193,11 +193,11 @@
                             <p class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]" id="userName">Carregando...</p>
                             <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
                             <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
-                                <a id="followersLink" class="text-center group cursor-pointer" href="javascript:void(0);">
+                                <a id="followersLink" class="text-center group cursor-pointer" href="javascript:void(0);" onclick="window.showFollowersList(); return false;">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followerCount">0</p>
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
                                 </a>
-                                <a id="followingLink" class="text-center group cursor-pointer" href="javascript:void(0);">
+                                <a id="followingLink" class="text-center group cursor-pointer" href="javascript:void(0);" onclick="window.showFollowingList(); return false;">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
                                 </a>
@@ -318,11 +318,16 @@
 </div>
 
 <script>
+    console.log('=== SCRIPT INICIADO ===');
+    
     const API_URL = 'https://app-backend-api-h67c.onrender.com';
     // Verificar token no localStorage ou sessionStorage
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     
+    console.log('Token encontrado:', !!token);
+    
     if (!token) {
+        console.log('Redirecionando para login...');
         window.location.href = 'login.html';
     }
 
@@ -1180,6 +1185,45 @@
         showFollowersList: typeof showFollowersList,
         showFollowingList: typeof showFollowingList,
         closeFollowListModal: typeof closeFollowListModal
+    });
+    
+    // Funções globais imediatas (antes do DOMContentLoaded)
+    window.showFollowersList = function() {
+        console.log('=== showFollowersList GLOBAL chamado ===');
+        if (typeof showFollowersList === 'function') {
+            return showFollowersList();
+        } else {
+            console.error('showFollowersList não está definida');
+            alert('Erro: Função showFollowersList não encontrada. Verifique o console.');
+        }
+    };
+    
+    window.showFollowingList = function() {
+        console.log('=== showFollowingList GLOBAL chamado ===');
+        if (typeof showFollowingList === 'function') {
+            return showFollowingList();
+        } else {
+            console.error('showFollowingList não está definida');
+            alert('Erro: Função showFollowingList não encontrada. Verifique o console.');
+        }
+    };
+    
+    window.closeFollowListModal = function() {
+        if (typeof closeFollowListModal === 'function') {
+            return closeFollowListModal();
+        } else {
+            const modal = document.getElementById('followListModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+    };
+    
+    console.log('Funções globais criadas:', {
+        showFollowersList: typeof window.showFollowersList,
+        showFollowingList: typeof window.showFollowingList,
+        closeFollowListModal: typeof window.closeFollowListModal
     });
 </script>
     <script src="js/notifications.js"></script>
