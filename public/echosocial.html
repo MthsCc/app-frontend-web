@@ -2,7 +2,7 @@
 <html class="dark" lang="pt-br">
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta name="theme-color" content="#335b7e"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -635,9 +635,6 @@
             });
             
             if (response.ok) {
-                showToast('Conversa excluída', 'success');
-                loadConversations();
-                // Se a conversa aberta for a excluída, fechar o chat
                 if (AppState.currentChatUserId === userId) {
                     const chatSection = document.getElementById('chatSection');
                     if (chatSection) {
@@ -645,6 +642,8 @@
                     }
                     AppState.currentChatUserId = null;
                 }
+                await loadConversations();
+                showToast('Conversa excluída', 'success');
             } else {
                 const errorData = await response.json();
                 showToast('Erro ao excluir conversa: ' + (errorData.error || 'Erro desconhecido'), 'error');

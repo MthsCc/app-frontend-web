@@ -2,7 +2,7 @@
 <html class="dark" lang="pt-br">
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta name="theme-color" content="#335b7e"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -302,6 +302,10 @@
         const params = new URLSearchParams(window.location.search);
         categoryType = params.get('type') || 'popular';
         categoryName = params.get('name') || 'Popular';
+        const query = params.get('query');
+        if (query && categoryType === 'search') {
+            categoryName = `Resultados: ${query}`;
+        }
         document.getElementById('categoryTitle').textContent = categoryName;
     }
 
@@ -309,6 +313,15 @@
         try {
             const grid = document.getElementById('categoryGrid');
             grid.innerHTML = '<div class="col-span-full flex items-center justify-center py-12"><div class="text-white">Carregando...</div></div>';
+            
+            if (categoryType === 'search') {
+                const params = new URLSearchParams(window.location.search);
+                const query = params.get('query');
+                if (query) {
+                    await loadSearchResults(query);
+                    return;
+                }
+            }
             
             let endpoint = '';
             
@@ -346,7 +359,6 @@
                 const data = await response.json();
                 grid.innerHTML = '';
                 
-                // Filtrar apenas títulos com poster_path válido e ID válido
                 const validTitles = data.results.filter(title => title.poster_path && title.id);
                 
                 if (validTitles.length === 0) {
@@ -355,7 +367,6 @@
                 }
                 
                 validTitles.forEach(title => {
-                    // poster_path pode vir como URL completa ou caminho relativo
                     const posterUrl = title.poster_path 
                         ? (title.poster_path.startsWith('http') ? title.poster_path : `https://image.tmdb.org/t/p/w300${title.poster_path}`)
                         : null;
@@ -383,6 +394,130 @@
             }
         } catch (error) {
             console.error('Erro ao carregar categoria:', error);
+            document.getElementById('categoryGrid').innerHTML = '<div class="col-span-full text-white text-center py-12">Erro ao carregar. Tente novamente.</div>';
+        }
+    }
+    
+    async function loadSearchResults(query) {
+        try {
+            const grid = document.getElementById('categoryGrid');
+            
+            const searchResponse = await fetch(`${API_URL}/api/tmdb/search?query=${encodeURIComponent(query)}&page=1`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (!searchResponse.ok) {
+                grid.innerHTML = '<div class="col-span-full text-white text-center py-12">Erro ao buscar. Tente novamente.</div>';
+                return;
+            }
+            
+            const searchData = await searchResponse.json();
+            const results = searchData.results || [];
+            
+            if (results.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-white text-center py-12">Nenhum resultado encontrado.</div>';
+                return;
+            }
+            
+            const firstResult = results[0];
+            const titleType = firstResult.media_type || (firstResult.name ? 'tv' : 'movie');
+            const tmdbId = firstResult.id;
+            
+            const relatedTitles = [];
+            
+            try {
+                const similarResponse = await fetch(`${API_URL}/api/titles/similar/${tmdbId}?type=${titleType}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (similarResponse.ok) {
+                    const similarData = await similarResponse.json();
+                    relatedTitles.push(...(similarData.results || []));
+                }
+            } catch (e) {
+                console.warn('Erro ao buscar similares:', e);
+            }
+            
+            if (titleType === 'movie') {
+                try {
+                    const detailsResponse = await fetch(`${API_URL}/api/titles/tmdb/${tmdbId}?type=${titleType}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (detailsResponse.ok) {
+                        const details = await detailsResponse.json();
+                        if (details.belongs_to_collection && details.belongs_to_collection.id) {
+                            const collectionResponse = await fetch(`${API_URL}/api/tmdb/collection/${details.belongs_to_collection.id}`, {
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            
+                            if (collectionResponse.ok) {
+                                const collectionData = await collectionResponse.json();
+                                const collectionMovies = (collectionData.parts || []).filter(m => m.id !== tmdbId && m.poster_path);
+                                relatedTitles.push(...collectionMovies.map(m => ({
+                                    id: m.id,
+                                    title: m.title,
+                                    type: 'movie',
+                                    poster_path: m.poster_path,
+                                    release_date: m.release_date,
+                                    overview: m.overview,
+                                    vote_average: m.vote_average
+                                })));
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Erro ao buscar coleção:', e);
+                }
+            }
+            
+            const allTitles = [firstResult, ...relatedTitles];
+            const uniqueTitles = [];
+            const seenIds = new Set();
+            
+            allTitles.forEach(title => {
+                if (title.poster_path && title.id && !seenIds.has(title.id)) {
+                    seenIds.add(title.id);
+                    uniqueTitles.push(title);
+                }
+            });
+            
+            grid.innerHTML = '';
+            
+            if (uniqueTitles.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-white text-center py-12">Nenhum título encontrado.</div>';
+                return;
+            }
+            
+            uniqueTitles.forEach(title => {
+                const posterPath = title.poster_path || title.posterPath;
+                const posterUrl = posterPath 
+                    ? (posterPath.startsWith('http') ? posterPath : `https://image.tmdb.org/t/p/w300${posterPath}`)
+                    : null;
+                
+                if (!posterUrl) return;
+                
+                const item = document.createElement('div');
+                item.className = 'grid-item group cursor-pointer aspect-[2/3] overflow-hidden rounded-lg';
+                
+                item.innerHTML = `
+                    <img src="${posterUrl}" alt="${title.title || title.name}" loading="lazy" />
+                `;
+                
+                item.addEventListener('click', () => {
+                    openModal({
+                        id: title.id,
+                        title: title.title || title.name,
+                        type: title.type || title.media_type || (title.name ? 'tv' : 'movie')
+                    });
+                });
+                
+                grid.appendChild(item);
+            });
+            
+            document.getElementById('pageInfo').textContent = `${uniqueTitles.length} título(s) encontrado(s)`;
+        } catch (error) {
+            console.error('Erro ao carregar resultados da busca:', error);
             document.getElementById('categoryGrid').innerHTML = '<div class="col-span-full text-white text-center py-12">Erro ao carregar. Tente novamente.</div>';
         }
     }

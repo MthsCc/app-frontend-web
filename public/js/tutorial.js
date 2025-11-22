@@ -97,9 +97,11 @@ const TutorialSystem = {
                 background: linear-gradient(135deg, #072f57 0%, #051422 100%);
                 border: 2px solid rgba(74, 222, 128, 0.3);
                 border-radius: 20px;
-                padding: 2rem;
+                padding: 1.5rem;
                 max-width: 500px;
-                width: 90%;
+                width: calc(100% - 2rem);
+                max-height: 90vh;
+                overflow-y: auto;
                 box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
                 z-index: 100003 !important;
                 position: fixed !important;
@@ -109,6 +111,29 @@ const TutorialSystem = {
                 opacity: 1 !important;
                 visibility: visible !important;
                 transition: top 0.3s ease, left 0.3s ease;
+                margin: 1rem;
+            }
+            
+            @media (max-width: 768px) {
+                .tutorial-card {
+                    padding: 1rem;
+                    max-width: calc(100% - 2rem);
+                    width: calc(100% - 2rem);
+                    border-radius: 15px;
+                }
+                
+                .tutorial-card h3 {
+                    font-size: 1.25rem;
+                }
+                
+                .tutorial-card p {
+                    font-size: 0.9rem;
+                }
+                
+                .tutorial-btn {
+                    padding: 0.6rem 1.2rem;
+                    font-size: 0.9rem;
+                }
             }
             
             .tutorial-card * {
@@ -405,14 +430,15 @@ const TutorialSystem = {
         const card = document.getElementById('tutorialCard');
         if (!card) return;
         
-        if (!targetSelector) {
+        const isMobile = window.innerWidth <= 768;
+        
+        if (!targetSelector || isMobile) {
             card.style.top = '50%';
             card.style.left = '50%';
             card.style.transform = 'translate(-50%, -50%)';
             return;
         }
         
-        // Tentar múltiplos seletores
         const selectors = targetSelector.split(',').map(s => s.trim());
         let targetElement = null;
         
@@ -435,27 +461,22 @@ const TutorialSystem = {
         
         let top, left;
         
-        // Tentar posicionar acima
         if (rect.top > cardRect.height + spacing + padding) {
             top = rect.top - cardRect.height - spacing;
             left = Math.max(padding, Math.min(rect.left, window.innerWidth - cardRect.width - padding));
         }
-        // Tentar abaixo
         else if (rect.bottom + cardRect.height + spacing + padding < window.innerHeight) {
             top = rect.bottom + spacing;
             left = Math.max(padding, Math.min(rect.left, window.innerWidth - cardRect.width - padding));
         }
-        // Tentar à direita
         else if (rect.right + cardRect.width + spacing + padding < window.innerWidth) {
             top = Math.max(padding, Math.min(rect.top, window.innerHeight - cardRect.height - padding));
             left = rect.right + spacing;
         }
-        // Tentar à esquerda
         else if (rect.left - cardRect.width - spacing > padding) {
             top = Math.max(padding, Math.min(rect.top, window.innerHeight - cardRect.height - padding));
             left = rect.left - cardRect.width - spacing;
         }
-        // Centralizar se não couber em lugar nenhum
         else {
             card.style.top = '50%';
             card.style.left = '50%';
