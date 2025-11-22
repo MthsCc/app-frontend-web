@@ -176,10 +176,15 @@
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followerCount">0</p>
                                     <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
                                 </a>
-                                <a class="text-center group" href="#">
+                                <div class="text-center group">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
-                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
-                                </a>
+                                    <div class="flex items-center gap-2 justify-center mt-1">
+                                        <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
+                                        <button id="viewFollowingBtn" class="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 hover:bg-primary text-primary hover:text-white transition-all duration-200">
+                                            <span class="material-symbols-outlined !text-sm">arrow_forward</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Abas de Navegação -->
                             <div class="w-full border-b border-gray-200 dark:border-gray-700 mb-4">
@@ -407,6 +412,26 @@
                     Sair
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Seguidores/Seguindo -->
+<div id="followListModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="z-index: 9999 !important;">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col" style="z-index: 10000 !important; position: relative;">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <button id="switchFollowListBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition-transform hover:scale-110" type="button" title="Alternar entre Seguidores e Seguindo">
+                    <span class="material-symbols-outlined">swap_horiz</span>
+                </button>
+                <h3 id="followListTitle" class="text-gray-900 dark:text-white text-xl font-bold">Seguindo</h3>
+            </div>
+            <button id="closeFollowListModalBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer" type="button">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div id="followListContent" class="flex-1 overflow-y-auto p-4">
+            <div class="text-center text-gray-400 py-8">Carregando...</div>
         </div>
     </div>
 </div>
@@ -1115,6 +1140,148 @@
             sessionStorage.removeItem('userEmail');
             window.location.href = 'login.html';
         });
+        
+        // Modal de Seguidores/Seguindo
+        let currentFollowListType = 'following';
+        
+        async function loadFollowList(type) {
+            currentFollowListType = type;
+            const modal = document.getElementById('followListModal');
+            const title = document.getElementById('followListTitle');
+            const content = document.getElementById('followListContent');
+            
+            if (!modal || !title || !content) return;
+            
+            title.textContent = type === 'followers' ? 'Seguidores' : 'Seguindo';
+            content.innerHTML = '<div class="text-center text-gray-400 py-8">Carregando...</div>';
+            
+            try {
+                const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+                if (!currentToken) {
+                    content.innerHTML = '<div class="text-center text-red-400 py-8">Erro: Token não encontrado. Faça login novamente.</div>';
+                    return;
+                }
+                
+                // Obter ID do usuário atual
+                function getCurrentUserId() {
+                    try {
+                        const tokenPayload = JSON.parse(atob(currentToken.split('.')[1]));
+                        return tokenPayload.id;
+                    } catch (error) {
+                        console.error('Erro ao obter ID do usuário:', error);
+                        return null;
+                    }
+                }
+                
+                const userId = getCurrentUserId();
+                if (!userId) {
+                    content.innerHTML = '<div class="text-center text-red-400 py-8">Erro ao obter ID do usuário.</div>';
+                    return;
+                }
+                
+                const endpoint = type === 'followers' 
+                    ? `${API_URL}/api/social/followers/${userId}`
+                    : `${API_URL}/api/social/following/${userId}`;
+                
+                const response = await fetch(endpoint, {
+                    headers: { 
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const users = type === 'followers' ? data.followers : data.following;
+                    
+                    if (!users || users.length === 0) {
+                        content.innerHTML = `<div class="text-center text-gray-400 py-8">Nenhum ${type === 'followers' ? 'seguidor' : 'seguindo'} encontrado</div>`;
+                    } else {
+                        content.innerHTML = users.map(user => {
+                            const safeName = (user.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                            const safeUsername = (user.username || 'user').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                            return `
+                                <div class="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer" onclick="window.location.href='perfil-publico.html?userId=${user.id}'">
+                                    ${user.profilePicture 
+                                        ? `<img src="${user.profilePicture}" alt="${safeName}" class="w-10 h-10 rounded-full object-cover">` 
+                                        : `<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">${safeName.charAt(0).toUpperCase()}</div>`}
+                                    <div class="flex-1">
+                                        <p class="text-gray-900 dark:text-white font-medium">${safeName}</p>
+                                        <p class="text-gray-500 dark:text-gray-400 text-sm">@${safeUsername}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    console.error(`Erro ao carregar ${type}:`, response.status, errorText);
+                    content.innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar ${type === 'followers' ? 'seguidores' : 'seguindo'} (${response.status})</div>`;
+                }
+            } catch (error) {
+                console.error(`Erro ao carregar ${type}:`, error);
+                content.innerHTML = `<div class="text-center text-red-400 py-8">Erro ao carregar ${type === 'followers' ? 'seguidores' : 'seguindo'}</div>`;
+            }
+        }
+        
+        async function showFollowingList() {
+            const modal = document.getElementById('followListModal');
+            if (!modal) return;
+            
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            
+            await loadFollowList('following');
+        }
+        
+        function switchFollowList() {
+            const newType = currentFollowListType === 'following' ? 'followers' : 'following';
+            loadFollowList(newType);
+        }
+        
+        // Configurar botão Ver
+        const viewFollowingBtn = document.getElementById('viewFollowingBtn');
+        if (viewFollowingBtn) {
+            viewFollowingBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showFollowingList();
+            });
+        }
+        
+        // Botão de alternar no modal
+        const switchBtn = document.getElementById('switchFollowListBtn');
+        if (switchBtn) {
+            switchBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                switchFollowList();
+            });
+        }
+        
+        // Fechar modal
+        const closeBtn = document.getElementById('closeFollowListModalBtn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                const modal = document.getElementById('followListModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Fechar ao clicar no backdrop
+        const followListModal = document.getElementById('followListModal');
+        if (followListModal) {
+            followListModal.addEventListener('click', (e) => {
+                if (e.target === followListModal) {
+                    followListModal.classList.add('hidden');
+                }
+            });
+        }
         
         // Fechar modal ao clicar fora
         logoutModal.addEventListener('click', function(e) {
