@@ -418,7 +418,7 @@
 
 <!-- Modal de Seguidores/Seguindo -->
 <div id="followListModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="z-index: 9999 !important;">
-    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col" style="z-index: 10000 !important; position: relative;">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col" style="z-index: 10000 !important; position: relative;" onclick="event.stopPropagation()">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
             <div class="flex items-center gap-3">
                 <button id="switchFollowListBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition-transform hover:scale-110" type="button" title="Alternar entre Seguidores e Seguindo">
@@ -1237,6 +1237,17 @@
             await loadFollowList('following');
         }
         
+        function closeFollowListModal() {
+            const modal = document.getElementById('followListModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+            }
+        }
+        
         function switchFollowList() {
             const newType = currentFollowListType === 'following' ? 'followers' : 'following';
             loadFollowList(newType);
@@ -1265,11 +1276,10 @@
         // Fechar modal
         const closeBtn = document.getElementById('closeFollowListModalBtn');
         if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                const modal = document.getElementById('followListModal');
-                if (modal) {
-                    modal.classList.add('hidden');
-                }
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                closeFollowListModal();
             });
         }
         
@@ -1277,8 +1287,9 @@
         const followListModal = document.getElementById('followListModal');
         if (followListModal) {
             followListModal.addEventListener('click', (e) => {
+                // Fechar apenas se clicar diretamente no backdrop (não no conteúdo interno)
                 if (e.target === followListModal) {
-                    followListModal.classList.add('hidden');
+                    closeFollowListModal();
                 }
             });
         }
