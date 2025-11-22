@@ -639,7 +639,10 @@
                 loadConversations();
                 // Se a conversa aberta for a excluída, fechar o chat
                 if (AppState.currentChatUserId === userId) {
-                    document.getElementById('chatSection').classList.add('hidden');
+                    const chatSection = document.getElementById('chatSection');
+                    if (chatSection) {
+                        chatSection.classList.add('hidden');
+                    }
                     AppState.currentChatUserId = null;
                 }
             } else {

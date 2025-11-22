@@ -205,8 +205,7 @@
                                     <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
                                     <div class="flex items-center gap-2 justify-center mt-1">
                                         <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
-                                        <button id="viewFollowingBtn" class="flex items-center gap-1 px-2 py-1 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors text-xs font-medium whitespace-nowrap">
-                                            <span>Ver</span>
+                                        <button id="viewFollowingBtn" class="hidden flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 hover:bg-primary text-white transition-all duration-200 opacity-0 group-hover:opacity-100">
                                             <span class="material-symbols-outlined !text-sm">arrow_forward</span>
                                         </button>
                                     </div>
@@ -1172,20 +1171,35 @@
         document.getElementById('followBtn').addEventListener('click', toggleFollow);
         document.getElementById('messageBtn').addEventListener('click', openMessage);
         
-        // Botão Ver ao lado de Seguindo
+        // Botão Ver ao lado de Seguindo (apenas no próprio perfil)
         const viewFollowingBtn = document.getElementById('viewFollowingBtn');
-        console.log('Botão Ver encontrado:', !!viewFollowingBtn);
         if (viewFollowingBtn) {
-            viewFollowingBtn.style.display = 'flex';
-            viewFollowingBtn.style.visibility = 'visible';
-            viewFollowingBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Botão Ver clicado');
-                showFollowingList();
-            });
-        } else {
-            console.error('Botão Ver não encontrado!');
+            // Verificar se é o próprio perfil
+            function getCurrentUserId() {
+                try {
+                    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                    return tokenPayload.id;
+                } catch (error) {
+                    console.error('Erro ao obter ID do usuário:', error);
+                    return null;
+                }
+            }
+            
+            const currentUserId = getCurrentUserId();
+            const isOwnProfile = currentUserId === viewedUserId;
+            
+            if (isOwnProfile) {
+                // Mostrar botão apenas se for o próprio perfil
+                viewFollowingBtn.classList.remove('hidden');
+                viewFollowingBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showFollowingList();
+                });
+            } else {
+                // Ocultar botão se não for o próprio perfil
+                viewFollowingBtn.classList.add('hidden');
+            }
         }
         
         // Botão de alternar no modal
