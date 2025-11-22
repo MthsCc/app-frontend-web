@@ -507,17 +507,12 @@
                     <h1 class="hero-title" id="heroTitle">Carregando...</h1>
                     <p class="hero-description" id="heroDescription">Descubra os melhores filmes e séries</p>
                     <div class="hero-buttons">
-                        <button class="hero-btn hero-btn-primary" onclick="openHeroModal()">
-                            <span class="material-symbols-outlined">play_arrow</span>
-                            Assistir Agora
-                            <span class="text-xs opacity-75 ml-1 hidden sm:inline">(pode conter link de afiliado)</span>
-                        </button>
+                        <!-- Botão "Assistir Agora" desabilitado para beta -->
                         <button class="hero-btn hero-btn-secondary" onclick="openHeroModal()">
                             <span class="material-symbols-outlined">info</span>
                             Mais Informações
                         </button>
                     </div>
-                    <p class="text-xs text-gray-400 mt-2 sm:hidden">⚠️ Pode conter link de afiliado</p>
                     <!-- Streaming Providers -->
                     <div id="heroStreamingProviders" class="flex items-center gap-3 mt-2">
                         <!-- Ícones de streaming serão inseridos aqui -->
@@ -598,7 +593,7 @@
     // Categorias fixas
     const categories = [
         { name: 'Em Alta', type: 'popular', endpoint: '/api/tmdb/popular' },
-        { name: 'Assistir Agora', type: 'watch-now', endpoint: null, isWatchNow: true }, // Catálogo especial
+        // { name: 'Assistir Agora', type: 'watch-now', endpoint: null, isWatchNow: true }, // DESABILITADO PARA BETA
         { name: 'Filmes Populares', type: 'movies-popular', endpoint: '/api/tmdb/movies/popular' },
         { name: 'Séries Populares', type: 'tv-popular', endpoint: '/api/tmdb/tv/popular' },
         { name: 'Filmes Mais Bem Avaliados', type: 'movies-top-rated', endpoint: '/api/tmdb/movies/top-rated' },
@@ -638,13 +633,13 @@
                 }
             }
 
-            // Carregar catálogo "Assistir Agora" em paralelo (não bloquear outras categorias)
-            const watchNowCategory = categories.find(c => c.isWatchNow);
-            if (watchNowCategory) {
-                loadWatchNowCatalog(watchNowCategory).catch(err => {
-                    console.error('Erro ao carregar catálogo Assistir Agora:', err);
-                });
-            }
+            // DESABILITADO PARA BETA: Carregar catálogo "Assistir Agora" em paralelo (não bloquear outras categorias)
+            // const watchNowCategory = categories.find(c => c.isWatchNow);
+            // if (watchNowCategory) {
+            //     loadWatchNowCatalog(watchNowCategory).catch(err => {
+            //         console.error('Erro ao carregar catálogo Assistir Agora:', err);
+            //     });
+            // }
 
             // Carregar todas as categorias
             for (const category of categories) {
@@ -2066,6 +2061,7 @@
     
     /**
      * Gera o botão "Assistir Agora" com links de afiliado
+     * DESABILITADO PARA BETA - Retorna string vazia
      * @param {Object} watchProviders - Dados dos providers de streaming
      * @param {Object} titleData - Dados do título (filme/série)
      * @param {string} titleType - Tipo do título ('movie' ou 'tv')
@@ -2073,6 +2069,10 @@
      * @returns {string} HTML do botão ou string vazia se não houver providers
      */
     function getWatchNowButton(watchProviders, titleData, titleType, tmdbId) {
+        // DESABILITADO PARA BETA
+        return '';
+        
+        /* CÓDIGO ORIGINAL COMENTADO - DESABILITADO PARA BETA
         if (!watchProviders?.results?.BR) {
             return '';
         }
@@ -2183,6 +2183,7 @@
         `;
         
         return buttonHtml;
+        */
     }
 
     document.addEventListener('DOMContentLoaded', () => {
