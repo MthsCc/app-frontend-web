@@ -198,13 +198,13 @@
                             <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
                             <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
                                 <a id="followersLink" class="text-center group cursor-pointer" href="javascript:void(0);">
-                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followerCount">0</p>
-                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg leading-tight mb-1.5 min-w-[2ch] tabular-nums" id="followerCount">0</p>
+                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors text-sm">Seguidores</p>
                                 </a>
                                 <div class="text-center group">
-                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
-                                    <div class="flex items-center gap-2 justify-center mt-1">
-                                        <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg leading-tight mb-1.5 min-w-[2ch] tabular-nums" id="followingCount">0</p>
+                                    <div class="flex items-center gap-2 justify-center">
+                                        <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors text-sm">Seguindo</p>
                                         <button id="viewFollowingBtn" class="hidden flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 hover:bg-primary text-white transition-all duration-200 opacity-0 group-hover:opacity-100">
                                             <span class="material-symbols-outlined !text-sm">arrow_forward</span>
                                         </button>
@@ -354,6 +354,12 @@
         window.location.href = 'login.html';
     }
 
+    // Função global para formatar contadores
+    function formatCount(count) {
+        const num = Number(count) || 0;
+        return num.toLocaleString('pt-BR');
+    }
+
     // Obter userId da URL
     const urlParams = new URLSearchParams(window.location.search);
     const viewedUserId = urlParams.get('userId');
@@ -410,8 +416,9 @@
                 document.getElementById('userNameDisplay').textContent = viewedUser.name || 'Usuário';
                 document.getElementById('userHandle').textContent = '@' + (viewedUser.username || 'user');
                 document.getElementById('userBio').textContent = viewedUser.bio || 'Apaixonada por cinema e séries.';
-                document.getElementById('followerCount').textContent = String(viewedUser.followersCount ?? 0);
-                document.getElementById('followingCount').textContent = String(viewedUser.followingCount ?? 0);
+                
+                document.getElementById('followerCount').textContent = formatCount(viewedUser.followersCount ?? 0);
+                document.getElementById('followingCount').textContent = formatCount(viewedUser.followingCount ?? 0);
                 
                 // Avatar
                 if (viewedUser.profilePicture) {
@@ -943,8 +950,9 @@
             
             if (response.ok) {
                 const userData = await response.json();
-                document.getElementById('followerCount').textContent = String(userData.followersCount ?? 0);
-                document.getElementById('followingCount').textContent = String(userData.followingCount ?? 0);
+                
+                document.getElementById('followerCount').textContent = formatCount(userData.followersCount ?? 0);
+                document.getElementById('followingCount').textContent = formatCount(userData.followingCount ?? 0);
             }
         } catch (error) {
             console.error('Erro ao carregar contadores:', error);

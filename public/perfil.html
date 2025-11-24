@@ -173,13 +173,13 @@
                             <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
                             <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
                                 <a class="text-center group" href="#">
-                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followerCount">0</p>
-                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguidores</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg leading-tight mb-1.5 min-w-[2ch] tabular-nums" id="followerCount">0</p>
+                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors text-sm">Seguidores</p>
                                 </a>
                                 <div class="text-center group">
-                                    <p class="text-gray-900 dark:text-white font-bold text-lg" id="followingCount">0</p>
-                                    <div class="flex items-center gap-2 justify-center mt-1">
-                                        <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">Seguindo</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-lg leading-tight mb-1.5 min-w-[2ch] tabular-nums" id="followingCount">0</p>
+                                    <div class="flex items-center gap-2 justify-center">
+                                        <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors text-sm">Seguindo</p>
                                         <button id="viewFollowingBtn" class="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 hover:bg-primary text-primary hover:text-white transition-all duration-200">
                                             <span class="material-symbols-outlined !text-sm">arrow_forward</span>
                                         </button>
@@ -445,6 +445,12 @@
         window.location.href = 'login.html';
     }
 
+    // Função global para formatar contadores
+    function formatCount(count) {
+        const num = Number(count) || 0;
+        return num.toLocaleString('pt-BR');
+    }
+
     let currentListStatus = 'want_to_watch'; // Estado atual da lista: 'want_to_watch', 'watched', 'dropped'
     const statusLabels = {
         'want_to_watch': 'Quero Assistir',
@@ -480,8 +486,8 @@
                 document.getElementById('userUsernameDisplay').textContent = '@' + displayUsername;
                 document.getElementById('userHandle').textContent = '@' + displayUsername;
                 document.getElementById('userBio').textContent = userData.bio || 'Apaixonada por cinema e séries.';
-                document.getElementById('followerCount').textContent = String(userData.followersCount ?? 0);
-                document.getElementById('followingCount').textContent = String(userData.followingCount ?? 0);
+                document.getElementById('followerCount').textContent = formatCount(userData.followersCount ?? 0);
+                document.getElementById('followingCount').textContent = formatCount(userData.followingCount ?? 0);
                 
                 // Aba Segurança
                 const usernameDisplaySecurity = document.getElementById('userUsernameDisplaySecurity');
