@@ -410,8 +410,8 @@
                 document.getElementById('userNameDisplay').textContent = viewedUser.name || 'Usuário';
                 document.getElementById('userHandle').textContent = '@' + (viewedUser.username || 'user');
                 document.getElementById('userBio').textContent = viewedUser.bio || 'Apaixonada por cinema e séries.';
-                document.getElementById('followerCount').textContent = viewedUser.followersCount || 0;
-                document.getElementById('followingCount').textContent = viewedUser.followingCount || 0;
+                document.getElementById('followerCount').textContent = String(viewedUser.followersCount ?? 0);
+                document.getElementById('followingCount').textContent = String(viewedUser.followingCount ?? 0);
                 
                 // Avatar
                 if (viewedUser.profilePicture) {
@@ -943,8 +943,8 @@
             
             if (response.ok) {
                 const userData = await response.json();
-                document.getElementById('followerCount').textContent = userData.followersCount || 0;
-                document.getElementById('followingCount').textContent = userData.followingCount || 0;
+                document.getElementById('followerCount').textContent = String(userData.followersCount ?? 0);
+                document.getElementById('followingCount').textContent = String(userData.followingCount ?? 0);
             }
         } catch (error) {
             console.error('Erro ao carregar contadores:', error);
