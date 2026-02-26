@@ -171,20 +171,15 @@
                             </div>
                             <p class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]" id="userName">Carregando...</p>
                             <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
-                            <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
-                                <a class="text-center group" href="#">
+                            <div class="grid grid-cols-2 gap-3 text-sm mb-6 w-full">
+                                <button id="openFollowersBtn" class="text-center rounded-lg border border-gray-200 dark:border-gray-700 p-3 hover:border-primary/60 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg leading-tight mb-1.5 min-w-[2ch] tabular-nums" id="followerCount">0</p>
-                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors text-sm">Seguidores</p>
-                                </a>
-                                <div class="text-center group">
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">Seguidores</p>
+                                </button>
+                                <button id="openFollowingBtn" class="text-center rounded-lg border border-gray-200 dark:border-gray-700 p-3 hover:border-primary/60 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg leading-tight mb-1.5 min-w-[2ch] tabular-nums" id="followingCount">0</p>
-                                    <div class="flex items-center gap-2 justify-center">
-                                        <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors text-sm">Seguindo</p>
-                                        <button id="viewFollowingBtn" class="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 hover:bg-primary text-primary hover:text-white transition-all duration-200">
-                                            <span class="material-symbols-outlined !text-sm">arrow_forward</span>
-                                        </button>
-                                    </div>
-                                </div>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">Seguindo</p>
+                                </button>
                             </div>
                             <!-- Abas de Navegação -->
                             <div class="w-full border-b border-gray-200 dark:border-gray-700 mb-4">
@@ -380,6 +375,18 @@
                                 </div>
                                 <a class="text-sm font-medium text-primary hover:underline" href="#" id="verTodosLink">Ver todos</a>
                             </div>
+                            <div id="folderControls" class="hidden mb-5 space-y-3">
+                                <div class="flex items-center justify-between gap-3">
+                                    <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Pastas do Quero Assistir</p>
+                                </div>
+                                <div id="folderChips" class="flex flex-wrap gap-2"></div>
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <input id="newFolderInput" type="text" maxlength="40" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm" placeholder="Nome da pasta (ex: Maratona de domingo)">
+                                    <button id="createFolderBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm font-medium">
+                                        Criar pasta
+                                    </button>
+                                </div>
+                            </div>
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="watchlist">
                                 <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
                                 <div class="aspect-[2/3] bg-gray-800 rounded-lg animate-pulse"></div>
@@ -458,6 +465,17 @@
         'dropped': 'Abandonado'
     };
     const statusOrder = ['want_to_watch', 'watched', 'dropped'];
+    let selectedWantFolder = 'all';
+    let folderSummary = { folders: [], uncategorizedCount: 0, total: 0 };
+
+    function escapeHtml(text) {
+        return (text || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
 
     // Carregar dados do perfil
     async function loadProfile() {
@@ -543,7 +561,165 @@
         }
     }
 
-    async function loadWatchlist() {
+    function updateFolderControlsVisibility() {
+        const folderControls = document.getElementById('folderControls');
+        if (!folderControls) return;
+
+        if (currentListStatus === 'want_to_watch') {
+            folderControls.classList.remove('hidden');
+        } else {
+            folderControls.classList.add('hidden');
+        }
+    }
+
+    function renderFolderChips() {
+        const chipsContainer = document.getElementById('folderChips');
+        if (!chipsContainer) return;
+
+        const allFolders = folderSummary.folders || [];
+        const chips = [
+            { value: 'all', label: 'Todos', count: folderSummary.total || 0 },
+            ...allFolders.map(folder => ({
+                value: folder.name,
+                label: folder.name,
+                count: folder.count || 0
+            })),
+            { value: '__uncategorized__', label: 'Sem pasta', count: folderSummary.uncategorizedCount || 0 }
+        ];
+
+        const visibleChips = chips.filter(chip => chip.value === 'all' || chip.value === selectedWantFolder || chip.count > 0);
+
+        chipsContainer.innerHTML = visibleChips
+            .map(chip => {
+                const active = chip.value === selectedWantFolder;
+                return `
+                    <button data-folder="${encodeURIComponent(chip.value)}" class="px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${active
+                        ? 'bg-primary text-white border-primary'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:border-primary/60'}">
+                        ${escapeHtml(chip.label)} (${chip.count})
+                    </button>
+                `;
+            })
+            .join('');
+
+        chipsContainer.querySelectorAll('button[data-folder]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const folder = decodeURIComponent(button.dataset.folder || 'all');
+                setFolderFilter(folder);
+            });
+        });
+    }
+
+    async function loadFolderSummary() {
+        if (currentListStatus !== 'want_to_watch') {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/api/titles/folders?status=want_to_watch`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+            folderSummary = {
+                folders: data.folders || [],
+                uncategorizedCount: data.uncategorizedCount || 0,
+                total: data.total || 0
+            };
+
+            const folderStillExists = folderSummary.folders.some(folder => folder.name === selectedWantFolder);
+            if (selectedWantFolder !== 'all' && selectedWantFolder !== '__uncategorized__' && !folderStillExists) {
+                selectedWantFolder = 'all';
+            }
+
+            renderFolderChips();
+        } catch (error) {
+            console.error('Erro ao carregar pastas:', error);
+        }
+    }
+
+    async function createFolder() {
+        const input = document.getElementById('newFolderInput');
+        if (!input) return;
+
+        const folderName = input.value.trim();
+        if (!folderName) {
+            showToast('Digite um nome para a pasta.', 'warning');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/api/titles/folders`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ name: folderName })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                showToast(error.error || 'Não foi possível criar a pasta.', 'error');
+                return;
+            }
+
+            const data = await response.json();
+            selectedWantFolder = data.folder || folderName;
+            input.value = '';
+            showToast(data.created ? 'Pasta criada com sucesso.' : 'Essa pasta já existia.', 'success');
+            await loadWatchlist();
+        } catch (error) {
+            console.error('Erro ao criar pasta:', error);
+            showToast('Erro ao criar pasta.', 'error');
+        }
+    }
+
+    async function moveInteractionToFolder(interactionId, currentFolder = '') {
+        const currentLabel = (currentFolder || '').trim();
+        const promptMessage = currentLabel
+            ? `Mover para pasta (atual: ${currentLabel}). Deixe vazio para remover da pasta:`
+            : 'Mover para pasta. Deixe vazio para remover da pasta:';
+        const newFolder = prompt(promptMessage, currentLabel);
+
+        if (newFolder === null) {
+            return;
+        }
+
+        const normalized = newFolder.trim();
+
+        try {
+            const response = await fetch(`${API_URL}/api/titles/interaction/${interactionId}/folder`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ folderName: normalized || null })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                showToast(error.error || 'Não foi possível mover para a pasta.', 'error');
+                return;
+            }
+
+            showToast('Pasta atualizada com sucesso.', 'success');
+            await loadWatchlist();
+        } catch (error) {
+            console.error('Erro ao mover item de pasta:', error);
+            showToast('Erro ao atualizar pasta.', 'error');
+        }
+    }
+
+    function setFolderFilter(folder) {
+        selectedWantFolder = folder;
+        loadWatchlist();
+    }
+
+    async function loadWatchlistLegacyUnused() {
         try {
             const response = await fetch(`${API_URL}/api/titles/my-interactions?status=${currentListStatus}&limit=20`, {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -599,6 +775,96 @@
         }
     }
 
+    // Watchlist com suporte a pastas
+    async function loadWatchlist() {
+        try {
+            updateFolderControlsVisibility();
+
+            if (currentListStatus === 'want_to_watch') {
+                await loadFolderSummary();
+            }
+
+            let endpoint = `${API_URL}/api/titles/my-interactions?status=${currentListStatus}&limit=20`;
+            if (currentListStatus === 'want_to_watch' && selectedWantFolder !== 'all') {
+                const folderParam = selectedWantFolder === '__uncategorized__' ? 'uncategorized' : selectedWantFolder;
+                endpoint += `&folder=${encodeURIComponent(folderParam)}`;
+            }
+
+            const response = await fetch(endpoint, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const interactions = data.data || data.interactions || [];
+                const watchlist = document.getElementById('watchlist');
+                watchlist.innerHTML = '';
+                
+                if (interactions.length === 0) {
+                    watchlist.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">Nenhum título nesta lista ainda.</div>';
+                } else {
+                    interactions.forEach(interaction => {
+                        const title = interaction.title;
+                        if (!title) return;
+                        
+                        let posterUrl = title.posterPath || '';
+                        if (posterUrl && !posterUrl.startsWith('http')) {
+                            posterUrl = `https://image.tmdb.org/t/p/w300${posterUrl}`;
+                        } else if (!posterUrl) {
+                            posterUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450"%3E%3Crect width="300" height="450" fill="%231a1f2e"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="16" fill="%239dabb9" text-anchor="middle" dy=".3em"%3ESem Pôster%3C/text%3E%3C/svg%3E';
+                        }
+
+                        const safeTitle = escapeHtml(title.title || 'Sem título');
+                        const safeFolder = escapeHtml(interaction.folderName || '');
+                        const folderLabel = interaction.folderName ? escapeHtml(interaction.folderName) : 'Sem pasta';
+                        const showFolderActions = currentListStatus === 'want_to_watch';
+                    
+                        const item = document.createElement('div');
+                        item.className = 'group relative aspect-[2/3] overflow-hidden rounded-lg cursor-pointer';
+                        item.innerHTML = `
+                            <div class="bg-center bg-no-repeat aspect-auto bg-cover w-full h-full" style="background-image: url('${posterUrl}');"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="flex items-center justify-between mb-2 gap-2">
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="text-white font-bold text-sm truncate">${safeTitle}</h3>
+                                        <p class="text-gray-300 text-xs">${title.releaseDate ? new Date(title.releaseDate).getFullYear() : 'N/A'}</p>
+                                        ${showFolderActions ? `<p class="text-gray-300 text-[11px] mt-1 truncate">Pasta: ${folderLabel}</p>` : ''}
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        ${showFolderActions ? `
+                                            <button class="move-folder-btn text-gray-200 hover:text-white transition-colors p-1" data-current-folder="${safeFolder}" title="Mover para pasta">
+                                                <span class="material-symbols-outlined !text-lg">folder_open</span>
+                                            </button>
+                                        ` : ''}
+                                        <button onclick="event.stopPropagation(); removeFromList('${interaction.id}')" class="text-red-400 hover:text-red-500 transition-colors p-1" title="Remover da lista">
+                                            <span class="material-symbols-outlined !text-lg">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        const moveFolderBtn = item.querySelector('.move-folder-btn');
+                        if (moveFolderBtn) {
+                            moveFolderBtn.addEventListener('click', (event) => {
+                                event.stopPropagation();
+                                moveInteractionToFolder(interaction.id, interaction.folderName || '');
+                            });
+                        }
+
+                        item.addEventListener('click', () => {
+                            window.location.href = `categoria.html?type=${title.type || 'movie'}&tmdbId=${title.tmdbId}`;
+                        });
+                        watchlist.appendChild(item);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar watchlist:', error);
+            document.getElementById('watchlist').innerHTML = '<div class="col-span-full text-center py-8 text-red-500">Erro ao carregar lista.</div>';
+        }
+    }
+
     // Remover da lista
     async function removeFromList(interactionId) {
         const confirmed = await showConfirm({
@@ -636,6 +902,9 @@
         const currentIndex = statusOrder.indexOf(currentListStatus);
         const nextIndex = (currentIndex + 1) % statusOrder.length;
         currentListStatus = statusOrder[nextIndex];
+        if (currentListStatus !== 'want_to_watch') {
+            selectedWantFolder = 'all';
+        }
         
         document.getElementById('listTitle').textContent = `Minha Lista: ${statusLabels[currentListStatus]}`;
         loadWatchlist();
@@ -1141,6 +1410,18 @@
         
         // Configurar botão de alternar lista
         document.getElementById('toggleListBtn').addEventListener('click', toggleList);
+        document.getElementById('verTodosLink')?.addEventListener('click', (event) => {
+            event.preventDefault();
+            selectedWantFolder = 'all';
+            loadWatchlist();
+        });
+        document.getElementById('createFolderBtn')?.addEventListener('click', createFolder);
+        document.getElementById('newFolderInput')?.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                createFolder();
+            }
+        });
         
         // Configurar botão de sair
         const logoutBtn = document.getElementById('logoutBtn');
@@ -1261,6 +1542,19 @@
             
             await loadFollowList('following');
         }
+
+        async function showFollowersList() {
+            const modal = document.getElementById('followListModal');
+            if (!modal) return;
+            
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            
+            await loadFollowList('followers');
+        }
         
         function closeFollowListModal() {
             const modal = document.getElementById('followListModal');
@@ -1279,12 +1573,21 @@
         }
         
         // Configurar botão Ver
-        const viewFollowingBtn = document.getElementById('viewFollowingBtn');
-        if (viewFollowingBtn) {
-            viewFollowingBtn.addEventListener('click', (e) => {
+        const openFollowingBtn = document.getElementById('openFollowingBtn');
+        if (openFollowingBtn) {
+            openFollowingBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 showFollowingList();
+            });
+        }
+
+        const openFollowersBtn = document.getElementById('openFollowersBtn');
+        if (openFollowersBtn) {
+            openFollowersBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showFollowersList();
             });
         }
         
