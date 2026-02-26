@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <meta name="apple-mobile-web-app-title" content="EchoView"/>
     <meta name="mobile-web-app-capable" content="yes"/>
-    <meta name="description" content="Perfil Público - EchoView"/>
+    <meta name="description" content="Perfil PÃºblico - EchoView"/>
     <link rel="icon" type="image/svg+xml" href="logo.svg"/>
     <link rel="apple-touch-icon" href="logo.svg"/>
     <link rel="manifest" href="manifest.json"/>
@@ -46,7 +46,7 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
         
-        /* Estilos para notificações */
+        /* Estilos para notificaÃ§Ãµes */
         #notificationsList::-webkit-scrollbar {
             display: none;
         }
@@ -116,11 +116,11 @@
                         <div class="text-[#a7aabd] flex border-none bg-[#072f57] items-center justify-center pl-3 rounded-l-lg border-r-0">
                             <span class="material-symbols-outlined text-[20px]">search</span>
                         </div>
-                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#072f57] focus:border-none h-full placeholder:text-[#a7aabd] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal font-display" id="searchInput" placeholder="Buscar filmes e séries..." value=""/>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#072f57] focus:border-none h-full placeholder:text-[#a7aabd] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal font-display" id="searchInput" placeholder="Buscar filmes e sÃ©ries..." value=""/>
                         <!-- Dropdown de resultados -->
                         <div id="searchResultsDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#072f57] rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-[#707d9b]/30">
                             <div id="searchResultsContent" class="p-2">
-                                <!-- Resultados serão inseridos aqui -->
+                                <!-- Resultados serÃ£o inseridos aqui -->
                             </div>
                         </div>
                     </div>
@@ -135,19 +135,19 @@
                 <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors" onclick="window.location.href='echosocial.html'" title="ECHOSOCIAL">
                     <span class="material-symbols-outlined text-[20px]">groups</span>
                 </button>
-                <!-- Ícone de Notificação -->
+                <!-- Ãcone de NotificaÃ§Ã£o -->
                 <div class="relative">
-                    <button id="notificationBtn" class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors relative" title="Notificações">
+                    <button id="notificationBtn" class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#072f57] text-[#a7aabd] hover:text-[#e2e0df] hover:bg-[#335b7e] transition-colors relative" title="NotificaÃ§Ãµes">
                         <span class="material-symbols-outlined text-[20px]">notifications</span>
                     </button>
-                    <!-- Dropdown de Notificações -->
+                    <!-- Dropdown de NotificaÃ§Ãµes -->
                     <div id="notificationDropdown" class="hidden absolute right-0 top-full mt-2 w-[500px] bg-[#072f57] rounded-lg shadow-2xl border border-[#707d9b]/30 z-50 h-[600px] overflow-hidden flex flex-col">
                         <div class="p-4 border-b border-white/10 flex items-center justify-between flex-shrink-0">
-                            <h3 class="text-white font-bold">Notificações</h3>
+                            <h3 class="text-white font-bold">NotificaÃ§Ãµes</h3>
                             <button onclick="NotificationSystem.markAllNotificationsAsRead()" class="text-sm text-[#a7aabd] hover:text-white whitespace-nowrap">Marcar todas como lidas</button>
                         </div>
                         <div id="notificationsList" class="flex-1 overflow-y-auto p-2" style="min-height: 0;">
-                            <div class="p-4 text-center text-gray-400 text-sm">Carregando notificações...</div>
+                            <div class="p-4 text-center text-gray-400 text-sm">Carregando notificaÃ§Ãµes...</div>
                         </div>
                     </div>
                 </div>
@@ -174,7 +174,7 @@
                                 <div id="adminMenuDropdown" class="hidden absolute right-0 top-10 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 min-w-[200px] z-50">
                                     <button id="banUserBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
                                         <span class="material-symbols-outlined !text-base">block</span>
-                                        <span id="banUserText">Banir Usuário</span>
+                                        <span id="banUserText">Banir UsuÃ¡rio</span>
                                     </button>
                                     <button id="deleteUserBtn" class="hidden w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
                                         <span class="material-symbols-outlined !text-base">delete</span>
@@ -186,7 +186,7 @@
                                     </button>
                                     <button id="viewBackupCodeBtn" class="hidden w-full text-left px-4 py-2 text-sm text-purple-600 dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
                                         <span class="material-symbols-outlined !text-base">vpn_key</span>
-                                        <span>Ver Código de Backup</span>
+                                        <span>Ver CÃ³digo de Backup</span>
                                     </button>
                                 </div>
                             </div>
@@ -196,20 +196,15 @@
                             </div>
                             <p class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]" id="userName">Carregando...</p>
                             <p class="text-primary text-base font-normal leading-normal mb-4" id="userHandle">@usuario</p>
-                            <div class="flex items-center justify-center lg:justify-start gap-6 text-sm mb-6 w-full">
-                                <a id="followersLink" class="text-center group cursor-pointer" href="javascript:void(0);">
+                            <div class="grid grid-cols-2 gap-3 text-sm mb-6 w-full">
+                                <button id="followersSummaryBtn" class="text-center rounded-lg border border-gray-200 dark:border-gray-700 p-3 hover:border-primary/60 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg leading-tight mb-1.5 min-w-[2ch] tabular-nums" id="followerCount">0</p>
-                                    <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors text-sm">Seguidores</p>
-                                </a>
-                                <div class="text-center group">
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">Seguidores</p>
+                                </button>
+                                <button id="followingSummaryBtn" class="text-center rounded-lg border border-gray-200 dark:border-gray-700 p-3 hover:border-primary/60 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
                                     <p class="text-gray-900 dark:text-white font-bold text-lg leading-tight mb-1.5 min-w-[2ch] tabular-nums" id="followingCount">0</p>
-                                    <div class="flex items-center gap-2 justify-center">
-                                        <p class="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors text-sm">Seguindo</p>
-                                        <button id="viewFollowingBtn" class="hidden flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 hover:bg-primary text-white transition-all duration-200 opacity-0 group-hover:opacity-100">
-                                            <span class="material-symbols-outlined !text-sm">arrow_forward</span>
-                                        </button>
-                                    </div>
-                                </div>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">Seguindo</p>
+                                </button>
                             </div>
                             <div class="w-full mb-4">
                                 <button id="followBtn" class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
@@ -221,7 +216,7 @@
                                 </button>
                             </div>
                             
-                            <!-- Abas de Navegação -->
+                            <!-- Abas de NavegaÃ§Ã£o -->
                             <div class="w-full border-b border-gray-200 dark:border-gray-700 mb-4">
                                 <div class="flex gap-4">
                                     <button id="tabWatchlist" onclick="switchTab('watchlist')" class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary">
@@ -244,19 +239,19 @@
                                 <!-- Biografia -->
                                 <div>
                                     <h3 class="text-gray-800 dark:text-gray-200 font-semibold mb-2">Biografia</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-relaxed" id="userBio">Apaixonada por cinema e séries.</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-relaxed" id="userBio">Apaixonada por cinema e sÃ©ries.</p>
                                 </div>
 
                                 <!-- Status Badges -->
                                 <div id="statusBadges" class="flex flex-wrap gap-2">
-                                    <!-- Badges serão preenchidos dinamicamente -->
+                                    <!-- Badges serÃ£o preenchidos dinamicamente -->
                                 </div>
                                 
-                                <!-- Botão para restaurar sequência -->
+                                <!-- BotÃ£o para restaurar sequÃªncia -->
                                 <div id="restoreStreakContainer" class="hidden mt-4">
                                     <button id="restoreStreakBtn" class="w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium flex items-center justify-center gap-2">
                                         <span class="material-symbols-outlined !text-base">restore</span>
-                                        <span>Restaurar Sequência</span>
+                                        <span>Restaurar SequÃªncia</span>
                                     </button>
                                     <p id="restoreStreakInfo" class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center"></p>
                                 </div>
@@ -285,7 +280,7 @@
                             </div>
                         </div>
 
-                        <!-- Posts do Usuário -->
+                        <!-- Posts do UsuÃ¡rio -->
                         <div id="postsSection" class="hidden bg-white dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800/50">
                             <h2 class="text-gray-900 dark:text-white text-lg font-bold leading-tight mb-6">Posts</h2>
                             <div id="userPosts" class="space-y-4">
@@ -319,12 +314,12 @@
     </div>
 </div>
 
-<!-- Modal de Confirmação -->
+<!-- Modal de ConfirmaÃ§Ã£o -->
 <div id="confirmModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
         <div class="flex flex-col items-center text-center">
             <div id="confirmIcon" class="w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                <!-- Ícone será preenchido dinamicamente -->
+                <!-- Ãcone serÃ¡ preenchido dinamicamente -->
             </div>
             <h3 id="confirmTitle" class="text-gray-900 dark:text-white text-xl font-bold mb-2"></h3>
             <p id="confirmMessage" class="text-gray-600 dark:text-gray-400 text-sm mb-6"></p>
@@ -354,7 +349,7 @@
         window.location.href = 'login.html';
     }
 
-    // Função global para formatar contadores
+    // FunÃ§Ã£o global para formatar contadores
     function formatCount(count) {
         const num = Number(count) || 0;
         return num.toLocaleString('pt-BR');
@@ -381,7 +376,7 @@
     let viewedUser = null;
     let currentFollowListType = 'following'; // 'following' ou 'followers'
 
-    // Verificar se é admin
+    // Verificar se Ã© admin
     function checkAdminStatus() {
         try {
             const tokenPayload = JSON.parse(atob(token.split('.')[1]));
@@ -412,10 +407,10 @@
                 const userData = await response.json();
                 viewedUser = userData;
                 
-                document.getElementById('userName').textContent = viewedUser.name || 'Usuário';
-                document.getElementById('userNameDisplay').textContent = viewedUser.name || 'Usuário';
+                document.getElementById('userName').textContent = viewedUser.name || 'UsuÃ¡rio';
+                document.getElementById('userNameDisplay').textContent = viewedUser.name || 'UsuÃ¡rio';
                 document.getElementById('userHandle').textContent = '@' + (viewedUser.username || 'user');
-                document.getElementById('userBio').textContent = viewedUser.bio || 'Apaixonada por cinema e séries.';
+                document.getElementById('userBio').textContent = viewedUser.bio || 'Apaixonada por cinema e sÃ©ries.';
                 
                 document.getElementById('followerCount').textContent = formatCount(viewedUser.followersCount ?? 0);
                 document.getElementById('followingCount').textContent = formatCount(viewedUser.followingCount ?? 0);
@@ -448,23 +443,23 @@
                         }
                         const banUserText = document.getElementById('banUserText');
                         if (banUserText) {
-                            banUserText.textContent = adminUser.isBanned ? 'Desbanir Usuário' : 'Banir Usuário';
+                            banUserText.textContent = adminUser.isBanned ? 'Desbanir UsuÃ¡rio' : 'Banir UsuÃ¡rio';
                         }
                     }
                 } catch (e) {
-                    console.warn('Não foi possível carregar dados de admin:', e);
+                    console.warn('NÃ£o foi possÃ­vel carregar dados de admin:', e);
                 }
                 
                 // Carregar watchlist
                 loadWatchlist();
                 
-                // Verificar se está seguindo e carregar contadores
+                // Verificar se estÃ¡ seguindo e carregar contadores
                 checkFollowStatus();
                 loadFollowCounts();
             } else {
                 const errorData = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
                 if (response.status === 404) {
-                    alert('Usuário não encontrado');
+                    alert('UsuÃ¡rio nÃ£o encontrado');
                 } else {
                     alert('Erro ao carregar perfil: ' + (errorData.error || 'Erro desconhecido'));
                 }
@@ -472,7 +467,7 @@
             }
         } catch (error) {
             console.error('Erro ao carregar perfil:', error);
-            alert('Erro ao carregar perfil. Verifique sua conexão.');
+            alert('Erro ao carregar perfil. Verifique sua conexÃ£o.');
             window.location.href = 'catalogo.html';
         }
     }
@@ -491,7 +486,7 @@
                 watchlist.innerHTML = '';
                 
                 if (interactions.length === 0) {
-                    watchlist.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">Nenhum título nesta lista ainda.</div>';
+                    watchlist.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">Nenhum tÃ­tulo nesta lista ainda.</div>';
                 } else {
                     interactions.forEach(interaction => {
                         const title = interaction.title;
@@ -560,7 +555,7 @@
                 displayUserPosts(data.posts || []);
             }
         } catch (error) {
-            console.error('Erro ao carregar posts do usuário:', error);
+            console.error('Erro ao carregar posts do usuÃ¡rio:', error);
         }
     }
 
@@ -568,11 +563,11 @@
         const container = document.getElementById('userPosts');
         
         if (posts.length === 0) {
-            container.innerHTML = '<div class="text-center text-gray-400 py-8">Este usuário ainda não publicou nenhum post.</div>';
+            container.innerHTML = '<div class="text-center text-gray-400 py-8">Este usuÃ¡rio ainda nÃ£o publicou nenhum post.</div>';
             return;
         }
         
-        // Função auxiliar para obter ID do usuário atual
+        // FunÃ§Ã£o auxiliar para obter ID do usuÃ¡rio atual
         function getCurrentUserId() {
             try {
                 // Verificar token no localStorage ou sessionStorage
@@ -588,11 +583,11 @@
             const currentUserId = getCurrentUserId();
             const isRepost = post.repostedBy && post.repostedBy.id === viewedUserId;
             
-            // Escapar dados do usuário para prevenir XSS
-            const safeUserName = (post.user.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // Escapar dados do usuÃ¡rio para prevenir XSS
+            const safeUserName = (post.user.name || 'UsuÃ¡rio').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             const safeUsername = (post.user.username || 'user').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             const safeContent = (post.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const safeRepostedByName = post.repostedBy ? (post.repostedBy.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            const safeRepostedByName = post.repostedBy ? (post.repostedBy.name || 'UsuÃ¡rio').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
             const safeTitleTitle = post.title ? (post.title.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
             const safeTitleOverview = post.title ? ((post.title.overview || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')) : '';
             
@@ -615,7 +610,7 @@
                         <div class="flex items-center gap-2 mb-1">
                             <p class="text-gray-900 dark:text-white font-bold text-sm">${safeUserName}</p>
                             <p class="text-gray-500 dark:text-gray-400 text-xs">@${safeUsername}</p>
-                            <span class="text-gray-400">·</span>
+                            <span class="text-gray-400">Â·</span>
                             <p class="text-gray-500 dark:text-gray-400 text-xs">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</p>
                         </div>
                         <p class="text-gray-800 dark:text-gray-200 text-sm whitespace-pre-wrap">${safeContent}</p>
@@ -672,8 +667,8 @@
     document.getElementById('banUserBtn').addEventListener('click', function() {
         const isBanned = viewedUser.isBanned;
         showConfirmModal(
-            isBanned ? 'Desbanir Usuário' : 'Banir Usuário',
-            isBanned ? 'Tem certeza que deseja desbanir este usuário?' : 'Tem certeza que deseja banir este usuário?',
+            isBanned ? 'Desbanir UsuÃ¡rio' : 'Banir UsuÃ¡rio',
+            isBanned ? 'Tem certeza que deseja desbanir este usuÃ¡rio?' : 'Tem certeza que deseja banir este usuÃ¡rio?',
             'block',
             'bg-red-100 dark:bg-red-900/30',
             'text-red-600 dark:text-red-400',
@@ -690,25 +685,25 @@
                     });
 
                     if (response.ok) {
-                        alert(isBanned ? 'Usuário desbanido com sucesso' : 'Usuário banido com sucesso');
+                        alert(isBanned ? 'UsuÃ¡rio desbanido com sucesso' : 'UsuÃ¡rio banido com sucesso');
                         loadProfile();
                     } else {
                         const errorData = await response.json();
                         alert('Erro: ' + (errorData.error || 'Erro desconhecido'));
                     }
                 } catch (error) {
-                    console.error('Erro ao banir/desbanir usuário:', error);
-                    alert('Erro ao banir/desbanir usuário');
+                    console.error('Erro ao banir/desbanir usuÃ¡rio:', error);
+                    alert('Erro ao banir/desbanir usuÃ¡rio');
                 }
             }
         );
     });
 
-    // Deletar usuário
+    // Deletar usuÃ¡rio
     document.getElementById('deleteUserBtn').addEventListener('click', function() {
         showConfirmModal(
             'Deletar Conta',
-            'Tem certeza que deseja DELETAR esta conta? Esta ação não pode ser desfeita!',
+            'Tem certeza que deseja DELETAR esta conta? Esta aÃ§Ã£o nÃ£o pode ser desfeita!',
             'delete',
             'bg-red-100 dark:bg-red-900/30',
             'text-red-600 dark:text-red-400',
@@ -723,15 +718,15 @@
                     });
 
                     if (response.ok) {
-                        alert('Usuário deletado com sucesso');
+                        alert('UsuÃ¡rio deletado com sucesso');
                         window.location.href = 'dashboard-admin.html';
                     } else {
                         const errorData = await response.json();
                         alert('Erro: ' + (errorData.error || 'Erro desconhecido'));
                     }
                 } catch (error) {
-                    console.error('Erro ao deletar usuário:', error);
-                    alert('Erro ao deletar usuário');
+                    console.error('Erro ao deletar usuÃ¡rio:', error);
+                    alert('Erro ao deletar usuÃ¡rio');
                 }
             }
         );
@@ -762,13 +757,13 @@
                 isAdmin = false;
                 break;
             default:
-                alert('Opção inválida');
+                alert('OpÃ§Ã£o invÃ¡lida');
                 return;
         }
 
         showConfirmModal(
-            'Gerenciar Permissões',
-            'Tem certeza que deseja alterar as permissões de administrador deste usuário?',
+            'Gerenciar PermissÃµes',
+            'Tem certeza que deseja alterar as permissÃµes de administrador deste usuÃ¡rio?',
             'admin_panel_settings',
             'bg-yellow-100 dark:bg-yellow-900/30',
             'text-yellow-600 dark:text-yellow-400',
@@ -785,21 +780,21 @@
                     });
 
                     if (response.ok) {
-                        alert('Permissões atualizadas com sucesso');
+                        alert('PermissÃµes atualizadas com sucesso');
                         loadProfile();
                     } else {
                         const errorData = await response.json();
                         alert('Erro: ' + (errorData.error || 'Erro desconhecido'));
                     }
                 } catch (error) {
-                    console.error('Erro ao atualizar permissões:', error);
-                    alert('Erro ao atualizar permissões');
+                    console.error('Erro ao atualizar permissÃµes:', error);
+                    alert('Erro ao atualizar permissÃµes');
                 }
             }
         );
     });
 
-    // Ver código de backup (apenas admin master)
+    // Ver cÃ³digo de backup (apenas admin master)
     document.getElementById('viewBackupCodeBtn').addEventListener('click', async function() {
         try {
             const response = await fetch(`${API_URL}/api/admin/users/${viewedUserId}`, {
@@ -811,7 +806,7 @@
                 const user = data.user;
                 
                 if (user.resetCode) {
-                    // Criar modal para exibir código de backup
+                    // Criar modal para exibir cÃ³digo de backup
                     const modal = document.createElement('div');
                     modal.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4';
                     modal.id = 'backupCodeModal';
@@ -820,13 +815,13 @@
                             <div class="flex items-center justify-between mb-6">
                                 <h3 class="text-white text-2xl font-bold flex items-center gap-2">
                                     <span class="material-symbols-outlined text-xl">vpn_key</span>
-                                    Código de Backup
+                                    CÃ³digo de Backup
                                 </h3>
                                 <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
                             </div>
                             <div class="space-y-4">
                                 <p class="text-gray-400 text-sm">
-                                    Código de recuperação de senha do usuário <strong class="text-white">${user.name}</strong>:
+                                    CÃ³digo de recuperaÃ§Ã£o de senha do usuÃ¡rio <strong class="text-white">${user.name}</strong>:
                                 </p>
                                 <div class="bg-gray-800/50 rounded-lg p-4 border-2 border-purple-500/30 border-dashed">
                                     <p class="text-center text-2xl font-mono font-bold text-purple-400 tracking-wider">
@@ -837,7 +832,7 @@
                                     <p class="text-gray-500 text-xs text-center">
                                         Expira em: ${new Date(user.resetCodeExpires).toLocaleString('pt-BR')}
                                     </p>
-                                ` : '<p class="text-gray-500 text-xs text-center">Sem data de expiração</p>'}
+                                ` : '<p class="text-gray-500 text-xs text-center">Sem data de expiraÃ§Ã£o</p>'}
                                 <button onclick="this.closest('.fixed').remove()" class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
                                     Fechar
                                 </button>
@@ -849,19 +844,19 @@
                     // Fechar menu dropdown
                     document.getElementById('adminMenuDropdown').classList.add('hidden');
                 } else {
-                    alert('Este usuário não possui código de backup.');
+                    alert('Este usuÃ¡rio nÃ£o possui cÃ³digo de backup.');
                 }
             } else {
                 const errorData = await response.json();
-                alert('Erro: ' + (errorData.error || 'Erro ao buscar código de backup'));
+                alert('Erro: ' + (errorData.error || 'Erro ao buscar cÃ³digo de backup'));
             }
         } catch (error) {
-            console.error('Erro ao buscar código de backup:', error);
-            alert('Erro ao buscar código de backup');
+            console.error('Erro ao buscar cÃ³digo de backup:', error);
+            alert('Erro ao buscar cÃ³digo de backup');
         }
     });
 
-    // Função para mostrar modal de confirmação
+    // FunÃ§Ã£o para mostrar modal de confirmaÃ§Ã£o
     function showConfirmModal(title, message, icon, iconBg, iconColor, buttonColor, onConfirm) {
         const modal = document.getElementById('confirmModal');
         const iconDiv = document.getElementById('confirmIcon');
@@ -887,7 +882,7 @@
         };
     }
 
-    // Carregar perfil do usuário logado no header
+    // Carregar perfil do usuÃ¡rio logado no header
     async function loadUserProfile() {
         try {
             const response = await fetch(`${API_URL}/api/profile/me`, {
@@ -899,7 +894,7 @@
                 const profileButton = document.getElementById('profileButton');
                 
                 if (profileButton) {
-                    // Limpar conteúdo anterior
+                    // Limpar conteÃºdo anterior
                     profileButton.innerHTML = '';
                     profileButton.style.backgroundImage = '';
                     profileButton.style.backgroundSize = 'cover';
@@ -919,7 +914,7 @@
                 }
             }
         } catch (error) {
-            console.warn('Erro ao carregar perfil do usuário:', error);
+            console.warn('Erro ao carregar perfil do usuÃ¡rio:', error);
         }
     }
 
@@ -943,7 +938,7 @@
 
     async function loadFollowCounts() {
         try {
-            // Buscar contadores de seguidores/seguindo do perfil público
+            // Buscar contadores de seguidores/seguindo do perfil pÃºblico
             const response = await fetch(`${API_URL}/api/profile/${viewedUserId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -983,13 +978,13 @@
                 // Atualizar contadores do perfil visualizado
                 await loadFollowCounts();
                 
-                // Notificar que os contadores do próprio perfil precisam ser atualizados
-                // Isso será feito quando o usuário acessar sua própria página de perfil
-                showToast(isFollowing ? 'Agora você está seguindo este usuário' : 'Você deixou de seguir este usuário', 'success');
+                // Notificar que os contadores do prÃ³prio perfil precisam ser atualizados
+                // Isso serÃ¡ feito quando o usuÃ¡rio acessar sua prÃ³pria pÃ¡gina de perfil
+                showToast(isFollowing ? 'Agora vocÃª estÃ¡ seguindo este usuÃ¡rio' : 'VocÃª deixou de seguir este usuÃ¡rio', 'success');
             }
         } catch (error) {
             console.error('Erro ao seguir/deixar de seguir:', error);
-            showToast('Erro ao seguir/deixar de seguir usuário', 'error');
+            showToast('Erro ao seguir/deixar de seguir usuÃ¡rio', 'error');
         }
     }
 
@@ -1011,7 +1006,7 @@
         try {
             const currentToken = localStorage.getItem('token') || sessionStorage.getItem('token');
             if (!currentToken) {
-                content.innerHTML = '<div class="text-center text-red-400 py-8">Erro: Token não encontrado. Faça login novamente.</div>';
+                content.innerHTML = '<div class="text-center text-red-400 py-8">Erro: Token nÃ£o encontrado. FaÃ§a login novamente.</div>';
                 return;
             }
             
@@ -1031,10 +1026,10 @@
                 const users = type === 'followers' ? (data.followers || []) : (data.following || []);
                 
                 if (users.length === 0) {
-                    content.innerHTML = `<div class="text-center text-gray-400 py-8">${type === 'followers' ? 'Nenhum seguidor ainda' : 'Não está seguindo ninguém ainda'}</div>`;
+                    content.innerHTML = `<div class="text-center text-gray-400 py-8">${type === 'followers' ? 'Nenhum seguidor ainda' : 'NÃ£o estÃ¡ seguindo ninguÃ©m ainda'}</div>`;
                 } else {
                     content.innerHTML = users.map(user => {
-                        const safeName = (user.name || 'Usuário').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const safeName = (user.name || 'UsuÃ¡rio').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const safeUsername = (user.username || 'user').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         const avatar = user.profilePicture 
                             ? `<img src="${user.profilePicture}" alt="${safeName}" class="w-12 h-12 rounded-full object-cover">`
@@ -1093,7 +1088,7 @@
         loadFollowList(newType);
     }
     
-    // Função para carregar informações de streak e verificar se pode restaurar
+    // FunÃ§Ã£o para carregar informaÃ§Ãµes de streak e verificar se pode restaurar
     async function loadStreakInfo() {
         try {
             const response = await fetch(`${API_URL}/api/activity/streak`, {
@@ -1107,7 +1102,7 @@
                 
                 if (!container) return;
                 
-                // Verificar se perdeu a sequência e se foi há menos de 24 horas
+                // Verificar se perdeu a sequÃªncia e se foi hÃ¡ menos de 24 horas
                 const lastLogin = data.lastLoginDate ? new Date(data.lastLoginDate) : null;
                 const now = new Date();
                 let canRestore = false;
@@ -1118,8 +1113,8 @@
                     hoursSinceLoss = diffMs / (1000 * 60 * 60);
                     const daysDiff = Math.floor(hoursSinceLoss / 24);
                     
-                    // Perdeu a sequência se passou mais de 1 dia desde o último login
-                    // E pode restaurar se foi há menos de 24 horas desde que perdeu
+                    // Perdeu a sequÃªncia se passou mais de 1 dia desde o Ãºltimo login
+                    // E pode restaurar se foi hÃ¡ menos de 24 horas desde que perdeu
                     if (daysDiff > 1 && hoursSinceLoss <= 24) {
                         canRestore = true;
                     }
@@ -1128,20 +1123,20 @@
                 if (canRestore && data.restoresAvailable > 0) {
                     container.classList.remove('hidden');
                     const hoursLeft = Math.floor(24 - hoursSinceLoss);
-                    info.textContent = `Você pode restaurar sua sequência. Restam ${hoursLeft}h. Restaurações disponíveis: ${data.restoresAvailable}/3`;
+                    info.textContent = `VocÃª pode restaurar sua sequÃªncia. Restam ${hoursLeft}h. RestauraÃ§Ãµes disponÃ­veis: ${data.restoresAvailable}/3`;
                 } else {
                     container.classList.add('hidden');
                 }
             }
         } catch (error) {
-            console.error('Erro ao carregar informações de streak:', error);
+            console.error('Erro ao carregar informaÃ§Ãµes de streak:', error);
         }
     }
     
-    // Função para restaurar a sequência
+    // FunÃ§Ã£o para restaurar a sequÃªncia
     async function restoreStreak() {
         try {
-            const confirmed = confirm('Tem certeza que deseja restaurar sua sequência? Isso consumirá uma restauração mensal.');
+            const confirmed = confirm('Tem certeza que deseja restaurar sua sequÃªncia? Isso consumirÃ¡ uma restauraÃ§Ã£o mensal.');
             if (!confirmed) return;
             
             const response = await fetch(`${API_URL}/api/activity/restore-streak`, {
@@ -1151,15 +1146,15 @@
             
             if (response.ok) {
                 const data = await response.json();
-                showToast && showToast(`Sequência restaurada! Nova sequência: ${data.currentStreak} dias`, 'success');
+                showToast && showToast(`SequÃªncia restaurada! Nova sequÃªncia: ${data.currentStreak} dias`, 'success');
                 loadStreakInfo();
             } else {
                 const errorData = await response.json();
-                showToast && showToast(errorData.error || 'Erro ao restaurar sequência', 'error');
+                showToast && showToast(errorData.error || 'Erro ao restaurar sequÃªncia', 'error');
             }
         } catch (error) {
-            console.error('Erro ao restaurar sequência:', error);
-            showToast && showToast('Erro ao restaurar sequência', 'error');
+            console.error('Erro ao restaurar sequÃªncia:', error);
+            showToast && showToast('Erro ao restaurar sequÃªncia', 'error');
         }
     }
 
@@ -1179,12 +1174,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         console.log('DOMContentLoaded executado');
         
-        // Tornar funções globais para acesso via onclick (após definição)
+        // Tornar funÃ§Ãµes globais para acesso via onclick (apÃ³s definiÃ§Ã£o)
         window.showFollowersList = showFollowersList;
         window.showFollowingList = showFollowingList;
         window.closeFollowListModal = closeFollowListModal;
         
-        console.log('Funções globais definidas:', {
+        console.log('FunÃ§Ãµes globais definidas:', {
             showFollowersList: typeof window.showFollowersList,
             showFollowingList: typeof window.showFollowingList,
             closeFollowListModal: typeof window.closeFollowListModal
@@ -1197,54 +1192,41 @@
         document.getElementById('followBtn').addEventListener('click', toggleFollow);
         document.getElementById('messageBtn').addEventListener('click', openMessage);
         
-        // Botão Ver ao lado de Seguindo (apenas no próprio perfil)
-        const viewFollowingBtn = document.getElementById('viewFollowingBtn');
-        if (viewFollowingBtn) {
-            // Verificar se é o próprio perfil
-            function getCurrentUserId() {
-                try {
-                    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-                    return tokenPayload.id;
-                } catch (error) {
-                    console.error('Erro ao obter ID do usuário:', error);
-                    return null;
-                }
-            }
-            
-            const currentUserId = getCurrentUserId();
-            const isOwnProfile = currentUserId === viewedUserId;
-            
-            if (isOwnProfile) {
-                // Mostrar botão apenas se for o próprio perfil
-                viewFollowingBtn.classList.remove('hidden');
-                viewFollowingBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showFollowingList();
-                });
-            } else {
-                // Ocultar botão se não for o próprio perfil
-                viewFollowingBtn.classList.add('hidden');
-            }
+        const followersSummaryBtn = document.getElementById('followersSummaryBtn');
+        if (followersSummaryBtn) {
+            followersSummaryBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showFollowersList();
+            });
+        }
+
+        const followingSummaryBtn = document.getElementById('followingSummaryBtn');
+        if (followingSummaryBtn) {
+            followingSummaryBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showFollowingList();
+            });
         }
         
-        // Botão de alternar no modal
+        // BotÃ£o de alternar no modal
         const switchBtn = document.getElementById('switchFollowListBtn');
-        console.log('Botão de alternar encontrado:', !!switchBtn);
+        console.log('BotÃ£o de alternar encontrado:', !!switchBtn);
         if (switchBtn) {
             switchBtn.style.display = 'block';
             switchBtn.style.visibility = 'visible';
             switchBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Botão de alternar clicado');
+                console.log('BotÃ£o de alternar clicado');
                 switchFollowList();
             });
         } else {
-            console.error('Botão de alternar não encontrado!');
+            console.error('BotÃ£o de alternar nÃ£o encontrado!');
         }
         
-        // Fechar modal ao clicar no backdrop e no botão de fechar
+        // Fechar modal ao clicar no backdrop e no botÃ£o de fechar
         const modal = document.getElementById('followListModal');
         const closeBtn = document.getElementById('closeFollowListModalBtn');
         
@@ -1264,31 +1246,31 @@
             });
         }
         
-        // Botão de restaurar sequência
+        // BotÃ£o de restaurar sequÃªncia
         const restoreBtn = document.getElementById('restoreStreakBtn');
         const restoreContainer = document.getElementById('restoreStreakContainer');
-        console.log('Botão de restaurar encontrado:', !!restoreBtn);
+        console.log('BotÃ£o de restaurar encontrado:', !!restoreBtn);
         console.log('Container de restaurar encontrado:', !!restoreContainer);
         
         if (restoreBtn) {
             restoreBtn.addEventListener('click', restoreStreak);
         }
         
-        // Carregar informações de streak (apenas se for o próprio perfil)
+        // Carregar informaÃ§Ãµes de streak (apenas se for o prÃ³prio perfil)
         try {
             const currentUserId = JSON.parse(atob(token.split('.')[1])).id;
             console.log('IDs:', { currentUserId, viewedUserId });
             if (currentUserId === viewedUserId) {
-                console.log('É o próprio perfil, carregando informações de streak...');
+                console.log('Ã‰ o prÃ³prio perfil, carregando informaÃ§Ãµes de streak...');
                 loadStreakInfo();
             } else {
-                console.log('Não é o próprio perfil, ocultando botão de restaurar');
+                console.log('NÃ£o Ã© o prÃ³prio perfil, ocultando botÃ£o de restaurar');
                 if (restoreContainer) {
                     restoreContainer.classList.add('hidden');
                 }
             }
         } catch (error) {
-            console.error('Erro ao verificar usuário atual:', error);
+            console.error('Erro ao verificar usuÃ¡rio atual:', error);
         }
         
         // Teste: verificar se o modal existe
@@ -1299,10 +1281,10 @@
             console.log('Modal style.display:', modalTest.style.display);
         }
         
-        // Teste manual: adicionar um botão de teste temporário
-        console.log('Testando se as funções funcionam...');
+        // Teste manual: adicionar um botÃ£o de teste temporÃ¡rio
+        console.log('Testando se as funÃ§Ãµes funcionam...');
         setTimeout(() => {
-            console.log('Teste após 1 segundo - verificando funções:', {
+            console.log('Teste apÃ³s 1 segundo - verificando funÃ§Ãµes:', {
                 showFollowersList: typeof showFollowersList,
                 showFollowingList: typeof showFollowingList
             });
@@ -1310,14 +1292,14 @@
     });
     
     // Teste imediato (fora do DOMContentLoaded)
-    console.log('Script carregado. Funções disponíveis:', {
+    console.log('Script carregado. FunÃ§Ãµes disponÃ­veis:', {
         showFollowersList: typeof showFollowersList,
         showFollowingList: typeof showFollowingList,
         closeFollowListModal: typeof closeFollowListModal
     });
     
-    // Funções globais serão definidas no DOMContentLoaded (linha 1091-1093)
-    // Não criar wrappers duplicados aqui para evitar recursão infinita
+    // FunÃ§Ãµes globais serÃ£o definidas no DOMContentLoaded (linha 1091-1093)
+    // NÃ£o criar wrappers duplicados aqui para evitar recursÃ£o infinita
 </script>
     <script src="js/notifications.js"></script>
 </body>
